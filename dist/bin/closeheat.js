@@ -1,13 +1,20 @@
 #!/usr/bin/env node
 
-var program;
+var Creator, program;
 
 program = require('commander');
 
-program.version('0.0.1').usage('<keywords>').parse(process.argv);
+Creator = require('../creator');
+
+program.version('0.0.1').usage('<keywords>');
+
+program.command('create [name]').alias('new').description('creates a new app with clean setup and directory structure').action(function(name) {
+  console.log('name was ' + name);
+  return new Creator().create();
+});
+
+program.parse(process.argv);
 
 if (!program.args.length) {
   return program.help();
 }
-
-console.log('Keywords: ' + program.args);
