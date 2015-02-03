@@ -30,8 +30,8 @@ Spinner = do ->
 
     # remove spinner
     util.print sequence[index].replace(/./g, "\r")
-    # add colored dash
-    util.puts chalk.blue('- ')
+    # add a colored dash
+    util.puts chalk.blue('-')
 
     util.puts "  #{stop_message}"
 

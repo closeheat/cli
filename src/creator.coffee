@@ -20,3 +20,5 @@ class Creator
 
       start_cmd = chalk.yellow("cd #{name} && closeheat server")
       util.puts "  Run \"#{start_cmd}\" to start it."
+
+      process.exit(0)

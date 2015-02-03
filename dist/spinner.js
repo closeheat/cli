@@ -27,7 +27,7 @@ module.exports = Spinner = (function() {
     }
     clearInterval(timer);
     util.print(sequence[index].replace(/./g, "\r"));
-    util.puts(chalk.blue('- '));
+    util.puts(chalk.blue('-'));
     return util.puts("  " + stop_message);
   };
   return {

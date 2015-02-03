@@ -21,7 +21,8 @@ module.exports = Creator = (function() {
       util = require('util');
       Spinner.stop("App with name \"" + (chalk.yellow(name)) + "\" is ready.");
       start_cmd = chalk.yellow("cd " + name + " && closeheat server");
-      return util.puts("  Run \"" + start_cmd + "\" to start it.");
+      util.puts("  Run \"" + start_cmd + "\" to start it.");
+      return process.exit(0);
     });
   };
 
