@@ -10,8 +10,7 @@ program
   .alias('new')
   .description('creates a new app with clean setup and directory structure')
   .action (name) ->
-    console.log 'name was ' + name
-    new Creator().create()
+    new Creator().create(name)
 
 program.parse(process.argv)
 

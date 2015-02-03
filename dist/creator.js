@@ -3,10 +3,12 @@ var Creator;
 module.exports = Creator = (function() {
   function Creator() {}
 
-  Creator.prototype.create = function() {
-    var request, url;
+  Creator.prototype.create = function(name) {
+    var Spinner, request, url;
     url = 'https://api.github.com/search/repositories?sort=stars&order=desc&q=closeheat';
     request = require('request');
+    Spinner = require('./spinner');
+    Spinner.start('Creating a directory');
     return request({
       method: 'GET',
       headers: {
@@ -14,22 +16,12 @@ module.exports = Creator = (function() {
       },
       url: url
     }, function(error, response, body) {
-      var chalk, i, _results;
-      if (!error && response.statusCode === 200) {
-        body = JSON.parse(body);
-        i = 0;
-        _results = [];
-        while (i < body.items.length) {
-          chalk = require('chalk');
-          console.log(chalk.cyan.bold.underline('Name: ' + body.items[i].name));
-          console.log(chalk.magenta.bold('Owner: ' + body.items[i].owner.login));
-          _results.push(i++);
-        }
-        return _results;
-      } else if (error) {
-        chalk = require('chalk');
-        return console.log(chalk.red('Error: ' + error));
-      }
+      var chalk, start_cmd, util;
+      chalk = require('chalk');
+      util = require('util');
+      Spinner.stop("App with name \"" + (chalk.yellow(name)) + "\" is ready.");
+      start_cmd = chalk.yellow("cd " + name + " && closeheat server");
+      return util.puts("  Run \"" + start_cmd + "\" to start it.");
     });
   };
 

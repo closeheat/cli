@@ -1,25 +1,22 @@
-
 module.exports =
 class Creator
-  create: ->
+  create: (name) ->
     url = 'https://api.github.com/search/repositories?sort=stars&order=desc&q=closeheat'
 
     request = require 'request'
+
+    Spinner = require './spinner'
+    Spinner.start('Creating a directory')
 
     request {
       method: 'GET'
       headers: 'User-Agent': 'closeheat'
       url: url
     }, (error, response, body) ->
-      if !error and response.statusCode == 200
-        body = JSON.parse(body)
+      chalk = require('chalk')
+      util = require('util')
 
-        i = 0
-        while i < body.items.length
-          chalk = require 'chalk'
-          console.log chalk.cyan.bold.underline('Name: ' + body.items[i].name)
-          console.log chalk.magenta.bold('Owner: ' + body.items[i].owner.login)
-          i++
-      else if error
-        chalk = require 'chalk'
-        console.log chalk.red('Error: ' + error)
+      Spinner.stop("App with name \"#{chalk.yellow(name)}\" is ready.")
+
+      start_cmd = chalk.yellow("cd #{name} && closeheat server")
+      util.puts "  Run \"#{start_cmd}\" to start it."
