@@ -33,7 +33,7 @@ module.exports = Server = (function() {
       '**': 'max-age=0, no-cache, no-store'
     };
     new Watcher(this.src, this.dist).run();
-    app = charge(this.dist, opts);
+    app = charge(path.join(this.dist, 'app'), opts);
     this.server = app.start(4000);
     return util.puts("Server started at " + (chalk.blue('http://0.0.0.0:4000')));
   };

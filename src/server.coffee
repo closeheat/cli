@@ -26,7 +26,7 @@ class Server
     opts.cache_control = {'**': 'max-age=0, no-cache, no-store'}
 
     new Watcher(@src, @dist).run()
-    app = charge(@dist, opts)
+    app = charge(path.join(@dist, 'app'), opts)
 
     @server = app.start(4000)
     util.puts("Server started at #{chalk.blue('http://0.0.0.0:4000')}")
