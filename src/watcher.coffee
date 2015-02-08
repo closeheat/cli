@@ -3,6 +3,8 @@ chokidar  = require 'chokidar'
 util = require 'util'
 chalk = require 'chalk'
 rimraf = require 'rimraf'
+Requirer = require './requirer'
+fs = require 'fs'
 
 module.exports =
 class Watcher
@@ -19,5 +21,9 @@ class Watcher
 
   build: (e, file) ->
     rimraf.sync(@dist)
-    builder.build(@src, @dist)
-    util.puts("#{chalk.blue('App rebuilt')} - File #{file} #{e}.") if file
+    builder.build(@src, @dist).then ->
+      util.puts("#{chalk.blue('App rebuilt')} - File #{file} #{e}.") if file
+      util.puts "Reading #{dist}"
+      fs.readdir @dist, (err, files) ->
+        console.log(files)
+      new Requirer(@dist).scan()

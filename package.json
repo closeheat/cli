@@ -21,12 +21,14 @@
     "chokidar": "^1.0.0-rc3",
     "closeheat-builder": "0.0.1",
     "commander": "^2.6.0",
+    "gutil": "^1.6.0",
     "home-path": "^0.1.1",
     "lodash": "^3.1.0",
     "path": "^0.11.14",
     "request": "^2.53.0",
     "rimraf": "^2.2.8",
-    "serve-static": "^1.8.1"
+    "serve-static": "^1.8.1",
+    "through2": "^0.6.3"
   },
   "keywords": [
     "closeheat",

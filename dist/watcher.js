@@ -1,4 +1,4 @@
-var Watcher, builder, chalk, chokidar, rimraf, util;
+var Requirer, Watcher, builder, chalk, chokidar, fs, rimraf, util;
 
 builder = require('closeheat-builder');
 
@@ -9,6 +9,10 @@ util = require('util');
 chalk = require('chalk');
 
 rimraf = require('rimraf');
+
+Requirer = require('./requirer');
+
+fs = require('fs');
 
 module.exports = Watcher = (function() {
   function Watcher(src, dist) {
@@ -32,10 +36,16 @@ module.exports = Watcher = (function() {
 
   Watcher.prototype.build = function(e, file) {
     rimraf.sync(this.dist);
-    builder.build(this.src, this.dist);
-    if (file) {
-      return util.puts("" + (chalk.blue('App rebuilt')) + " - File " + file + " " + e + ".");
-    }
+    return builder.build(this.src, this.dist).then(function() {
+      if (file) {
+        util.puts("" + (chalk.blue('App rebuilt')) + " - File " + file + " " + e + ".");
+      }
+      util.puts("Reading " + dist);
+      fs.readdir(this.dist, function(err, files) {
+        return console.log(files);
+      });
+      return new Requirer(this.dist).scan();
+    });
   };
 
   return Watcher;
