@@ -1,5 +1,6 @@
 program = require 'commander'
 Creator = require '../creator'
+Server = require '../server'
 
 program
   .version('0.0.1')
@@ -11,6 +12,11 @@ program
   .description('creates a new app with clean setup and directory structure')
   .action (name) ->
     new Creator().create(name)
+
+program
+  .command('server')
+  .action ->
+    new Server().start()
 
 program.parse(process.argv)
 
