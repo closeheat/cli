@@ -5,11 +5,15 @@ chalk = require 'chalk'
 rimraf = require 'rimraf'
 Requirer = require './requirer'
 fs = require 'fs'
+path = require 'path'
 
 module.exports =
 class Watcher
   constructor: (@src, @dist) ->
-    @watcher = chokidar.watch @src,
+    @src_app = path.join(@src, 'app')
+    @dist_app = path.join(@dist, 'app')
+
+    @watcher = chokidar.watch @src_app,
       ignoreInitial: true
 
   run: ->
@@ -20,10 +24,9 @@ class Watcher
       .on('all', (e, file) => @build(e, file))
 
   build: (e, file) ->
-    rimraf.sync(@dist)
-    builder.build(@src, @dist).then ->
+    rimraf.sync(@dist_app)
+
+    builder.build(@src_app, @dist_app).then =>
       util.puts("#{chalk.blue('App rebuilt')} - File #{file} #{e}.") if file
-      util.puts "Reading #{dist}"
-      fs.readdir @dist, (err, files) ->
-        console.log(files)
-      new Requirer(@dist).scan()
+
+      new Requirer(@dist, @dist_app).scan()

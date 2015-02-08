@@ -18,7 +18,7 @@ homePath = require('home-path');
 
 module.exports = Server = (function() {
   function Server() {
-    this.src = 'app';
+    this.src = process.cwd();
     this.dist = "" + (homePath()) + "/.closeheat/tmp/321app-token321/";
   }
 

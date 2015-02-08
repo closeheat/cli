@@ -1,4 +1,4 @@
-var Requirer, Watcher, builder, chalk, chokidar, fs, rimraf, util;
+var Requirer, Watcher, builder, chalk, chokidar, fs, path, rimraf, util;
 
 builder = require('closeheat-builder');
 
@@ -14,11 +14,15 @@ Requirer = require('./requirer');
 
 fs = require('fs');
 
+path = require('path');
+
 module.exports = Watcher = (function() {
   function Watcher(src, dist) {
     this.src = src;
     this.dist = dist;
-    this.watcher = chokidar.watch(this.src, {
+    this.src_app = path.join(this.src, 'app');
+    this.dist_app = path.join(this.dist, 'app');
+    this.watcher = chokidar.watch(this.src_app, {
       ignoreInitial: true
     });
   }
@@ -35,17 +39,15 @@ module.exports = Watcher = (function() {
   };
 
   Watcher.prototype.build = function(e, file) {
-    rimraf.sync(this.dist);
-    return builder.build(this.src, this.dist).then(function() {
-      if (file) {
-        util.puts("" + (chalk.blue('App rebuilt')) + " - File " + file + " " + e + ".");
-      }
-      util.puts("Reading " + dist);
-      fs.readdir(this.dist, function(err, files) {
-        return console.log(files);
-      });
-      return new Requirer(this.dist).scan();
-    });
+    rimraf.sync(this.dist_app);
+    return builder.build(this.src_app, this.dist_app).then((function(_this) {
+      return function() {
+        if (file) {
+          util.puts("" + (chalk.blue('App rebuilt')) + " - File " + file + " " + e + ".");
+        }
+        return new Requirer(_this.dist, _this.dist_app).scan();
+      };
+    })(this));
   };
 
   return Watcher;

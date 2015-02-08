@@ -10,7 +10,7 @@ homePath = require('home-path')
 module.exports =
 class Server
   constructor: ->
-    @src = 'app'
+    @src = process.cwd()
     @dist = "#{homePath()}/.closeheat/tmp/321app-token321/"
 
   start: (port, cb) ->
