@@ -1,4 +1,4 @@
-var Server, chalk, charge, path, serve_static, util;
+var Server, Watcher, chalk, charge, fs, homePath, path, serve_static, util;
 
 path = require('path');
 
@@ -10,8 +10,17 @@ util = require('util');
 
 chalk = require('chalk');
 
+fs = require('fs');
+
+Watcher = require('./watcher');
+
+homePath = require('home-path');
+
 module.exports = Server = (function() {
-  function Server() {}
+  function Server() {
+    this.src = 'app';
+    this.dist = "" + (homePath()) + "/.closeheat/tmp/321app-token321/";
+  }
 
   Server.prototype.start = function(port, cb) {
     var app, opts;
@@ -23,7 +32,8 @@ module.exports = Server = (function() {
     opts.cache_control = {
       '**': 'max-age=0, no-cache, no-store'
     };
-    app = charge('app', opts);
+    new Watcher(this.src, this.dist).run();
+    app = charge(this.dist, opts);
     this.server = app.start(4000);
     return util.puts("Server started at " + (chalk.blue('http://0.0.0.0:4000')));
   };
