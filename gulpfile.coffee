@@ -31,7 +31,7 @@ gulp.task 'coffee', ->
     .pipe gulp.dest('./dist/bin/')
 
 gulp.task 'requires', ->
-  fs.readFile './dist/spinner.js', 'utf-8', (err, data) ->
+  fs.readFile './dist/creator.js', 'utf-8', (err, data) ->
     ast = acorn.parse(data)
     walk = require('acorn/util/walk')
     walkall = require('walkall')
