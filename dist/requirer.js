@@ -1,4 +1,4 @@
-var Requirer, acorn, callback, coffee, fs, gulp, gutil, npmi, path, through, _,
+var Requirer, acorn, callback, coffee, fs, gulp, gutil, npmi, path, through, util, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 fs = require('fs');
@@ -10,6 +10,8 @@ path = require('path');
 gulp = require('gulp');
 
 gutil = require('gutil');
+
+util = require('util');
 
 coffee = require('gulp-coffee');
 
@@ -30,7 +32,6 @@ module.exports = Requirer = (function() {
   }
 
   Requirer.prototype.scan = function() {
-    console.log('Scanning');
     return gulp.src(path.join(this.dist_app, '**/*.js')).pipe(this.scanner().on('error', gutil.log));
   };
 
@@ -46,17 +47,25 @@ module.exports = Requirer = (function() {
   Requirer.prototype.downloadModules = function() {
     var package_file;
     package_file = {
-      dependencies: {}
+      name: 'closeheat-app',
+      version: '1.0.0',
+      dependencies: {},
+      path: '.'
     };
-    _.each(_.uniq(this.modules), function(module) {
-      return package_file.dependencies[module] = '*';
-    });
-    fs.writeFile(path.join(this.dist, 'package.json'), JSON.stringify(package_file));
-    return npmi({
-      path: this.dist
-    }, function(err, result) {
-      return console.log('installed');
-    });
+    _.each(_.uniq(this.modules), (function(_this) {
+      return function(module) {
+        package_file.dependencies[module] = '';
+        return npmi({
+          name: module,
+          path: _this.dist
+        }, function(err, result) {
+          if (result) {
+            return util.puts("" + module + " installed");
+          }
+        });
+      };
+    })(this));
+    return fs.writeFileSync(path.join(this.dist, 'package.json'), JSON.stringify(package_file));
   };
 
   Requirer.prototype.scanner = function() {

@@ -3,6 +3,7 @@ through = require('through2')
 path = require 'path'
 gulp = require 'gulp'
 gutil = require 'gutil'
+util = require 'util'
 coffee = require 'gulp-coffee'
 acorn = require 'acorn'
 _ = require 'lodash'
@@ -15,8 +16,6 @@ class Requirer
     @modules = []
 
   scan: ->
-    console.log 'Scanning'
-
     gulp
       .src(path.join(@dist_app, '**/*.js'))
       .pipe(@scanner().on('error', gutil.log))
@@ -30,16 +29,19 @@ class Requirer
 
   downloadModules: =>
     package_file = {
-      dependencies: {}
+      name: 'closeheat-app'
+      version: '1.0.0'
+      dependencies: {},
+      path: '.',
     }
 
-    _.each _.uniq(@modules), (module) ->
-      package_file.dependencies[module] = '*'
+    _.each _.uniq(@modules), (module) =>
+      package_file.dependencies[module] = ''
 
-    fs.writeFile(path.join(@dist, 'package.json'), JSON.stringify(package_file))
+      npmi name: module, path: @dist, (err, result) ->
+        util.puts("#{module} installed") if result
 
-    npmi { path: @dist }, (err, result) ->
-      console.log 'installed'
+    fs.writeFileSync(path.join(@dist, 'package.json'), JSON.stringify(package_file))
 
   scanner: ->
     through.obj((file, enc, cb) =>
