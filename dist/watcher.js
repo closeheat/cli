@@ -20,9 +20,8 @@ module.exports = Watcher = (function() {
   function Watcher(src, dist) {
     this.src = src;
     this.dist = dist;
-    this.src_app = path.join(this.src, 'app');
     this.dist_app = path.join(this.dist, 'app');
-    this.watcher = chokidar.watch(this.src_app, {
+    this.watcher = chokidar.watch(this.src, {
       ignoreInitial: true
     });
   }
@@ -40,7 +39,7 @@ module.exports = Watcher = (function() {
 
   Watcher.prototype.build = function(e, file) {
     rimraf.sync(this.dist_app);
-    return builder.build(this.src_app, this.dist_app).then((function(_this) {
+    return builder.build(this.src, this.dist_app).then((function(_this) {
       return function() {
         if (file) {
           util.puts("" + (chalk.blue('App rebuilt')) + " - File " + file + " " + e + ".");

@@ -10,10 +10,9 @@ path = require 'path'
 module.exports =
 class Watcher
   constructor: (@src, @dist) ->
-    @src_app = path.join(@src, 'app')
     @dist_app = path.join(@dist, 'app')
 
-    @watcher = chokidar.watch @src_app,
+    @watcher = chokidar.watch @src,
       ignoreInitial: true
 
   run: ->
@@ -26,7 +25,7 @@ class Watcher
   build: (e, file) ->
     rimraf.sync(@dist_app)
 
-    builder.build(@src_app, @dist_app).then =>
+    builder.build(@src, @dist_app).then =>
       util.puts("#{chalk.blue('App rebuilt')} - File #{file} #{e}.") if file
 
       new Requirer(@dist, @dist_app).scan()
