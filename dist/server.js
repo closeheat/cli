@@ -19,7 +19,7 @@ homePath = require('home-path');
 module.exports = Server = (function() {
   function Server() {
     this.src = process.cwd();
-    this.dist = "" + (homePath()) + "/.closeheat/tmp/321app-token321/";
+    this.dist = "" + (homePath()) + "/.closeheat/tmp/apps/321app-token321/";
   }
 
   Server.prototype.start = function(port, cb) {
@@ -34,8 +34,9 @@ module.exports = Server = (function() {
     };
     new Watcher(this.src, this.dist).run();
     app = charge(path.join(this.dist, 'app'), opts);
-    this.server = app.start(4000);
-    return util.puts("Server started at " + (chalk.blue('http://0.0.0.0:4000')));
+    port = 9000;
+    this.server = app.start(port);
+    return util.puts(chalk.blue("Server started at http://0.0.0.0:" + port));
   };
 
   return Server;
