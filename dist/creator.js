@@ -40,6 +40,11 @@ module.exports = Creator = (function() {
   function Creator() {}
 
   Creator.prototype.create = function(name) {
+    this.app_dir = path.join(process.cwd(), name);
+    if (fs.existsSync(this.app_dir)) {
+      console.log("Dir " + this.app_dir + " already exists");
+      return;
+    }
     this.src = process.cwd();
     this.tmp_dir = "" + (homePath()) + "/.closeheat/tmp/creations/353cleaned5sometime/";
     return inquirer.prompt([
@@ -126,8 +131,7 @@ module.exports = Creator = (function() {
   };
 
   Creator.prototype.createFromSettings = function(name, answers) {
-    var app_dir, parts_dir, transformed_dir, whole_dir;
-    app_dir = path.join(process.cwd(), name);
+    var parts_dir, transformed_dir, whole_dir;
     parts_dir = path.join(this.tmp_dir, 'parts');
     whole_dir = path.join(this.tmp_dir, 'whole');
     transformed_dir = path.join(this.tmp_dir, 'transformed');
@@ -150,7 +154,7 @@ module.exports = Creator = (function() {
           return _this.downloadAndAdd(framework_dir, answers.framework).then(function() {
             return _this.downloadAndAdd(template_dir, answers.template).then(function() {
               return dirmr([template_dir, framework_dir]).join(whole_dir).complete(function(err, result) {
-                return _this.transform(answers);
+                return _this.transform(answers, _this.app_dir);
               });
             });
           });
@@ -180,7 +184,7 @@ module.exports = Creator = (function() {
     return deferred.promise;
   };
 
-  Creator.prototype.transform = function(answers) {
+  Creator.prototype.transform = function(answers, app_dir) {
     var transformed_dir, whole_dir;
     whole_dir = path.join(this.tmp_dir, 'whole');
     transformed_dir = path.join(this.tmp_dir, 'transformed');
@@ -189,64 +193,82 @@ module.exports = Creator = (function() {
     }
     return mkdirp(transformed_dir, (function(_this) {
       return function(err) {
+        var jobs;
         if (err) {
           console.log(err);
         }
+        jobs = [];
         if (answers.html === 'jade') {
-          _this.preprocessJade();
+          jobs.push(_this.preprocessJade());
         } else {
-          _this.move('html');
+          jobs.push(_this.move('html'));
         }
         if (answers.javascript === 'coffeescript') {
-          _this.preprocessCoffeeScript();
+          jobs.push(_this.preprocessCoffeeScript());
         } else {
-          _this.move('js');
+          jobs.push(_this.move('js'));
         }
         if (answers.css === 'scss') {
-          return _this.preprocessSCSS();
+          jobs.push(_this.preprocessSCSS());
         } else {
-          return _this.move('css');
+          jobs.push(_this.move('css'));
         }
+        return Q.when.apply(Q, jobs).then(function() {
+          return dirmr([transformed_dir]).join(app_dir).complete(function(err, result) {
+            console.log(err);
+            console.log(result);
+            fs.rmrfSync(transformed_dir);
+            return console.log('all done!');
+          });
+        });
       };
     })(this));
   };
 
   Creator.prototype.move = function(ext) {
-    var transformed_dir, whole_dir;
+    var deferred, transformed_dir, whole_dir;
     whole_dir = path.join(this.tmp_dir, 'whole');
     transformed_dir = path.join(this.tmp_dir, 'transformed');
-    return gulp.src(path.join(whole_dir, "**/*." + ext)).pipe(gulp.dest(transformed_dir).on('error', gutil.log)).pipe(callback(function() {
-      return console.log('moved');
+    deferred = Q.defer();
+    gulp.src(path.join(whole_dir, "**/*." + ext)).pipe(gulp.dest(transformed_dir).on('error', gutil.log)).pipe(callback(function() {
+      return deferred.resolve();
     }));
+    return deferred.promise;
   };
 
   Creator.prototype.preprocessSCSS = function() {
-    var transformed_dir, whole_dir;
+    var deferred, transformed_dir, whole_dir;
     whole_dir = path.join(this.tmp_dir, 'whole');
     transformed_dir = path.join(this.tmp_dir, 'transformed');
-    return gulp.src(path.join(whole_dir, "**/*.css")).pipe(cssScss()).pipe(gulp.dest(transformed_dir).on('error', gutil.log)).pipe(callback(function() {
-      return console.log('scssed');
+    deferred = Q.defer();
+    gulp.src(path.join(whole_dir, "**/*.css")).pipe(cssScss()).pipe(gulp.dest(transformed_dir).on('error', gutil.log)).pipe(callback(function() {
+      return deferred.resolve();
     }));
+    return deferred.promise;
   };
 
   Creator.prototype.preprocessJade = function() {
-    var transformed_dir, whole_dir;
+    var deferred, transformed_dir, whole_dir;
     whole_dir = path.join(this.tmp_dir, 'whole');
     transformed_dir = path.join(this.tmp_dir, 'transformed');
-    return gulp.src(path.join(whole_dir, '**/*.html')).pipe(this.gulpHtmlToJade({
+    deferred = Q.defer();
+    gulp.src(path.join(whole_dir, '**/*.html')).pipe(this.gulpHtmlToJade({
       nspaces: 2
     }).on('error', gutil.log)).pipe(gulp.dest(transformed_dir).on('error', gutil.log)).pipe(callback(function() {
-      return console.log('jaded');
+      return deferred.resolve();
     }));
+    return deferred.promise;
   };
 
   Creator.prototype.preprocessCoffeeScript = function() {
-    var transformed_dir, whole_dir;
+    var deferred, transformed_dir, whole_dir;
     whole_dir = path.join(this.tmp_dir, 'whole');
     transformed_dir = path.join(this.tmp_dir, 'transformed');
-    return gulp.src(path.join(whole_dir, '**/*.js')).pipe(js2coffee().on('error', gutil.log)).pipe(gulp.dest(transformed_dir)).pipe(callback(function() {
-      return console.log('coffied');
+    deferred = Q.defer();
+    gulp.src(path.join(whole_dir, '**/*.js')).pipe(js2coffee().on('error', gutil.log)).pipe(gulp.dest(transformed_dir)).pipe(callback(function() {
+      return deferred.resolve();
     }));
+    return deferred.promise;
   };
 
   Creator.prototype.gulpHtmlToJade = function(options) {

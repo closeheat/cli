@@ -20,6 +20,12 @@ exec = require('exec')
 module.exports =
 class Creator
   create: (name) ->
+    @app_dir = path.join(process.cwd(), name)
+
+    if fs.existsSync @app_dir
+      console.log "Dir #{@app_dir} already exists"
+      return
+
     @src = process.cwd()
     @tmp_dir = "#{homePath()}/.closeheat/tmp/creations/353cleaned5sometime/"
 
@@ -114,7 +120,6 @@ class Creator
       @createFromSettings(name, answers)
 
   createFromSettings: (name, answers) ->
-    app_dir = path.join(process.cwd(), name)
     parts_dir = path.join(@tmp_dir, 'parts')
     whole_dir = path.join(@tmp_dir, 'whole')
     transformed_dir = path.join(@tmp_dir, 'transformed')
@@ -137,7 +142,7 @@ class Creator
         @downloadAndAdd(framework_dir, answers.framework).then =>
           @downloadAndAdd(template_dir, answers.template).then =>
             dirmr([template_dir, framework_dir]).join(whole_dir).complete (err, result) =>
-              @transform(answers)
+              @transform(answers, @app_dir)
 
   downloadAndAdd: (tmp, part) ->
     deferred = Q.defer()
@@ -156,7 +161,7 @@ class Creator
 
     deferred.promise
 
-  transform: (answers) ->
+  transform: (answers, app_dir) ->
     whole_dir = path.join(@tmp_dir, 'whole')
     transformed_dir = path.join(@tmp_dir, 'transformed')
 
@@ -166,59 +171,81 @@ class Creator
     mkdirp transformed_dir, (err) =>
       console.log(err) if err
 
+      jobs = []
+
       if answers.html == 'jade'
-        @preprocessJade()
+        jobs.push(@preprocessJade())
       else
-        @move('html')
+        jobs.push(@move('html'))
 
       if answers.javascript == 'coffeescript'
-        @preprocessCoffeeScript()
+        jobs.push(@preprocessCoffeeScript())
       else
-        @move('js')
+        jobs.push(@move('js'))
 
       if answers.css == 'scss'
-        @preprocessSCSS()
+        jobs.push(@preprocessSCSS())
       else
-        @move('css')
+        jobs.push(@move('css'))
+
+      Q.when(jobs...).then ->
+        dirmr([transformed_dir]).join(app_dir).complete (err, result) ->
+          console.log err
+          console.log result
+          fs.rmrfSync(transformed_dir)
+          console.log 'all done!'
 
   move: (ext) ->
     whole_dir = path.join(@tmp_dir, 'whole')
     transformed_dir = path.join(@tmp_dir, 'transformed')
 
+    deferred = Q.defer()
+
     gulp
       .src(path.join(whole_dir, "**/*.#{ext}"))
       .pipe(gulp.dest(transformed_dir).on('error', gutil.log))
-      .pipe(callback(-> console.log('moved')))
+      .pipe(callback(-> deferred.resolve()))
+
+    deferred.promise
 
   preprocessSCSS: ->
     whole_dir = path.join(@tmp_dir, 'whole')
     transformed_dir = path.join(@tmp_dir, 'transformed')
 
+    deferred = Q.defer()
     gulp
       .src(path.join(whole_dir, "**/*.css"))
       .pipe(cssScss())
       .pipe(gulp.dest(transformed_dir).on('error', gutil.log))
-      .pipe(callback(-> console.log('scssed')))
+      .pipe(callback(-> deferred.resolve()))
+
+    deferred.promise
 
   preprocessJade: ->
     whole_dir = path.join(@tmp_dir, 'whole')
     transformed_dir = path.join(@tmp_dir, 'transformed')
 
+    deferred = Q.defer()
     gulp
       .src(path.join(whole_dir, '**/*.html'))
       .pipe(@gulpHtmlToJade(nspaces: 2).on('error', gutil.log))
       .pipe(gulp.dest(transformed_dir).on('error', gutil.log))
-      .pipe(callback(-> console.log('jaded')))
+      .pipe(callback(-> deferred.resolve()))
+
+    deferred.promise
 
   preprocessCoffeeScript: ->
     whole_dir = path.join(@tmp_dir, 'whole')
     transformed_dir = path.join(@tmp_dir, 'transformed')
 
+    deferred = Q.defer()
     gulp
       .src(path.join(whole_dir, '**/*.js'))
       .pipe(js2coffee().on('error', gutil.log))
       .pipe(gulp.dest(transformed_dir))
-      .pipe(callback(-> console.log('coffied')))
+      .pipe(callback(-> deferred.resolve()))
+
+    deferred.promise
 
   gulpHtmlToJade: (options) ->
     through.obj (file, enc, cb) ->
