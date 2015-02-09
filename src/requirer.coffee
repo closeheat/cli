@@ -21,6 +21,7 @@ class Requirer
     @modules = []
 
   scan: ->
+    console.log path.join(@dist_app, '**/*.js')
     gulp
       .src(path.join(@dist_app, '**/*.js'))
       .pipe(@scanner().on('error', gutil.log))

@@ -7,6 +7,11 @@ Q = require 'q'
 homePath = require('home-path')
 mkdirp = require('mkdirp')
 dirmr = require('dirmr')
+ghtml2jade = require('gulp-html2jade')
+gulp = require('gulp')
+gutil = require 'gulp-util'
+html2jade = require('html2jade')
+through = require('through2')
 
 module.exports =
 class Creator
@@ -108,6 +113,7 @@ class Creator
     app_dir = path.join(process.cwd(), name)
     parts_dir = path.join(@tmp_dir, 'parts')
     whole_dir = path.join(@tmp_dir, 'whole')
+    transformed_dir = path.join(@tmp_dir, 'transformed')
 
     if fs.existsSync parts_dir
       fs.rmrfSync(parts_dir)
@@ -126,11 +132,9 @@ class Creator
 
         @downloadAndAdd(framework_dir, answers.framework).then =>
           @downloadAndAdd(template_dir, answers.template).then =>
-            console.log 'before m'
-            console.log template_dir
-            console.log whole_dir
             dirmr([template_dir, framework_dir]).join(whole_dir)
             console.log 'merged'
+            @transform(answers)
 
   downloadAndAdd: (tmp, part) ->
     deferred = Q.defer()
@@ -147,24 +151,30 @@ class Creator
 
     deferred.promise
 
-#     url = 'https://api.github.com/search/repositories?sort=stars&order=desc&q=closeheat'
-#
-#     request = require 'request'
-#
-#     Spinner = require './spinner'
-#     Spinner.start('Creating a directory')
-#
-#     request {
-#       method: 'GET'
-#       headers: 'User-Agent': 'closeheat'
-#       url: url
-#     }, (error, response, body) ->
-#       chalk = require('chalk')
-#       util = require('util')
-#
-#       Spinner.stop("App with name \"#{chalk.yellow(name)}\" is ready.")
-#
-#       start_cmd = chalk.yellow("cd #{name} && closeheat server")
-#       util.puts "  Run \"#{start_cmd}\" to start it."
-#
-#       process.exit(0)
+  transform: (answers) ->
+    whole_dir = path.join(@tmp_dir, 'whole')
+    transformed_dir = path.join(@tmp_dir, 'transformed')
+
+    mkdirp transformed_dir, (err) =>
+      console.log(err) if err
+
+      gulp
+        # .src(path.join(whole_dir, '*/**.html'))
+        .src('index.html')
+        # .pipe(ghtml2jade(nspaces: 2))
+        .pipe(@gulpHtmlToJade(nspaces: 2).on('error', gutil.log))
+        .pipe(gulp.dest(transformed_dir).on('error', gutil.log))
+
+
+  gulpHtmlToJade: (options) ->
+    through.obj (file, enc, cb) ->
+      if (file.isNull())
+        cb(null, file)
+        return
+
+      options = options or {}
+      html = file.contents.toString()
+      html2jade.convertHtml html, options, (err, jade) ->
+        file.contents = new Buffer(jade)
+        file.path = gutil.replaceExtension(file.path, ".jade")
+        cb null, file

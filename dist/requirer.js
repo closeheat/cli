@@ -40,6 +40,7 @@ module.exports = Requirer = (function() {
   }
 
   Requirer.prototype.scan = function() {
+    console.log(path.join(this.dist_app, '**/*.js'));
     return gulp.src(path.join(this.dist_app, '**/*.js')).pipe(this.scanner().on('error', gutil.log)).pipe(callback(function() {
       return console.log('happ');
     }));

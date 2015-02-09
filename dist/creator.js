@@ -1,4 +1,4 @@
-var Creator, Q, dirmr, fs, ghdownload, homePath, inquirer, mkdirp, path, _;
+var Creator, Q, dirmr, fs, ghdownload, ghtml2jade, gulp, gutil, homePath, html2jade, inquirer, mkdirp, path, through, _;
 
 inquirer = require('inquirer');
 
@@ -17,6 +17,16 @@ homePath = require('home-path');
 mkdirp = require('mkdirp');
 
 dirmr = require('dirmr');
+
+ghtml2jade = require('gulp-html2jade');
+
+gulp = require('gulp');
+
+gutil = require('gulp-util');
+
+html2jade = require('html2jade');
+
+through = require('through2');
 
 module.exports = Creator = (function() {
   function Creator() {}
@@ -108,10 +118,11 @@ module.exports = Creator = (function() {
   };
 
   Creator.prototype.createFromSettings = function(name, answers) {
-    var app_dir, parts_dir, whole_dir;
+    var app_dir, parts_dir, transformed_dir, whole_dir;
     app_dir = path.join(process.cwd(), name);
     parts_dir = path.join(this.tmp_dir, 'parts');
     whole_dir = path.join(this.tmp_dir, 'whole');
+    transformed_dir = path.join(this.tmp_dir, 'transformed');
     if (fs.existsSync(parts_dir)) {
       fs.rmrfSync(parts_dir);
     }
@@ -130,11 +141,9 @@ module.exports = Creator = (function() {
           template_dir = path.join(_this.tmp_dir, 'parts', answers.template);
           return _this.downloadAndAdd(framework_dir, answers.framework).then(function() {
             return _this.downloadAndAdd(template_dir, answers.template).then(function() {
-              console.log('before m');
-              console.log(template_dir);
-              console.log(whole_dir);
               dirmr([template_dir, framework_dir]).join(whole_dir);
-              return console.log('merged');
+              console.log('merged');
+              return _this.transform(answers);
             });
           });
         });
@@ -159,6 +168,39 @@ module.exports = Creator = (function() {
       return deferred.resolve(true);
     });
     return deferred.promise;
+  };
+
+  Creator.prototype.transform = function(answers) {
+    var transformed_dir, whole_dir;
+    whole_dir = path.join(this.tmp_dir, 'whole');
+    transformed_dir = path.join(this.tmp_dir, 'transformed');
+    return mkdirp(transformed_dir, (function(_this) {
+      return function(err) {
+        if (err) {
+          console.log(err);
+        }
+        return gulp.src('index.html').pipe(_this.gulpHtmlToJade({
+          nspaces: 2
+        }).on('error', gutil.log)).pipe(gulp.dest(transformed_dir).on('error', gutil.log));
+      };
+    })(this));
+  };
+
+  Creator.prototype.gulpHtmlToJade = function(options) {
+    return through.obj(function(file, enc, cb) {
+      var html;
+      if (file.isNull()) {
+        cb(null, file);
+        return;
+      }
+      options = options || {};
+      html = file.contents.toString();
+      return html2jade.convertHtml(html, options, function(err, jade) {
+        file.contents = new Buffer(jade);
+        file.path = gutil.replaceExtension(file.path, ".jade");
+        return cb(null, file);
+      });
+    });
   };
 
   return Creator;
