@@ -12,6 +12,10 @@ gulp = require('gulp')
 gutil = require 'gulp-util'
 html2jade = require('html2jade')
 through = require('through2')
+callback = require 'gulp-callback'
+js2coffee = require('gulp-js2coffee')
+cssScss = require('gulp-css-scss')
+exec = require('exec')
 
 module.exports =
 class Creator
@@ -132,9 +136,8 @@ class Creator
 
         @downloadAndAdd(framework_dir, answers.framework).then =>
           @downloadAndAdd(template_dir, answers.template).then =>
-            dirmr([template_dir, framework_dir]).join(whole_dir)
-            console.log 'merged'
-            @transform(answers)
+            dirmr([template_dir, framework_dir]).join(whole_dir).complete (err, result) =>
+              @transform(answers)
 
   downloadAndAdd: (tmp, part) ->
     deferred = Q.defer()
@@ -145,6 +148,8 @@ class Creator
         console.log "dir")
       .on 'error', (err) ->
         console.log(err)
+      .on 'zip', ->
+        console.log('REACHED GITHUB LIMITS')
       .on 'end', ->
         console.log('donw')
         deferred.resolve(true)
@@ -155,16 +160,65 @@ class Creator
     whole_dir = path.join(@tmp_dir, 'whole')
     transformed_dir = path.join(@tmp_dir, 'transformed')
 
+    if fs.existsSync transformed_dir
+      fs.rmrfSync(transformed_dir)
+
     mkdirp transformed_dir, (err) =>
       console.log(err) if err
 
-      gulp
-        # .src(path.join(whole_dir, '*/**.html'))
-        .src('index.html')
-        # .pipe(ghtml2jade(nspaces: 2))
-        .pipe(@gulpHtmlToJade(nspaces: 2).on('error', gutil.log))
-        .pipe(gulp.dest(transformed_dir).on('error', gutil.log))
+      if answers.html == 'jade'
+        @preprocessJade()
+      else
+        @move('html')
 
+      if answers.javascript == 'coffeescript'
+        @preprocessCoffeeScript()
+      else
+        @move('js')
+
+      if answers.css == 'scss'
+        @preprocessSCSS()
+      else
+        @move('css')
+
+  move: (ext) ->
+    whole_dir = path.join(@tmp_dir, 'whole')
+    transformed_dir = path.join(@tmp_dir, 'transformed')
+
+    gulp
+      .src(path.join(whole_dir, "**/*.#{ext}"))
+      .pipe(gulp.dest(transformed_dir).on('error', gutil.log))
+      .pipe(callback(-> console.log('moved')))
+
+  preprocessSCSS: ->
+    whole_dir = path.join(@tmp_dir, 'whole')
+    transformed_dir = path.join(@tmp_dir, 'transformed')
+
+    gulp
+      .src(path.join(whole_dir, "**/*.css"))
+      .pipe(cssScss())
+      .pipe(gulp.dest(transformed_dir).on('error', gutil.log))
+      .pipe(callback(-> console.log('scssed')))
+
+  preprocessJade: ->
+    whole_dir = path.join(@tmp_dir, 'whole')
+    transformed_dir = path.join(@tmp_dir, 'transformed')
+
+    gulp
+      .src(path.join(whole_dir, '**/*.html'))
+      .pipe(@gulpHtmlToJade(nspaces: 2).on('error', gutil.log))
+      .pipe(gulp.dest(transformed_dir).on('error', gutil.log))
+      .pipe(callback(-> console.log('jaded')))
+
+  preprocessCoffeeScript: ->
+    whole_dir = path.join(@tmp_dir, 'whole')
+    transformed_dir = path.join(@tmp_dir, 'transformed')
+
+    gulp
+      .src(path.join(whole_dir, '**/*.js'))
+      .pipe(js2coffee().on('error', gutil.log))
+      .pipe(gulp.dest(transformed_dir))
+      .pipe(callback(-> console.log('coffied')))
 
   gulpHtmlToJade: (options) ->
     through.obj (file, enc, cb) ->
