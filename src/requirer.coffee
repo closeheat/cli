@@ -10,6 +10,11 @@ _ = require 'lodash'
 callback = require 'gulp-callback'
 npmi = require('npmi')
 
+browserify = require 'browserify'
+source = require('vinyl-source-stream')
+buffer = require('vinyl-buffer')
+sourcemaps = require('gulp-sourcemaps')
+
 module.exports =
 class Requirer
   constructor: (@dist, @dist_app) ->
@@ -19,10 +24,7 @@ class Requirer
     gulp
       .src(path.join(@dist_app, '**/*.js'))
       .pipe(@scanner().on('error', gutil.log))
-
-  downloader: (arg) ->
-    console.log 'down'
-    console.log (arg)
+      .pipe(callback(-> console.log('happ')))
 
   registerModule: (module_name) ->
     @modules.push(module_name)
@@ -35,13 +37,38 @@ class Requirer
       path: '.',
     }
 
-    _.each _.uniq(@modules), (module) =>
-      package_file.dependencies[module] = ''
+    total = @modulesToDownload().length
 
-      npmi name: module, path: @dist, (err, result) ->
-        util.puts("#{module} installed") if result
+    count = 0
+    _.each @modulesToDownload(), (module) =>
+      npmi name: module, path: @dist, (err, result) =>
+        count += 1
+
+        if result
+          package_file.dependencies[module] = ''
+          util.puts("#{module} installed")
+
+        @continueBundling() if count == total
 
     fs.writeFileSync(path.join(@dist, 'package.json'), JSON.stringify(package_file))
+
+  continueBundling: ->
+    bundler = browserify
+      entries: [path.join(@dist_app, 'app.js')]
+      debug: true
+
+    bundler
+      .bundle()
+      .pipe(source('bundle.js'))
+      .pipe(buffer())
+      .pipe(sourcemaps.init({loadMaps: true}))
+      .pipe(sourcemaps.write('./'))
+      .pipe(gulp.dest(@dist_app))
+
+    console.log('bundlng')
+
+  modulesToDownload: ->
+    _.uniq(@modules)
 
   scanner: ->
     through.obj((file, enc, cb) =>

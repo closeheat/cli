@@ -27,7 +27,7 @@ module.exports = Server = (function() {
     opts = {};
     opts.log = false;
     opts.write = {
-      content: "<!-- closeheat development config --> <script>var closeheat = {};</script> <script>var closeheat.livereload = true;</script>"
+      content: "<!-- closeheat development config --> <script>var closeheat = {};</script> <script>var closeheat.livereload = true;</script> <script src='bundle.js'></script>"
     };
     opts.cache_control = {
       '**': 'max-age=0, no-cache, no-store'
