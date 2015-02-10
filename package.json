@@ -36,7 +36,7 @@
     "gulp-util": "^3.0.3",
     "gutil": "^1.6.0",
     "home-path": "^0.1.1",
-    "html2jade": "^0.8.2",
+    "html2jade": "0.8.0",
     "inquirer": "^0.8.0",
     "js2coffee": "^2.0.0",
     "lodash": "^3.1.0",
