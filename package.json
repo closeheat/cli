@@ -21,7 +21,7 @@
     "chalk": "^0.5.1",
     "charge": "0.0.3",
     "chokidar": "^1.0.0-rc3",
-    "closeheat-builder": "0.0.1",
+    "closeheat-builder": "0.0.2",
     "commander": "^2.6.0",
     "dirmr": "0.0.3",
     "download-github-repo": "^0.1.3",
