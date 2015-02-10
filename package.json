@@ -1,6 +1,6 @@
 {
   "name": "closeheat",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "Domas Bitvinskas <domas.bitvinskas@me.com>",
   "contributors": [
     "Justas Palumickas <jpalumickas@gmail.com>"
@@ -8,7 +8,7 @@
   "description": "A cli for closeheat",
   "main": "dist/creator.js",
   "bin": {
-    "closeheat": "./dist/bin/closeheat"
+    "closeheat": "./dist/bin/closeheat.js"
   },
   "homepage": "https://github.com/closeheat/cli",
   "repository": {
@@ -53,6 +53,8 @@
     "through2": "^0.6.3",
     "transfer-github": "^0.2.0",
     "vinyl-buffer": "^1.0.0",
+    "fs": "^0.0.2",
+    "gulp": "^3.8.10",
     "vinyl-source-stream": "^1.0.0"
   },
   "keywords": [
@@ -61,9 +63,7 @@
   ],
   "devDependencies": {
     "coffee-script": "^1.8.0",
-    "fs": "^0.0.2",
     "groc": "^0.7.0",
-    "gulp": "^3.8.10",
     "gulp-coffee": "2.2.0",
     "gulp-header": "^1.2.2",
     "gulp-insert": "^0.4.0",
