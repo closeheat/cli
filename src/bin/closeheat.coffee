@@ -1,4 +1,6 @@
 program = require 'commander'
+_ = require 'lodash'
+
 Creator = require '../creator'
 Server = require '../server'
 
@@ -10,8 +12,18 @@ program
   .command('create [name]')
   .alias('new')
   .description('creates a new app with clean setup and directory structure')
-  .action (name) ->
-    new Creator().create(name)
+  .option('-f, --framework [name]', 'Framework')
+  .option('-t, --template [name]', 'Template')
+  .option('--javascript [name]', 'Javascript precompiler')
+  .option('--html [name]', 'HTML precompiler')
+  .option('--css [name]', 'CSS precompiler')
+  .action (name, opts) ->
+    settings = _.pick(opts, 'framework', 'template', 'javascript', 'html', 'css')
+
+    if _.isEmpty(settings)
+      new Creator().createFromPrompt(name)
+    else
+      new Creator().createFromSettings(name, settings)
 
 program
   .command('server')

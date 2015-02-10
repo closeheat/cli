@@ -1,4 +1,4 @@
-var Creator, Dirs, Prompt, Q, TemplateDownloader, Transformer, dirmr, fs, inquirer;
+var Creator, Dirs, Prompt, Q, TemplateDownloader, Transformer, dirmr, fs, inquirer, _;
 
 inquirer = require('inquirer');
 
@@ -7,6 +7,8 @@ fs = require('fs.extra');
 dirmr = require('dirmr');
 
 Q = require('q');
+
+_ = require('lodash');
 
 Prompt = require('./prompt');
 
@@ -19,20 +21,38 @@ Transformer = require('./transformer');
 module.exports = Creator = (function() {
   function Creator() {}
 
-  Creator.prototype.create = function(name) {
+  Creator.prototype.createFromSettings = function(name, settings) {
+    var defaults;
     this.dirs = new Dirs(name);
-    if (fs.existsSync(this.dirs.target)) {
-      console.log("Directory " + this.dirs.target + " already exists");
-      return;
-    }
+    this.checkDir();
+    defaults = {
+      framework: 'angular',
+      template: 'bootstrap',
+      javascript: 'javascript',
+      html: 'html',
+      css: 'css'
+    };
+    return this.createWithSettings(_.defaults(settings, defaults));
+  };
+
+  Creator.prototype.createFromPrompt = function(name) {
+    this.dirs = new Dirs(name);
+    this.checkDir();
     return inquirer.prompt(Prompt.questions, (function(_this) {
       return function(answers) {
-        return _this.createFromSettings(answers);
+        console.log(answers);
+        return _this.createWithSettings(answers);
       };
     })(this));
   };
 
-  Creator.prototype.createFromSettings = function(answers) {
+  Creator.prototype.checkDir = function() {
+    if (fs.existsSync(this.dirs.target)) {
+      throw Error("Directory " + this.dirs.target + " already exists");
+    }
+  };
+
+  Creator.prototype.createWithSettings = function(answers) {
     this.dirs.clean();
     return this.dirs.create().then((function(_this) {
       return function() {

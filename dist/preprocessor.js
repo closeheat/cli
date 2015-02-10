@@ -1,4 +1,4 @@
-var JadePreprocessor, Preprocessor, Q, callback, cssScss, gulp, gutil, js2coffee, path;
+var Preprocessor, Q, callback, cssScss, gulp, gutil, html2jade, js2coffee, path, through;
 
 Q = require('q');
 
@@ -14,7 +14,9 @@ path = require('path');
 
 js2coffee = require('gulp-js2coffee');
 
-JadePreprocessor = require('./jade_preprocessor');
+html2jade = require('html2jade');
+
+through = require('through2');
 
 module.exports = Preprocessor = (function() {
   function Preprocessor(dirs) {
@@ -54,11 +56,13 @@ module.exports = Preprocessor = (function() {
       coffeescript: function() {
         return js2coffee();
       },
-      jade: function() {
-        return new JadePreprocessor.exec({
-          nspaces: 2
-        });
-      },
+      jade: (function(_this) {
+        return function() {
+          return _this.jade({
+            nspaces: 2
+          });
+        };
+      })(this),
       scss: function() {
         return cssScss();
       }
@@ -77,6 +81,23 @@ module.exports = Preprocessor = (function() {
       return deferred.resolve();
     }));
     return deferred.promise;
+  };
+
+  Preprocessor.prototype.jade = function(options) {
+    return through.obj(function(file, enc, cb) {
+      var html;
+      if (file.isNull()) {
+        cb(null, file);
+        return;
+      }
+      options = options || {};
+      html = file.contents.toString();
+      return html2jade.convertHtml(html, options, function(err, jade) {
+        file.contents = new Buffer(jade);
+        file.path = gutil.replaceExtension(file.path, ".jade");
+        return cb(null, file);
+      });
+    });
   };
 
   return Preprocessor;

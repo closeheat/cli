@@ -2,6 +2,7 @@ inquirer = require('inquirer')
 fs = require('fs.extra')
 dirmr = require('dirmr')
 Q = require 'q'
+_ = require 'lodash'
 
 Prompt = require './prompt'
 Dirs = require './dirs'
@@ -10,17 +11,32 @@ Transformer = require './transformer'
 
 module.exports =
 class Creator
-  create: (name) ->
+  createFromSettings: (name, settings) ->
     @dirs = new Dirs(name)
+    @checkDir()
 
-    if fs.existsSync @dirs.target
-      console.log "Directory #{@dirs.target} already exists"
-      return
+    defaults =
+      framework: 'angular'
+      template: 'bootstrap'
+      javascript: 'javascript'
+      html: 'html'
+      css: 'css'
+
+    @createWithSettings(_.defaults(settings, defaults))
+
+  createFromPrompt: (name) ->
+    @dirs = new Dirs(name)
+    @checkDir()
 
     inquirer.prompt Prompt.questions, (answers) =>
-      @createFromSettings(answers)
+      console.log answers
+      @createWithSettings(answers)
 
-  createFromSettings: (answers) ->
+  checkDir: ->
+    if fs.existsSync @dirs.target
+      throw Error "Directory #{@dirs.target} already exists"
+
+  createWithSettings: (answers) ->
     @dirs.clean()
 
     @dirs.create().then =>

@@ -6,7 +6,8 @@ cssScss = require('gulp-css-scss')
 path = require 'path'
 js2coffee = require('gulp-js2coffee')
 
-JadePreprocessor = require('./jade_preprocessor')
+html2jade = require('html2jade')
+through = require('through2')
 
 module.exports =
 class Preprocessor
@@ -37,7 +38,7 @@ class Preprocessor
   preprocessorFor: (tech) ->
     PREPROCESSORS =
       coffeescript: -> js2coffee()
-      jade: -> new JadePreprocessor.exec(nspaces: 2)
+      jade: => @jade(nspaces: 2)
       scss: -> cssScss()
 
     PREPROCESSORS[tech] || -> callback(-> 'no preprocessor')
@@ -52,3 +53,16 @@ class Preprocessor
       .pipe(callback(-> deferred.resolve()))
 
     deferred.promise
+
+  jade: (options) ->
+    through.obj (file, enc, cb) ->
+      if (file.isNull())
+        cb(null, file)
+        return
+
+      options = options or {}
+      html = file.contents.toString()
+      html2jade.convertHtml html, options, (err, jade) ->
+        file.contents = new Buffer(jade)
+        file.path = gutil.replaceExtension(file.path, ".jade")
+        cb null, file

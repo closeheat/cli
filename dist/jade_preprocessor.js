@@ -10,6 +10,7 @@ module.exports = JadePreprocessor = (function() {
   function JadePreprocessor() {}
 
   JadePreprocessor.prototype.exec = function(options) {
+    console.log('con');
     return through.obj(function(file, enc, cb) {
       var html;
       if (file.isNull()) {
