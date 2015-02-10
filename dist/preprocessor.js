@@ -1,4 +1,4 @@
-var Preprocessor, Q, callback, cssScss, gulp, gutil, html2jade, js2coffee, path, through;
+var Preprocessor, Q, callback, cssScss, gulp, gulpif, gutil, html2jade, js2coffee, path, through;
 
 Q = require('q');
 
@@ -13,6 +13,8 @@ cssScss = require('gulp-css-scss');
 path = require('path');
 
 js2coffee = require('gulp-js2coffee');
+
+gulpif = require('gulp-if');
 
 html2jade = require('html2jade');
 
@@ -77,10 +79,14 @@ module.exports = Preprocessor = (function() {
   Preprocessor.prototype.exec = function(tech) {
     var deferred;
     deferred = Q.defer();
-    gulp.src(path.join(this.dirs.whole, "**/*." + (this.sourceFor(tech)))).pipe(this.preprocessorFor(tech)()).pipe(gulp.dest(this.dirs.transformed).on('error', gutil.log)).pipe(callback(function() {
+    gulp.src(path.join(this.dirs.whole, "**/*." + (this.sourceFor(tech)))).pipe(gulpif(this.notMinimized, this.preprocessorFor(tech)())).pipe(gulp.dest(this.dirs.transformed).on('error', gutil.log)).pipe(callback(function() {
       return deferred.resolve();
     }));
     return deferred.promise;
+  };
+
+  Preprocessor.prototype.notMinimized = function(file) {
+    return !file.path.match(/\.min\./);
   };
 
   Preprocessor.prototype.jade = function(options) {

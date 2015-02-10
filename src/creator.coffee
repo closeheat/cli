@@ -29,7 +29,6 @@ class Creator
     @checkDir()
 
     inquirer.prompt Prompt.questions, (answers) =>
-      console.log answers
       @createWithSettings(answers)
 
   checkDir: ->

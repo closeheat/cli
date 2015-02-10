@@ -40,7 +40,6 @@ module.exports = Creator = (function() {
     this.checkDir();
     return inquirer.prompt(Prompt.questions, (function(_this) {
       return function(answers) {
-        console.log(answers);
         return _this.createWithSettings(answers);
       };
     })(this));

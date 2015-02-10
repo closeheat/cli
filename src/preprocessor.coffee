@@ -5,6 +5,7 @@ gutil = require 'gulp-util'
 cssScss = require('gulp-css-scss')
 path = require 'path'
 js2coffee = require('gulp-js2coffee')
+gulpif = require('gulp-if')
 
 html2jade = require('html2jade')
 through = require('through2')
@@ -48,11 +49,14 @@ class Preprocessor
 
     gulp
       .src(path.join(@dirs.whole, "**/*.#{@sourceFor(tech)}"))
-      .pipe(@preprocessorFor(tech)())
+      .pipe(gulpif(@notMinimized, @preprocessorFor(tech)()))
       .pipe(gulp.dest(@dirs.transformed).on('error', gutil.log))
       .pipe(callback(-> deferred.resolve()))
 
     deferred.promise
+
+  notMinimized: (file) ->
+    !file.path.match(/\.min\./)
 
   jade: (options) ->
     through.obj (file, enc, cb) ->
