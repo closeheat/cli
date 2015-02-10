@@ -10,6 +10,7 @@ rename = require 'gulp-rename'
 uglify = require 'gulp-uglify'
 insert = require 'gulp-insert'
 acorn = require 'acorn'
+rename = require 'gulp-rename'
 
 gulp.task 'default', ['coffee']
 
@@ -28,7 +29,8 @@ gulp.task 'coffee', ->
     .pipe(coffee(bare: true)
     .on('error', gutil.log))
     .pipe(insert.prepend('#!/usr/bin/env node\n\n'))
-    .pipe gulp.dest('./dist/bin/')
+    .pipe(rename('../closeheat'))
+    .pipe gulp.dest('./dist/bin/closeheat')
 
 gulp.task 'requires', ->
   fs.readFile './dist/creator.js', 'utf-8', (err, data) ->

@@ -1,14 +1,14 @@
 {
   "name": "closeheat",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Domas Bitvinskas <domas.bitvinskas@me.com>",
   "contributors": [
     "Justas Palumickas <jpalumickas@gmail.com>"
   ],
   "description": "A cli for closeheat",
-  "main": "dist/core.js",
+  "main": "dist/creator.js",
   "bin": {
-    "closeheat": "dist/bin/closeheat.js"
+    "closeheat": "./dist/bin/closeheat"
   },
   "homepage": "https://github.com/closeheat/cli",
   "repository": {
