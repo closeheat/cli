@@ -21,9 +21,9 @@ Transformer = require('./transformer');
 module.exports = Creator = (function() {
   function Creator() {}
 
-  Creator.prototype.createFromSettings = function(name, settings) {
+  Creator.prototype.createFromSettings = function(settings) {
     var defaults;
-    this.dirs = new Dirs(name);
+    this.dirs = new Dirs(settings);
     this.checkDir();
     defaults = {
       framework: 'angular',
@@ -35,12 +35,12 @@ module.exports = Creator = (function() {
     return this.createWithSettings(_.defaults(settings, defaults));
   };
 
-  Creator.prototype.createFromPrompt = function(name) {
-    this.dirs = new Dirs(name);
+  Creator.prototype.createFromPrompt = function(settings) {
+    this.dirs = new Dirs(settings);
     this.checkDir();
     return inquirer.prompt(Prompt.questions, (function(_this) {
       return function(answers) {
-        return _this.createWithSettings(answers);
+        return _this.createWithSettings(_.defaults(answers, settings));
       };
     })(this));
   };

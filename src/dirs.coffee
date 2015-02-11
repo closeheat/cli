@@ -6,11 +6,11 @@ mkdirp = require('mkdirp')
 
 module.exports =
 class Dirs
-  constructor: (app_name) ->
-    @target = path.join(process.cwd(), app_name)
+  constructor: (settings = {}) ->
+    @target = path.join(settings.dist || process.cwd(), settings.name)
 
     tmp_token = '353cleaned5sometime'
-    @tmp = "#{homePath()}/.closeheat/tmp/creations/#{tmp_token}/"
+    @tmp = settings.tmp || "#{homePath()}/.closeheat/tmp/creations/#{tmp_token}/"
 
     @parts = path.join(@tmp, 'parts')
     @whole = path.join(@tmp, 'whole')

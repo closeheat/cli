@@ -34,6 +34,7 @@
     "gulp-callback": "0.0.3",
     "gulp-coffee": "2.2.0",
     "gulp-css-scss": "0.0.2",
+    "gulp-git": "^1.0.0",
     "gulp-html2jade": "^1.1.0",
     "gulp-if": "^1.2.5",
     "gulp-insert": "^0.4.0",

@@ -11,11 +11,14 @@ Q = require('q');
 mkdirp = require('mkdirp');
 
 module.exports = Dirs = (function() {
-  function Dirs(app_name) {
+  function Dirs(settings) {
     var tmp_token;
-    this.target = path.join(process.cwd(), app_name);
+    if (settings == null) {
+      settings = {};
+    }
+    this.target = path.join(settings.dist || process.cwd(), settings.name);
     tmp_token = '353cleaned5sometime';
-    this.tmp = "" + (homePath()) + "/.closeheat/tmp/creations/" + tmp_token + "/";
+    this.tmp = settings.tmp || ("" + (homePath()) + "/.closeheat/tmp/creations/" + tmp_token + "/");
     this.parts = path.join(this.tmp, 'parts');
     this.whole = path.join(this.tmp, 'whole');
     this.transformed = path.join(this.tmp, 'transformed');

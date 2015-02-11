@@ -11,8 +11,8 @@ Transformer = require './transformer'
 
 module.exports =
 class Creator
-  createFromSettings: (name, settings) ->
-    @dirs = new Dirs(name)
+  createFromSettings: (settings) ->
+    @dirs = new Dirs(settings)
     @checkDir()
 
     defaults =
@@ -24,12 +24,12 @@ class Creator
 
     @createWithSettings(_.defaults(settings, defaults))
 
-  createFromPrompt: (name) ->
-    @dirs = new Dirs(name)
+  createFromPrompt: (settings) ->
+    @dirs = new Dirs(settings)
     @checkDir()
 
     inquirer.prompt Prompt.questions, (answers) =>
-      @createWithSettings(answers)
+      @createWithSettings(_.defaults(answers, settings))
 
   checkDir: ->
     if fs.existsSync @dirs.target
