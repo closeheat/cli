@@ -1,71 +1,65 @@
 gulp = require 'gulp'
 git = require 'gulp-git'
 Q = require 'q'
+q = require('bluebird')
 callback = require 'gulp-callback'
+gutil = require 'gulp-util'
 
 module.exports =
 class Deployer
-  ALL_FILES = './**/*.*'
+  ALL_FILES = '**'
 
   deploy: ->
     @addEverything().then =>
-      @commit('Deploying').then =>
-        @pushToMainBranch().then =>
+      console.log 'All files added.'
+      @commit('Deploy via CLI').then(=>
+        console.log 'Commited.'
+        console.log 'Pushing to Github.'
+        @pushToMainBranch().then (branch)=>
+          console.log "Pushed to brach #{branch} on Github."
           @showDeployLog()
 
+        ).catch (e) ->
+        console.log 'No files to deploy.'
+
   addEverything: ->
-    deferred = Q.defer()
+    new q (resolve, reject) ->
+      gulp
+        .src(ALL_FILES)
+        .pipe(stream = git.add())
+        .on('error', reject)
+        .on('end', resolve)
 
-    gulp
-      .src(ALL_FILES)
-      .pipe(git.add())
-      .pipe(callback(-> deferred.resolve()))
-
-    deferred.promise
+      stream.resume()
 
   commit: (msg) ->
-    deferred = Q.defer()
+    new q (resolve, reject) ->
+      gulp
+        .src(ALL_FILES)
+        .pipe(stream = git.commit(msg))
+        .on('error', reject)
+        .on('end', resolve)
 
-    console.log 'commiting'
-    stream = gulp
-      .src(ALL_FILES)
-      .pipe(git.commit(msg))
-
-    stream.on 'end', ->
-      console.log 'abc'
-      deferred.resolve()
-
-    deferred.promise
+      stream.resume()
 
   pushToMainBranch: ->
-    deferred = Q.defer()
+    new q (resolve, reject) =>
+      @getMainBranch().then (main_branch) =>
+        @push(main_branch).then ->
+          resolve(main_branch)
 
-    getMainBranch().then (main_branch) ->
-      console.log "got #{main_branch}"
-      push(main_branch).then ->
-        deferred.resolve()
-
-    deferred.promise
   getMainBranch: ->
-    deferred = Q.defer()
-
-    # get main branch from backend
-    deferred.resolve('master')
-
-    deferred.promise
+    new q (resolve, reject) ->
+      resolve('master')
 
   push: (branch) ->
-    deferred = Q.defer()
+    new q (resolve, reject) ->
+      git.push 'origin', branch, args: '--quiet', (err) ->
+        throw err if err
 
-    console.log "pushing #{branch}"
-    git.push 'origin', branch, (err) ->
-      throw err if err
-      console.log 'done'
-
-      deferred.resolve()
-
-    deferred.promise
+        resolve()
 
   showDeployLog: ->
-    console.log('Deploying....')
+    console.log('Deploying to closeheat.')
+    console.log('............ SOME LOG HERE ..........')
     console.log('Should be done.')

@@ -1,4 +1,4 @@
-var Deployer, Q, callback, git, gulp;
+var Deployer, Q, callback, git, gulp, gutil, q;
 
 gulp = require('gulp');
 
@@ -6,83 +6,87 @@ git = require('gulp-git');
 
 Q = require('q');
 
+q = require('bluebird');
+
 callback = require('gulp-callback');
+
+gutil = require('gulp-util');
 
 module.exports = Deployer = (function() {
   var ALL_FILES;
 
   function Deployer() {}
 
-  ALL_FILES = './**/*.*';
+  ALL_FILES = '**';
 
   Deployer.prototype.deploy = function() {
     return this.addEverything().then((function(_this) {
       return function() {
-        return _this.commit('Deploying').then(function() {
-          return _this.pushToMainBranch().then(function() {
+        console.log('All files added.');
+        return _this.commit('Deploy via CLI').then(function() {
+          console.log('Commited.');
+          console.log('Pushing to Github.');
+          return _this.pushToMainBranch().then(function(branch) {
+            console.log("Pushed to brach " + branch + " on Github.");
             return _this.showDeployLog();
           });
+        })["catch"](function(e) {
+          return console.log('No files to deploy.');
         });
       };
     })(this));
   };
 
   Deployer.prototype.addEverything = function() {
-    var deferred;
-    deferred = Q.defer();
-    gulp.src(ALL_FILES).pipe(git.add()).pipe(callback(function() {
-      return deferred.resolve();
-    }));
-    return deferred.promise;
+    return new q(function(resolve, reject) {
+      var stream;
+      gulp.src(ALL_FILES).pipe(stream = git.add()).on('error', reject).on('end', resolve);
+      return stream.resume();
+    });
   };
 
   Deployer.prototype.commit = function(msg) {
-    var deferred, stream;
-    deferred = Q.defer();
-    console.log('commiting');
-    stream = gulp.src(ALL_FILES).pipe(git.commit(msg));
-    stream.on('end', function() {
-      console.log('abc');
-      return deferred.resolve();
+    return new q(function(resolve, reject) {
+      var stream;
+      gulp.src(ALL_FILES).pipe(stream = git.commit(msg)).on('error', reject).on('end', resolve);
+      return stream.resume();
     });
-    return deferred.promise;
   };
 
   Deployer.prototype.pushToMainBranch = function() {
-    var deferred;
-    deferred = Q.defer();
-    getMainBranch().then(function(main_branch) {
-      console.log("got " + main_branch);
-      return push(main_branch).then(function() {
-        return deferred.resolve();
-      });
-    });
-    return deferred.promise;
+    return new q((function(_this) {
+      return function(resolve, reject) {
+        return _this.getMainBranch().then(function(main_branch) {
+          return _this.push(main_branch).then(function() {
+            return resolve(main_branch);
+          });
+        });
+      };
+    })(this));
   };
 
   Deployer.prototype.getMainBranch = function() {
-    var deferred;
-    deferred = Q.defer();
-    deferred.resolve('master');
-    return deferred.promise;
+    return new q(function(resolve, reject) {
+      return resolve('master');
+    });
   };
 
   Deployer.prototype.push = function(branch) {
-    var deferred;
-    deferred = Q.defer();
-    console.log("pushing " + branch);
-    git.push('origin', branch, function(err) {
-      if (err) {
-        throw err;
-      }
-      console.log('done');
-      return deferred.resolve();
+    return new q(function(resolve, reject) {
+      return git.push('origin', branch, {
+        args: '--quiet'
+      }, function(err) {
+        if (err) {
+          throw err;
+        }
+        return resolve();
+      });
     });
-    return deferred.promise;
   };
 
   Deployer.prototype.showDeployLog = function() {
-    console.log('Deploying....');
+    console.log('Deploying to closeheat.');
+    console.log('............ SOME LOG HERE ..........');
     return console.log('Should be done.');
   };
 
