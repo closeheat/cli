@@ -6,4 +6,4 @@ class Urls
 
   @appsIndex: ->
     'http://staging.closeheat.com/api/apps'
-    'http://10.30.0.1:4000/api/apps'
+    # 'http://10.30.0.1:4000/api/apps'

@@ -8,8 +8,7 @@ module.exports = Urls = (function() {
   };
 
   Urls.appsIndex = function() {
-    'http://staging.closeheat.com/api/apps';
-    return 'http://10.30.0.1:4000/api/apps';
+    return 'http://staging.closeheat.com/api/apps';
   };
 
   return Urls;
