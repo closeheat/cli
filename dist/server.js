@@ -22,19 +22,22 @@ module.exports = Server = (function() {
     this.dist = "" + (homePath()) + "/.closeheat/tmp/apps/321app-token321/";
   }
 
-  Server.prototype.start = function(port, cb) {
-    var app, opts;
-    opts = {};
+  Server.prototype.start = function(opts) {
+    var app, live_reload_host, port;
+    if (opts == null) {
+      opts = {};
+    }
     opts.log = false;
+    live_reload_host = opts.ip || 'localhost';
     opts.write = {
-      content: "<!-- closeheat development config --> <script>var closeheat = {};</script> <script>var closeheat.livereload = true;</script> <script src='bundle.js'></script>"
+      content: "<!-- closeheat development config --> <script src='http://" + live_reload_host + ":35729/livereload.js'></script>"
     };
     opts.cache_control = {
       '**': 'max-age=0, no-cache, no-store'
     };
     new Watcher(this.src, this.dist).run();
     app = charge(path.join(this.dist, 'app'), opts);
-    port = 9000;
+    port = opts.port || 9000;
     this.server = app.start(port);
     return util.puts(chalk.blue("Server started at http://0.0.0.0:" + port));
   };

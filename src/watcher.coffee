@@ -4,8 +4,11 @@ util = require 'util'
 chalk = require 'chalk'
 rimraf = require 'rimraf'
 Requirer = require './requirer'
-fs = require 'fs'
+fs = require('fs-extra')
 path = require 'path'
+tinylr = require 'tiny-lr'
+gulp = require 'gulp'
+injectReload = require 'gulp-inject-reload'
 
 module.exports =
 class Watcher
@@ -22,10 +25,15 @@ class Watcher
       .on('error', (err) -> util.puts(err))
       .on('all', (e, file) => @build(e, file))
 
+    port = 35729
+    tinylr().listen port, ->
+      console.log('... Listening on %s ...', port)
+
   build: (e, file) ->
     rimraf.sync(@dist_app)
 
     builder.build(@src, @dist_app).then =>
       util.puts("#{chalk.blue('App rebuilt')} - File #{file} #{e}.") if file
+      tinylr.changed('/')
 
       new Requirer(@dist, @dist_app).scan()

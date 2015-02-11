@@ -25,7 +25,7 @@ class Requirer
     gulp
       .src(path.join(@dist_app, '**/*.js'))
       .pipe(@scanner().on('error', gutil.log))
-      .pipe(callback(-> console.log('happ')))
+      .on 'end', -> console.log 'scanned'
 
   registerModule: (module_name) ->
     @modules.push(module_name)
@@ -54,19 +54,19 @@ class Requirer
     fs.writeFileSync(path.join(@dist, 'package.json'), JSON.stringify(package_file))
 
   continueBundling: ->
-    bundler = browserify
-      entries: [path.join(@dist_app, 'app.js')]
-      debug: true
-
-    bundler
-      .bundle()
-      .pipe(source('bundle.js'))
-      .pipe(buffer())
-      .pipe(sourcemaps.init({loadMaps: true}))
-      .pipe(sourcemaps.write('./'))
-      .pipe(gulp.dest(@dist_app))
-
-    console.log('bundlng')
+#     bundler = browserify
+#       entries: [path.join(@dist_app, 'app.js')]
+#       debug: true
+#
+#     bundler
+#       .bundle()
+#       .pipe(source('bundle.js'))
+#       .pipe(buffer())
+#       .pipe(sourcemaps.init({loadMaps: true}))
+#       .pipe(sourcemaps.write('./'))
+#       .pipe(gulp.dest(@dist_app))
+#
+#     console.log('bundlng')
 
   modulesToDownload: ->
     _.uniq(@modules)

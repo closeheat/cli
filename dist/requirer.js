@@ -41,9 +41,9 @@ module.exports = Requirer = (function() {
 
   Requirer.prototype.scan = function() {
     console.log(path.join(this.dist_app, '**/*.js'));
-    return gulp.src(path.join(this.dist_app, '**/*.js')).pipe(this.scanner().on('error', gutil.log)).pipe(callback(function() {
-      return console.log('happ');
-    }));
+    return gulp.src(path.join(this.dist_app, '**/*.js')).pipe(this.scanner().on('error', gutil.log)).on('end', function() {
+      return console.log('scanned');
+    });
   };
 
   Requirer.prototype.registerModule = function(module_name) {
@@ -80,17 +80,7 @@ module.exports = Requirer = (function() {
     return fs.writeFileSync(path.join(this.dist, 'package.json'), JSON.stringify(package_file));
   };
 
-  Requirer.prototype.continueBundling = function() {
-    var bundler;
-    bundler = browserify({
-      entries: [path.join(this.dist_app, 'app.js')],
-      debug: true
-    });
-    bundler.bundle().pipe(source('bundle.js')).pipe(buffer()).pipe(sourcemaps.init({
-      loadMaps: true
-    })).pipe(sourcemaps.write('./')).pipe(gulp.dest(this.dist_app));
-    return console.log('bundlng');
-  };
+  Requirer.prototype.continueBundling = function() {};
 
   Requirer.prototype.modulesToDownload = function() {
     return _.uniq(this.modules);

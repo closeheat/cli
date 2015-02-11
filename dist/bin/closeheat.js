@@ -33,8 +33,8 @@ program.command('create [app-name]').alias('new').description('creates a new app
   }
 });
 
-program.command('server').action(function() {
-  return new Server().start();
+program.command('server').option('--ip [ip]', 'IP to run LiveReload on (default - localhost)').option('-p, --port [port]', 'Port to run server on (default - 4000)').action(function(opts) {
+  return new Server().start(opts);
 });
 
 program.command('init').action(function() {

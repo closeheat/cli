@@ -1,4 +1,4 @@
-var Requirer, Watcher, builder, chalk, chokidar, fs, path, rimraf, util;
+var Requirer, Watcher, builder, chalk, chokidar, fs, gulp, injectReload, path, rimraf, tinylr, util;
 
 builder = require('closeheat-builder');
 
@@ -12,9 +12,15 @@ rimraf = require('rimraf');
 
 Requirer = require('./requirer');
 
-fs = require('fs');
+fs = require('fs-extra');
 
 path = require('path');
+
+tinylr = require('tiny-lr');
+
+gulp = require('gulp');
+
+injectReload = require('gulp-inject-reload');
 
 module.exports = Watcher = (function() {
   function Watcher(src, dist) {
@@ -27,14 +33,19 @@ module.exports = Watcher = (function() {
   }
 
   Watcher.prototype.run = function() {
+    var port;
     this.build();
-    return this.watcher.on('error', function(err) {
+    this.watcher.on('error', function(err) {
       return util.puts(err);
     }).on('all', (function(_this) {
       return function(e, file) {
         return _this.build(e, file);
       };
     })(this));
+    port = 35729;
+    return tinylr().listen(port, function() {
+      return console.log('... Listening on %s ...', port);
+    });
   };
 
   Watcher.prototype.build = function(e, file) {
@@ -44,6 +55,7 @@ module.exports = Watcher = (function() {
         if (file) {
           util.puts("" + (chalk.blue('App rebuilt')) + " - File " + file + " " + e + ".");
         }
+        tinylr.changed('/');
         return new Requirer(_this.dist, _this.dist_app).scan();
       };
     })(this));

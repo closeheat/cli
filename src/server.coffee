@@ -13,22 +13,20 @@ class Server
     @src = process.cwd()
     @dist = "#{homePath()}/.closeheat/tmp/apps/321app-token321/"
 
-  start: (port, cb) ->
-    opts = {}
+  start: (opts = {}) ->
     opts.log = false
+    live_reload_host = opts.ip || 'localhost'
 
     opts.write = content:
       "
       <!-- closeheat development config -->
-      <script>var closeheat = {};</script>
-      <script>var closeheat.livereload = true;</script>
-      <script src='bundle.js'></script>
+      <script src='http://#{live_reload_host}:35729/livereload.js'></script>
       "
     opts.cache_control = {'**': 'max-age=0, no-cache, no-store'}
 
     new Watcher(@src, @dist).run()
     app = charge(path.join(@dist, 'app'), opts)
 
-    port = 9000
+    port = opts.port || 9000
     @server = app.start(port)
     util.puts(chalk.blue("Server started at http://0.0.0.0:#{port}"))

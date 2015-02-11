@@ -47,8 +47,10 @@ program
 
 program
   .command('server')
-  .action ->
-    new Server().start()
+  .option('--ip [ip]', 'IP to run LiveReload on (default - localhost)')
+  .option('-p, --port [port]', 'Port to run server on (default - 4000)')
+  .action (opts) ->
+    new Server().start(opts)
 
 program
   .command('init')
