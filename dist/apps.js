@@ -1,4 +1,4 @@
-var Apps, Authorizer, Table, git, gulp, q, request, rp, util, _;
+var Apps, Authorizer, Table, Urls, git, gulp, q, request, rp, util, _;
 
 gulp = require('gulp');
 
@@ -18,12 +18,10 @@ Table = require('cli-table');
 
 Authorizer = require('./authorizer');
 
+Urls = require('./urls');
+
 module.exports = Apps = (function() {
-  var APPS_INDEX;
-
   function Apps() {}
-
-  APPS_INDEX = 'http://staging.closeheat.com/api/apps';
 
   Apps.prototype.showList = function() {
     var authorizer, params;
@@ -33,7 +31,7 @@ module.exports = Apps = (function() {
     };
     util.puts('Getting Your Application Info...');
     return request({
-      url: APPS_INDEX,
+      url: Urls.appsIndex(),
       qs: params,
       method: 'get'
     }, (function(_this) {

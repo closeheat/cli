@@ -7,13 +7,14 @@ Initializer = require '../initializer'
 Deployer = require '../deployer'
 Apps = require '../apps'
 Authorizer = require '../authorizer'
+Cloner = require '../cloner'
 
 program
   .version('0.0.1')
   .usage('<keywords>')
 
 program
-  .command('create [name]')
+  .command('create [app-name]')
   .alias('new')
   .description('creates a new app with clean setup and directory structure')
   .option('-f, --framework [name]', 'Framework')
@@ -65,9 +66,14 @@ program
     new Apps().showList()
 
 program
-  .command('login [access_token]')
+  .command('login [access-token]')
   .action (access_token) ->
     new Authorizer().login(access_token)
+
+program
+  .command('clone [app-name]')
+  .action (app_name) ->
+    new Cloner().clone(app_name)
 
 program.parse(process.argv)
 

@@ -8,19 +8,17 @@ util = require('util')
 Table = require('cli-table')
 
 Authorizer = require './authorizer'
+Urls = require './urls'
 
 module.exports =
 class Apps
-  APPS_INDEX = 'http://staging.closeheat.com/api/apps'
-  # APPS_INDEX = 'http://10.30.0.1:4000/api/apps'
-
   showList: ->
     authorizer = new Authorizer
     params =
       api_token: authorizer.accessToken()
 
     util.puts 'Getting Your Application Info...'
-    request url: APPS_INDEX, qs: params, method: 'get', (err, resp) =>
+    request url: Urls.appsIndex(), qs: params, method: 'get', (err, resp) =>
       throw Error 'Error happened' if err
 
       apps = JSON.parse(resp.body).apps

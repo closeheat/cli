@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var Apps, Authorizer, Creator, Deployer, Initializer, Server, program, _;
+var Apps, Authorizer, Cloner, Creator, Deployer, Initializer, Server, program, _;
 
 program = require('commander');
 
@@ -18,9 +18,11 @@ Apps = require('../apps');
 
 Authorizer = require('../authorizer');
 
+Cloner = require('../cloner');
+
 program.version('0.0.1').usage('<keywords>');
 
-program.command('create [name]').alias('new').description('creates a new app with clean setup and directory structure').option('-f, --framework [name]', 'Framework').option('-t, --template [name]', 'Template').option('--javascript [name]', 'Javascript precompiler').option('--html [name]', 'HTML precompiler').option('--css [name]', 'CSS precompiler').option('--tmp [path]', 'The path of temporary directory when creating').option('--dist [path]', 'Path of destination of where to create app dir').action(function(name, opts) {
+program.command('create [app-name]').alias('new').description('creates a new app with clean setup and directory structure').option('-f, --framework [name]', 'Framework').option('-t, --template [name]', 'Template').option('--javascript [name]', 'Javascript precompiler').option('--html [name]', 'HTML precompiler').option('--css [name]', 'CSS precompiler').option('--tmp [path]', 'The path of temporary directory when creating').option('--dist [path]', 'Path of destination of where to create app dir').action(function(name, opts) {
   var settings;
   settings = _.pick.apply(_, [opts, 'framework', 'template', 'javascript', 'html', 'css', 'dist', 'tmp']);
   settings.name = name;
@@ -47,8 +49,12 @@ program.command('apps').action(function() {
   return new Apps().showList();
 });
 
-program.command('login [access_token]').action(function(access_token) {
+program.command('login [access-token]').action(function(access_token) {
   return new Authorizer().login(access_token);
+});
+
+program.command('clone [app-name]').action(function(app_name) {
+  return new Cloner().clone(app_name);
 });
 
 program.parse(process.argv);
