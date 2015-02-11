@@ -5,6 +5,8 @@ Creator = require '../creator'
 Server = require '../server'
 Initializer = require '../initializer'
 Deployer = require '../deployer'
+Apps = require '../apps'
+Authorizer = require '../authorizer'
 
 program
   .version('0.0.1')
@@ -56,6 +58,16 @@ program
   .command('deploy')
   .action ->
     new Deployer().deploy()
+
+program
+  .command('apps')
+  .action ->
+    new Apps().showList()
+
+program
+  .command('login [access_token]')
+  .action (access_token) ->
+    new Authorizer().login(access_token)
 
 program.parse(process.argv)
 

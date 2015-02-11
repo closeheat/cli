@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var Creator, Deployer, Initializer, Server, program, _;
+var Apps, Authorizer, Creator, Deployer, Initializer, Server, program, _;
 
 program = require('commander');
 
@@ -13,6 +13,10 @@ Server = require('../server');
 Initializer = require('../initializer');
 
 Deployer = require('../deployer');
+
+Apps = require('../apps');
+
+Authorizer = require('../authorizer');
 
 program.version('0.0.1').usage('<keywords>');
 
@@ -37,6 +41,14 @@ program.command('init').action(function() {
 
 program.command('deploy').action(function() {
   return new Deployer().deploy();
+});
+
+program.command('apps').action(function() {
+  return new Apps().showList();
+});
+
+program.command('login [access_token]').action(function(access_token) {
+  return new Authorizer().login(access_token);
 });
 
 program.parse(process.argv);
