@@ -28,7 +28,7 @@ module.exports = Cloner = (function() {
     return this.getAppData(app_name).then((function(_this) {
       return function(app) {
         util.puts("Downloading and cloning the repository...");
-        return _this.execCloning(app.github_repo, app.default_branch).then(function() {
+        return _this.execCloning(app.github_repo, app.default_branch, app_name).then(function() {
           return util.puts("DONE");
         });
       };
@@ -54,9 +54,11 @@ module.exports = Cloner = (function() {
     });
   };
 
-  Cloner.prototype.execCloning = function(github_repo, branch) {
+  Cloner.prototype.execCloning = function(github_repo, branch, app_name) {
     return new q(function(resolve, reject) {
-      return git.clone("https://github.com/" + github_repo, function(err) {
+      return git.clone("https://github.com/" + github_repo, {
+        args: app_name
+      }, function(err) {
         if (err) {
           throw err;
         }

@@ -18,7 +18,7 @@ class Cloner
     @getAppData(app_name).then (app) =>
       util.puts "Downloading and cloning the repository..."
 
-      @execCloning(app.github_repo, app.default_branch).then =>
+      @execCloning(app.github_repo, app.default_branch, app_name).then =>
         util.puts "DONE"
 
   getAppData: (app_name) ->
@@ -32,9 +32,9 @@ class Cloner
 
         resolve(app)
 
-  execCloning: (github_repo, branch) ->
+  execCloning: (github_repo, branch, app_name) ->
     new q (resolve, reject) ->
-      git.clone "https://github.com/#{github_repo}", (err) ->
+      git.clone "https://github.com/#{github_repo}", args: app_name, (err) ->
         throw err if err
 
         resolve()
