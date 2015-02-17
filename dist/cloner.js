@@ -27,9 +27,20 @@ module.exports = Cloner = (function() {
     util.puts("Getting application data for " + app_name + "...");
     return this.getAppData(app_name).then((function(_this) {
       return function(app) {
-        util.puts("Downloading and cloning the repository...");
+        util.puts("Cloning the repository...");
         return _this.execCloning(app.github_repo, app.default_branch, app_name).then(function() {
-          return util.puts("DONE");
+          util.puts("Cloned the app code to " + app_name + " directory.");
+          util.puts('------------------------');
+          util.puts('');
+          util.puts("Run the server by typing:");
+          util.puts("  cd " + app_name);
+          util.puts("  closeheat");
+          util.puts('');
+          util.puts("The simplest way to deploy changes to closeheat.com is with:");
+          util.puts("  closeheat deploy");
+          util.puts('');
+          util.puts("For more awesome tricks type:");
+          return util.puts("  closeheat help");
         });
       };
     })(this));

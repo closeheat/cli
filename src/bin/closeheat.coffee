@@ -1,5 +1,6 @@
 program = require 'commander'
 _ = require 'lodash'
+fs = require 'fs.extra'
 
 Creator = require '../creator'
 Server = require '../server'
@@ -77,6 +78,17 @@ program
   .action (app_name) ->
     new Cloner().clone(app_name)
 
+program
+  .command('help')
+  .action ->
+    program.help()
+
 program.parse(process.argv)
 
-return program.help() unless program.args.length
+unless program.args.length
+  if fs.existsSync('index.html') || fs.existsSync('index.jade')
+    new Server().start()
+  else
+    program.help()
+
+  return

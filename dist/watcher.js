@@ -43,9 +43,7 @@ module.exports = Watcher = (function() {
       };
     })(this));
     port = 35729;
-    return tinylr().listen(port, function() {
-      return console.log('... Listening on %s ...', port);
-    });
+    return tinylr().listen(port, function() {});
   };
 
   Watcher.prototype.build = function(e, file) {

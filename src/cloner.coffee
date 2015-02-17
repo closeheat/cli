@@ -16,10 +16,24 @@ class Cloner
     util.puts "Getting application data for #{app_name}..."
 
     @getAppData(app_name).then (app) =>
-      util.puts "Downloading and cloning the repository..."
+      util.puts "Cloning the repository..."
 
       @execCloning(app.github_repo, app.default_branch, app_name).then =>
-        util.puts "DONE"
+        util.puts "Cloned the app code to #{app_name} directory."
+        util.puts '------------------------'
+
+        util.puts ''
+        util.puts "Run the server by typing:"
+        util.puts "  cd #{app_name}"
+        util.puts "  closeheat"
+
+        util.puts ''
+        util.puts "The simplest way to deploy changes to closeheat.com is with:"
+        util.puts "  closeheat deploy"
+
+        util.puts ''
+        util.puts "For more awesome tricks type:"
+        util.puts "  closeheat help"
 
   getAppData: (app_name) ->
     authorizer = new Authorizer

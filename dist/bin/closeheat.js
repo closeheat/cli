@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 
-var Apps, Authorizer, Cloner, Creator, Deployer, Initializer, Server, program, _;
+var Apps, Authorizer, Cloner, Creator, Deployer, Initializer, Server, fs, program, _;
 
 program = require('commander');
 
 _ = require('lodash');
+
+fs = require('fs.extra');
 
 Creator = require('../creator');
 
@@ -57,8 +59,17 @@ program.command('clone [app-name]').action(function(app_name) {
   return new Cloner().clone(app_name);
 });
 
+program.command('help').action(function() {
+  return program.help();
+});
+
 program.parse(process.argv);
 
 if (!program.args.length) {
-  return program.help();
+  if (fs.existsSync('index.html') || fs.existsSync('index.jade')) {
+    new Server().start();
+  } else {
+    program.help();
+  }
+  return;
 }

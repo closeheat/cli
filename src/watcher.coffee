@@ -27,7 +27,6 @@ class Watcher
 
     port = 35729
     tinylr().listen port, ->
-      console.log('... Listening on %s ...', port)
 
   build: (e, file) ->
     rimraf.sync(@dist_app)
