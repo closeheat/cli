@@ -1,4 +1,4 @@
-var Creator, Dirs, Prompt, Q, TemplateDownloader, Transformer, dirmr, fs, inquirer, _;
+var Creator, Dirs, Prompt, Pusher, Q, TemplateDownloader, Transformer, dirmr, fs, inquirer, _;
 
 inquirer = require('inquirer');
 
@@ -17,6 +17,8 @@ Dirs = require('./dirs');
 TemplateDownloader = require('./template_downloader');
 
 Transformer = require('./transformer');
+
+Pusher = require('./pusher');
 
 module.exports = Creator = (function() {
   function Creator() {}
@@ -62,7 +64,13 @@ module.exports = Creator = (function() {
             return new Transformer(_this.dirs).transform(answers).then(function() {
               return _this.moveToTarget().then(function() {
                 _this.dirs.clean();
-                return console.log('Done');
+                console.log("Getting app ready for deployment...");
+                return new Pusher(answers.name, _this.dirs.target).push().then(function() {
+                  console.log("The app " + answers.name + " has been created.");
+                  console.log("Run app server with:");
+                  console.log("  cd " + answers.name);
+                  return console.log("  closeheat");
+                });
               });
             });
           });

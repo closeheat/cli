@@ -1,4 +1,4 @@
-var Requirer, Watcher, builder, chalk, chokidar, fs, gulp, injectReload, path, rimraf, tinylr, util;
+var Requirer, Watcher, builder, chalk, chokidar, fs, gulp, path, rimraf, tinylr, util;
 
 builder = require('closeheat-builder');
 
@@ -19,8 +19,6 @@ path = require('path');
 tinylr = require('tiny-lr');
 
 gulp = require('gulp');
-
-injectReload = require('gulp-inject-reload');
 
 module.exports = Watcher = (function() {
   function Watcher(src, dist) {

@@ -62,6 +62,7 @@
     "request-promise": "^0.4.0",
     "rimraf": "^2.2.8",
     "serve-static": "^1.8.1",
+    "shelljs": "^0.3.0",
     "through2": "^0.6.3",
     "tiny-lr": "^0.1.5",
     "transfer-github": "^0.2.0",

@@ -8,6 +8,7 @@ Prompt = require './prompt'
 Dirs = require './dirs'
 TemplateDownloader = require './template_downloader'
 Transformer = require './transformer'
+Pusher = require './pusher'
 
 module.exports =
 class Creator
@@ -47,7 +48,12 @@ class Creator
             @moveToTarget().then =>
               @dirs.clean()
 
-              console.log 'Done'
+              console.log "Getting app ready for deployment..."
+              new Pusher(answers.name, @dirs.target).push().then =>
+                console.log "The app #{answers.name} has been created."
+                console.log "Run app server with:"
+                console.log "  cd #{answers.name}"
+                console.log "  closeheat"
 
   moveToTarget: ->
     deferred = Q.defer()

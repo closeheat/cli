@@ -9,7 +9,7 @@ module.exports =
 class Deployer
   ALL_FILES = '**'
 
-  deploy: ->
+  deploy: (@files = ALL_FILES) ->
     @addEverything().then =>
       console.log 'All files added.'
       @commit('Deploy via CLI').then(=>
@@ -23,9 +23,9 @@ class Deployer
         console.log 'No files to deploy.'
 
   addEverything: ->
-    new q (resolve, reject) ->
+    new q (resolve, reject) =>
       gulp
-        .src(ALL_FILES)
+        .src(@files)
         .pipe(stream = git.add())
         .on('error', reject)
         .on('end', resolve)
@@ -33,9 +33,9 @@ class Deployer
       stream.resume()
 
   commit: (msg) ->
-    new q (resolve, reject) ->
+    new q (resolve, reject) =>
       gulp
-        .src(ALL_FILES)
+        .src(@files)
         .pipe(stream = git.commit(msg))
         .on('error', reject)
         .on('end', resolve)

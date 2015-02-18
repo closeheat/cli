@@ -8,7 +8,6 @@ fs = require('fs-extra')
 path = require 'path'
 tinylr = require 'tiny-lr'
 gulp = require 'gulp'
-injectReload = require 'gulp-inject-reload'
 
 module.exports =
 class Watcher

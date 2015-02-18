@@ -19,7 +19,8 @@ module.exports = Deployer = (function() {
 
   ALL_FILES = '**';
 
-  Deployer.prototype.deploy = function() {
+  Deployer.prototype.deploy = function(files) {
+    this.files = files != null ? files : ALL_FILES;
     return this.addEverything().then((function(_this) {
       return function() {
         console.log('All files added.');
@@ -38,19 +39,23 @@ module.exports = Deployer = (function() {
   };
 
   Deployer.prototype.addEverything = function() {
-    return new q(function(resolve, reject) {
-      var stream;
-      gulp.src(ALL_FILES).pipe(stream = git.add()).on('error', reject).on('end', resolve);
-      return stream.resume();
-    });
+    return new q((function(_this) {
+      return function(resolve, reject) {
+        var stream;
+        gulp.src(_this.files).pipe(stream = git.add()).on('error', reject).on('end', resolve);
+        return stream.resume();
+      };
+    })(this));
   };
 
   Deployer.prototype.commit = function(msg) {
-    return new q(function(resolve, reject) {
-      var stream;
-      gulp.src(ALL_FILES).pipe(stream = git.commit(msg)).on('error', reject).on('end', resolve);
-      return stream.resume();
-    });
+    return new q((function(_this) {
+      return function(resolve, reject) {
+        var stream;
+        gulp.src(_this.files).pipe(stream = git.commit(msg)).on('error', reject).on('end', resolve);
+        return stream.resume();
+      };
+    })(this));
   };
 
   Deployer.prototype.pushToMainBranch = function() {
