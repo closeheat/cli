@@ -9,6 +9,8 @@ acorn = require 'acorn'
 _ = require 'lodash'
 callback = require 'gulp-callback'
 npmi = require('npmi')
+htmlparser = require("htmlparser2")
+gulpFilter = require('gulp-filter')
 
 browserify = require 'browserify'
 source = require('vinyl-source-stream')
@@ -54,19 +56,40 @@ class Requirer
     fs.writeFileSync(path.join(@dist, 'package.json'), JSON.stringify(package_file))
 
   continueBundling: ->
-#     bundler = browserify
-#       entries: [path.join(@dist_app, 'app.js')]
-#       debug: true
-#
-#     bundler
-#       .bundle()
-#       .pipe(source('bundle.js'))
-#       .pipe(buffer())
-#       .pipe(sourcemaps.init({loadMaps: true}))
-#       .pipe(sourcemaps.write('./'))
-#       .pipe(gulp.dest(@dist_app))
-#
-#     console.log('bundlng')
+    min_filter = gulpFilter (file) ->
+      !/.min./.test(file.path)
+
+    gulp
+      .src(path.join(@dist_app, '**/*.js'))
+      .pipe(min_filter)
+      .pipe(@bundler().on('error', gutil.log))
+      .on 'end', -> console.log 'scanned'
+
+  bundler: ->
+    through.obj((file, enc, cb) =>
+      if file.isNull()
+        cb(null, file)
+        return
+
+      bundler = browserify {
+        entries: [file.path]
+        debug: true
+      }
+
+      relative = path.relative(@dist_app, file.path)
+      bundler
+        .bundle()
+        .pipe(source(relative))
+        .pipe(buffer())
+        .pipe(sourcemaps.init({loadMaps: true}))
+        .pipe(sourcemaps.write('./'))
+        .pipe(gulp.dest(@dist_app))
+        .on 'end', cb
+
+    , @finishedBundling)
+
+  finishedBundling: ->
+    console.log 'Finighe bundle'
 
   modulesToDownload: ->
     _.uniq(@modules)

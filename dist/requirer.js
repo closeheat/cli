@@ -1,4 +1,4 @@
-var Requirer, acorn, browserify, buffer, callback, coffee, fs, gulp, gutil, npmi, path, source, sourcemaps, through, util, _,
+var Requirer, acorn, browserify, buffer, callback, coffee, fs, gulp, gulpFilter, gutil, htmlparser, npmi, path, source, sourcemaps, through, util, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 fs = require('fs');
@@ -22,6 +22,10 @@ _ = require('lodash');
 callback = require('gulp-callback');
 
 npmi = require('npmi');
+
+htmlparser = require("htmlparser2");
+
+gulpFilter = require('gulp-filter');
 
 browserify = require('browserify');
 
@@ -80,7 +84,39 @@ module.exports = Requirer = (function() {
     return fs.writeFileSync(path.join(this.dist, 'package.json'), JSON.stringify(package_file));
   };
 
-  Requirer.prototype.continueBundling = function() {};
+  Requirer.prototype.continueBundling = function() {
+    var min_filter;
+    min_filter = gulpFilter(function(file) {
+      return !/.min./.test(file.path);
+    });
+    return gulp.src(path.join(this.dist_app, '**/*.js')).pipe(min_filter).pipe(this.bundler().on('error', gutil.log)).on('end', function() {
+      return console.log('scanned');
+    });
+  };
+
+  Requirer.prototype.bundler = function() {
+    return through.obj((function(_this) {
+      return function(file, enc, cb) {
+        var bundler, relative;
+        if (file.isNull()) {
+          cb(null, file);
+          return;
+        }
+        bundler = browserify({
+          entries: [file.path],
+          debug: true
+        });
+        relative = path.relative(_this.dist_app, file.path);
+        return bundler.bundle().pipe(source(relative)).pipe(buffer()).pipe(sourcemaps.init({
+          loadMaps: true
+        })).pipe(sourcemaps.write('./')).pipe(gulp.dest(_this.dist_app)).on('end', cb);
+      };
+    })(this), this.finishedBundling);
+  };
+
+  Requirer.prototype.finishedBundling = function() {
+    return console.log('Finighe bundle');
+  };
 
   Requirer.prototype.modulesToDownload = function() {
     return _.uniq(this.modules);
