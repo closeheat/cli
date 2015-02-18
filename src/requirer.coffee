@@ -41,6 +41,7 @@ class Requirer
     }
 
     total = @modulesToDownload().length
+    @continueBundling() if total == 0
 
     count = 0
     _.each @modulesToDownload(), (module) =>
@@ -52,6 +53,7 @@ class Requirer
           util.puts("#{module} installed")
 
         @continueBundling() if count == total
+
 
     fs.writeFileSync(path.join(@dist, 'package.json'), JSON.stringify(package_file))
 
@@ -71,17 +73,19 @@ class Requirer
         cb(null, file)
         return
 
+      relative = path.relative(@dist_app, file.path)
+
       bundler = browserify {
         entries: [file.path]
         debug: true
+        standalone: 'CloseheatStandaloneModule'
       }
 
-      relative = path.relative(@dist_app, file.path)
       bundler
         .bundle()
         .pipe(source(relative))
         .pipe(buffer())
-        .pipe(sourcemaps.init({loadMaps: true}))
+        .pipe(sourcemaps.init(loadMaps: true))
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest(@dist_app))
         .on 'end', cb
@@ -96,6 +100,7 @@ class Requirer
 
   scanner: ->
     through.obj((file, enc, cb) =>
+      console.log file.path
       if (file.isNull())
         cb(null, file)
         return
@@ -113,6 +118,7 @@ class Requirer
 
         @registerModule(module_name)
       ), walkall.traversers)
+      console.log file.path
 
       cb()
     , @downloadModules)

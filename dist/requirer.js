@@ -63,6 +63,9 @@ module.exports = Requirer = (function() {
       path: '.'
     };
     total = this.modulesToDownload().length;
+    if (total === 0) {
+      this.continueBundling();
+    }
     count = 0;
     _.each(this.modulesToDownload(), (function(_this) {
       return function(module) {
@@ -102,11 +105,12 @@ module.exports = Requirer = (function() {
           cb(null, file);
           return;
         }
+        relative = path.relative(_this.dist_app, file.path);
         bundler = browserify({
           entries: [file.path],
-          debug: true
+          debug: true,
+          standalone: 'CloseheatStandaloneModule'
         });
-        relative = path.relative(_this.dist_app, file.path);
         return bundler.bundle().pipe(source(relative)).pipe(buffer()).pipe(sourcemaps.init({
           loadMaps: true
         })).pipe(sourcemaps.write('./')).pipe(gulp.dest(_this.dist_app)).on('end', cb);
@@ -126,6 +130,7 @@ module.exports = Requirer = (function() {
     return through.obj((function(_this) {
       return function(file, enc, cb) {
         var ast, walk, walkall;
+        console.log(file.path);
         if (file.isNull()) {
           cb(null, file);
           return;
@@ -147,6 +152,7 @@ module.exports = Requirer = (function() {
           }
           return _this.registerModule(module_name);
         }), walkall.traversers);
+        console.log(file.path);
         return cb();
       };
     })(this), this.downloadModules);
