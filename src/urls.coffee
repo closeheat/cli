@@ -4,17 +4,23 @@ class Urls
     "#{@appsIndex()}/#{app_name}"
 
   @base: ->
-    'http://staging.closeheat.com'
-    'http://10.30.0.1:4000'
+    # 'http://staging.closeheat.com'
+    'http://app.closeheat.com'
+    # 'http://10.30.0.1:4000/api'
+
+  @api: ->
+    # 'http://staging.closeheat.com/api'
+    'http://api.closeheat.com'
+    # 'http://10.30.0.1:4000/api'
 
   @appsIndex: ->
-    "#{@base()}/api/apps"
+    "#{@api()}/apps"
 
   @createApp: ->
-    "#{@base()}/api/apps"
+    "#{@api()}/apps"
 
   @currentUserInfo: ->
-    "#{@base()}/api/users/me"
+    "#{@api()}/users/me"
 
   @authorizeGithub: ->
     "#{@base()}/authorize-github"

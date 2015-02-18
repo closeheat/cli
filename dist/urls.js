@@ -8,20 +8,23 @@ module.exports = Urls = (function() {
   };
 
   Urls.base = function() {
-    'http://staging.closeheat.com';
-    return 'http://10.30.0.1:4000';
+    return 'http://app.closeheat.com';
+  };
+
+  Urls.api = function() {
+    return 'http://api.closeheat.com';
   };
 
   Urls.appsIndex = function() {
-    return "" + (this.base()) + "/api/apps";
+    return "" + (this.api()) + "/apps";
   };
 
   Urls.createApp = function() {
-    return "" + (this.base()) + "/api/apps";
+    return "" + (this.api()) + "/apps";
   };
 
   Urls.currentUserInfo = function() {
-    return "" + (this.base()) + "/api/users/me";
+    return "" + (this.api()) + "/users/me";
   };
 
   Urls.authorizeGithub = function() {
