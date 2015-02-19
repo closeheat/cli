@@ -39,5 +39,5 @@ class Watcher
     builder.build(@src, @dist_app).then =>
       Log.stop() if file
 
-      new Requirer(@dist, @dist_app).scan().then ->
+      new Requirer(@dist, @dist_app).install().then ->
         tinylr.changed('/')

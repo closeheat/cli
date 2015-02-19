@@ -58,7 +58,7 @@ module.exports = Watcher = (function() {
         if (file) {
           Log.stop();
         }
-        return new Requirer(_this.dist, _this.dist_app).scan().then(function() {
+        return new Requirer(_this.dist, _this.dist_app).install().then(function() {
           return tinylr.changed('/');
         });
       };

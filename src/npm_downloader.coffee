@@ -8,18 +8,20 @@ Color = require './color'
 
 module.exports =
 class NpmDownloader
-  constructor: (@dist) ->
-    @modules = []
+  constructor: (@dist, @modules) ->
 
-  register: (module) ->
-    @modules.push(module)
+  downloadAll: =>
+    if _.isEmpty(@missing())
+      return new q (resolve, reject) ->
+        resolve()
 
-  downloadAll: (cb, _start) =>
-    return cb() if _.isEmpty(@missing())
+    module_downloads = _.map @missing(), (module) =>
+      @download(module)
 
-    module = _.last(@missing())
-    @download(module).then =>
-      @downloadAll(cb)
+    console.log 'wha'
+    console.log module_downloads
+    console.log 'up'
+    q.when(module_downloads...)
 
   missing: =>
     _.reject _.uniq(@modules), (module) =>

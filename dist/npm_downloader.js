@@ -16,28 +16,29 @@ Log = require('./log');
 Color = require('./color');
 
 module.exports = NpmDownloader = (function() {
-  function NpmDownloader(dist) {
+  function NpmDownloader(dist, modules) {
     this.dist = dist;
+    this.modules = modules;
     this.missing = __bind(this.missing, this);
     this.downloadAll = __bind(this.downloadAll, this);
-    this.modules = [];
   }
 
-  NpmDownloader.prototype.register = function(module) {
-    return this.modules.push(module);
-  };
-
-  NpmDownloader.prototype.downloadAll = function(cb, _start) {
-    var module;
+  NpmDownloader.prototype.downloadAll = function() {
+    var module_downloads;
     if (_.isEmpty(this.missing())) {
-      return cb();
+      return new q(function(resolve, reject) {
+        return resolve();
+      });
     }
-    module = _.last(this.missing());
-    return this.download(module).then((function(_this) {
-      return function() {
-        return _this.downloadAll(cb);
+    module_downloads = _.map(this.missing(), (function(_this) {
+      return function(module) {
+        return _this.download(module);
       };
     })(this));
+    console.log('wha');
+    console.log(module_downloads);
+    console.log('up');
+    return q.when.apply(q, module_downloads);
   };
 
   NpmDownloader.prototype.missing = function() {
