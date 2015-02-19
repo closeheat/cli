@@ -21,6 +21,10 @@ module.exports = Color = (function() {
     return Couleurs.fg(msg, ORANGE);
   };
 
+  Color.red = function(msg) {
+    return Couleurs.fg(msg, RED);
+  };
+
   Color.redYellow = function(msg) {
     return Couleurs.fg(msg, RED_YELLOW);
   };

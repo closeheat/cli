@@ -1,4 +1,4 @@
-var Couleurs, Log, Spinner, bar, c256, chalk, colors, fs, images, path, pictureTube, _;
+var Color, Couleurs, Log, Spinner, bar, c256, chalk, colors, fs, images, path, pictureTube, _;
 
 pictureTube = require('picture-tube');
 
@@ -21,6 +21,8 @@ c256 = require("colors-256")();
 Couleurs = require("couleurs")();
 
 Spinner = require('./spinner');
+
+Color = require('./color');
 
 module.exports = Log = (function() {
   function Log() {}
@@ -71,6 +73,10 @@ module.exports = Log = (function() {
 
   Log.spinStop = function() {
     return Spinner.stop();
+  };
+
+  Log.error = function(msg) {
+    return this.line("" + (Color.red('ERROR')) + " | " + msg);
   };
 
   return Log;

@@ -28,7 +28,10 @@ class Apps
       Log.spinStop()
       return Log.error(err) if err
 
-      apps = JSON.parse(resp.body).apps
+      try
+        apps = JSON.parse(resp.body).apps
+      catch e
+        return Log.error('Backend responded with an error.')
 
       if apps.length
         @table(apps)

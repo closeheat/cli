@@ -43,12 +43,17 @@ module.exports = Apps = (function() {
       method: 'get'
     }, (function(_this) {
       return function(err, resp) {
-        var apps;
+        var apps, e;
         Log.spinStop();
         if (err) {
           return Log.error(err);
         }
-        apps = JSON.parse(resp.body).apps;
+        try {
+          apps = JSON.parse(resp.body).apps;
+        } catch (_error) {
+          e = _error;
+          return Log.error('Backend responded with an error.');
+        }
         if (apps.length) {
           return _this.table(apps);
         } else {

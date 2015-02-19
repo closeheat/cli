@@ -11,6 +11,9 @@ class Color
   @orange: (msg) ->
     Couleurs.fg(msg, ORANGE)
 
+  @red: (msg) ->
+    Couleurs.fg(msg, RED)
+
   @redYellow: (msg) ->
     Couleurs.fg(msg, RED_YELLOW)
 

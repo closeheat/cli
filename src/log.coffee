@@ -10,6 +10,7 @@ c256 = require("colors-256")()
 Couleurs = require("couleurs")()
 
 Spinner = require './spinner'
+Color = require './color'
 
 module.exports =
 class Log
@@ -52,3 +53,6 @@ class Log
 
   @spinStop: ->
     Spinner.stop()
+
+  @error: (msg) ->
+    @line("#{Color.red('ERROR')} | #{msg}")
