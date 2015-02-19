@@ -17,12 +17,15 @@ source = require('vinyl-source-stream')
 buffer = require('vinyl-buffer')
 sourcemaps = require('gulp-sourcemaps')
 
-NPM = require('machinepack-npm')
+Log = require './log'
+Color = require './color'
+
+NpmDownloader = require './npm_downloader'
 
 module.exports =
 class Requirer
   constructor: (@dist, @dist_app) ->
-    @modules = []
+    @npm_downloader = new NpmDownloader(@dist)
 
   scan: ->
     gulp
@@ -30,43 +33,8 @@ class Requirer
       .pipe(@scanner().on('error', gutil.log))
       .on('end', -> console.log 'scanned')
 
-  registerModule: (module_name) ->
-    @modules.push(module_name)
-
-  downloadModules: =>
-    package_file = {
-      name: 'closeheat-app'
-      version: '1.0.0'
-      dependencies: {},
-      path: '.',
-    }
-
-    total = @modulesToDownload().length
-    @continueBundling() if total == 0
-
-    count = 0
-
-    _.each @modulesToDownload(), (module) =>
-      NPM.installPackage({
-        name: module
-        loglevel: 'silent'
-        prefix: @dist
-      }).exec({
-        error: (err) ->
-          console.log 'eeeerrr'
-          console.log err
-
-        success: (name) =>
-          count += 1
-          @continueBundling() if count == total
-          console.log 'succee'
-          console.log name
-      })
-
-    fs.writeFileSync(path.join(@dist, 'package.json'), JSON.stringify(package_file))
-
-  continueBundling: ->
-    console.log 'cont'
+  bundle: =>
+    console.log 'con'
     min_filter = gulpFilter (file) ->
       !/.min./.test(file.path)
 
@@ -75,6 +43,8 @@ class Requirer
       .pipe(min_filter)
       .pipe(@bundler().on('error', gutil.log))
       .on 'end', -> console.log 'scanned'
+
+    'c'
 
   bundler: ->
     through.obj((file, enc, cb) =>
@@ -104,10 +74,6 @@ class Requirer
   finishedBundling: ->
     # console.log 'Finighe bundle'
 
-  modulesToDownload: ->
-    _.reject _.uniq(@modules), (module) =>
-      fs.existsSync(path.join(@dist, 'node_modules', module))
-
   scanner: ->
     through.obj((file, enc, cb) =>
       if (file.isNull())
@@ -125,8 +91,8 @@ class Requirer
         module_name = node.arguments[0].value
         return unless module_name.match(/^[a-zA-Z]/)
 
-        @registerModule(module_name)
+        @npm_downloader.register(module_name)
       ), walkall.traversers)
 
       cb()
-    , @downloadModules)
+    , _.partial(@npm_downloader.downloadAll, @bundle))

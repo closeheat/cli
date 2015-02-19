@@ -1,4 +1,4 @@
-var NPM, Requirer, acorn, browserify, buffer, callback, coffee, fs, gulp, gulpFilter, gutil, htmlparser, npmi, path, source, sourcemaps, through, util, _,
+var Color, Log, NpmDownloader, Requirer, acorn, browserify, buffer, callback, coffee, fs, gulp, gulpFilter, gutil, htmlparser, npmi, path, source, sourcemaps, through, util, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 fs = require('fs');
@@ -35,14 +35,18 @@ buffer = require('vinyl-buffer');
 
 sourcemaps = require('gulp-sourcemaps');
 
-NPM = require('machinepack-npm');
+Log = require('./log');
+
+Color = require('./color');
+
+NpmDownloader = require('./npm_downloader');
 
 module.exports = Requirer = (function() {
   function Requirer(dist, dist_app) {
     this.dist = dist;
     this.dist_app = dist_app;
-    this.downloadModules = __bind(this.downloadModules, this);
-    this.modules = [];
+    this.bundle = __bind(this.bundle, this);
+    this.npm_downloader = new NpmDownloader(this.dist);
   }
 
   Requirer.prototype.scan = function() {
@@ -51,57 +55,16 @@ module.exports = Requirer = (function() {
     });
   };
 
-  Requirer.prototype.registerModule = function(module_name) {
-    return this.modules.push(module_name);
-  };
-
-  Requirer.prototype.downloadModules = function() {
-    var count, package_file, total;
-    package_file = {
-      name: 'closeheat-app',
-      version: '1.0.0',
-      dependencies: {},
-      path: '.'
-    };
-    total = this.modulesToDownload().length;
-    if (total === 0) {
-      this.continueBundling();
-    }
-    count = 0;
-    _.each(this.modulesToDownload(), (function(_this) {
-      return function(module) {
-        return NPM.installPackage({
-          name: module,
-          loglevel: 'silent',
-          prefix: _this.dist
-        }).exec({
-          error: function(err) {
-            console.log('eeeerrr');
-            return console.log(err);
-          },
-          success: function(name) {
-            count += 1;
-            if (count === total) {
-              _this.continueBundling();
-            }
-            console.log('succee');
-            return console.log(name);
-          }
-        });
-      };
-    })(this));
-    return fs.writeFileSync(path.join(this.dist, 'package.json'), JSON.stringify(package_file));
-  };
-
-  Requirer.prototype.continueBundling = function() {
+  Requirer.prototype.bundle = function() {
     var min_filter;
-    console.log('cont');
+    console.log('con');
     min_filter = gulpFilter(function(file) {
       return !/.min./.test(file.path);
     });
-    return gulp.src(path.join(this.dist_app, '**/*.js')).pipe(min_filter).pipe(this.bundler().on('error', gutil.log)).on('end', function() {
+    gulp.src(path.join(this.dist_app, '**/*.js')).pipe(min_filter).pipe(this.bundler().on('error', gutil.log)).on('end', function() {
       return console.log('scanned');
     });
+    return 'c';
   };
 
   Requirer.prototype.bundler = function() {
@@ -127,14 +90,6 @@ module.exports = Requirer = (function() {
 
   Requirer.prototype.finishedBundling = function() {};
 
-  Requirer.prototype.modulesToDownload = function() {
-    return _.reject(_.uniq(this.modules), (function(_this) {
-      return function(module) {
-        return fs.existsSync(path.join(_this.dist, 'node_modules', module));
-      };
-    })(this));
-  };
-
   Requirer.prototype.scanner = function() {
     return through.obj((function(_this) {
       return function(file, enc, cb) {
@@ -158,11 +113,11 @@ module.exports = Requirer = (function() {
           if (!module_name.match(/^[a-zA-Z]/)) {
             return;
           }
-          return _this.registerModule(module_name);
+          return _this.npm_downloader.register(module_name);
         }), walkall.traversers);
         return cb();
       };
-    })(this), this.downloadModules);
+    })(this), _.partial(this.npm_downloader.downloadAll, this.bundle));
   };
 
   return Requirer;
