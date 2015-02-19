@@ -85,3 +85,6 @@ class Log
 
   @doneLine: (msg) ->
     @p "#{chalk.blue('-')} #{msg}"
+
+  @backend: (msg) ->
+    Log.inner("#{Color.orange('closeheat')} | #{msg}")

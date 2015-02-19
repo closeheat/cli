@@ -4,43 +4,48 @@ Q = require 'q'
 q = require('bluebird')
 callback = require 'gulp-callback'
 gutil = require 'gulp-util'
+Git = require 'git-wrapper'
+
+Log = require './log'
+Color = require './color'
 
 module.exports =
 class Deployer
   ALL_FILES = '**'
 
   deploy: (@files = ALL_FILES) ->
-    @addEverything().then =>
-      console.log 'All files added.'
-      @commit('Deploy via CLI').then(=>
-        console.log 'Commited.'
-        console.log 'Pushing to Github.'
-        @pushToMainBranch().then (branch)=>
-          console.log "Pushed to brach #{branch} on Github."
-          @showDeployLog()
+    @git = new Git()
 
-        ).catch (e) ->
-        console.log 'No files to deploy.'
+    Log.spin('Deploying the app to closeheat.com via Github.')
+    @addEverything().then(=>
+      Log.stop()
+      Log.inner('All files added.')
+      @commit('Deploy via CLI').then =>
+        Log.inner('Files commited.')
+        Log.inner('Pushing to Github.')
+        @pushToMainBranch().then (branch)=>
+          Log.inner("Pushed to #{branch} branch on Github.")
+          @deployLog().then ->
+            Log.p("App deployed to #{Color.violet('http://blablabla.closeheatapp.com')}.")
+            Log.p('Open it quicker with:')
+            Log.code('closeheat open')
+
+    ).catch (err) ->
+      Log.error(err)
 
   addEverything: ->
     new q (resolve, reject) =>
-      gulp
-        .src(@files)
-        .pipe(stream = git.add())
-        .on('error', reject)
-        .on('end', resolve)
+      @git.exec 'add', ['.'], (err, resp) ->
+        return reject(err) if err
 
-      stream.resume()
+        resolve()
 
   commit: (msg) ->
     new q (resolve, reject) =>
-      gulp
-        .src(@files)
-        .pipe(stream = git.commit(msg))
-        .on('error', reject)
-        .on('end', resolve)
+      @git.exec 'commit', m: true, ["'#{msg}'"], (err, resp) ->
+        return reject(err) if err
 
-      stream.resume()
+        resolve()
 
   pushToMainBranch: ->
     new q (resolve, reject) =>
@@ -53,13 +58,17 @@ class Deployer
       resolve('master')
 
   push: (branch) ->
-    new q (resolve, reject) ->
-      git.push 'origin', branch, args: '--quiet', (err) ->
-        throw err if err
+    new q (resolve, reject) =>
+      @git.exec 'push', ['origin', branch], (err, msg) ->
+        return reject(err) if err
 
         resolve()
 
-  showDeployLog: ->
-    console.log('Deploying to closeheat.')
-    console.log('............ SOME LOG HERE ..........')
-    console.log('Should be done.')
+  deployLog: ->
+    new q (resolve, reject) ->
+      Log.br()
+      Log.backend('Downloading the Github repo.')
+      Log.backend('Building app.')
+      Log.backend('App is live.')
+      Log.br()
+      resolve()

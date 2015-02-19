@@ -64,6 +64,8 @@ program
 program
   .command('deploy')
   .action ->
+    Log.logo()
+
     new Deployer().deploy()
 
 program

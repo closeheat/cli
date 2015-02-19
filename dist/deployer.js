@@ -1,4 +1,4 @@
-var Deployer, Q, callback, git, gulp, gutil, q;
+var Color, Deployer, Git, Log, Q, callback, git, gulp, gutil, q;
 
 gulp = require('gulp');
 
@@ -12,6 +12,12 @@ callback = require('gulp-callback');
 
 gutil = require('gulp-util');
 
+Git = require('git-wrapper');
+
+Log = require('./log');
+
+Color = require('./color');
+
 module.exports = Deployer = (function() {
   var ALL_FILES;
 
@@ -21,29 +27,39 @@ module.exports = Deployer = (function() {
 
   Deployer.prototype.deploy = function(files) {
     this.files = files != null ? files : ALL_FILES;
+    this.git = new Git();
+    Log.spin('Deploying the app to closeheat.com via Github.');
     return this.addEverything().then((function(_this) {
       return function() {
-        console.log('All files added.');
+        Log.stop();
+        Log.inner('All files added.');
         return _this.commit('Deploy via CLI').then(function() {
-          console.log('Commited.');
-          console.log('Pushing to Github.');
+          Log.inner('Files commited.');
+          Log.inner('Pushing to Github.');
           return _this.pushToMainBranch().then(function(branch) {
-            console.log("Pushed to brach " + branch + " on Github.");
-            return _this.showDeployLog();
+            Log.inner("Pushed to " + branch + " branch on Github.");
+            return _this.deployLog().then(function() {
+              Log.p("App deployed to " + (Color.violet('http://blablabla.closeheatapp.com')) + ".");
+              Log.p('Open it quicker with:');
+              return Log.code('closeheat open');
+            });
           });
-        })["catch"](function(e) {
-          return console.log('No files to deploy.');
         });
       };
-    })(this));
+    })(this))["catch"](function(err) {
+      return Log.error(err);
+    });
   };
 
   Deployer.prototype.addEverything = function() {
     return new q((function(_this) {
       return function(resolve, reject) {
-        var stream;
-        gulp.src(_this.files).pipe(stream = git.add()).on('error', reject).on('end', resolve);
-        return stream.resume();
+        return _this.git.exec('add', ['.'], function(err, resp) {
+          if (err) {
+            return reject(err);
+          }
+          return resolve();
+        });
       };
     })(this));
   };
@@ -51,9 +67,14 @@ module.exports = Deployer = (function() {
   Deployer.prototype.commit = function(msg) {
     return new q((function(_this) {
       return function(resolve, reject) {
-        var stream;
-        gulp.src(_this.files).pipe(stream = git.commit(msg)).on('error', reject).on('end', resolve);
-        return stream.resume();
+        return _this.git.exec('commit', {
+          m: true
+        }, ["'" + msg + "'"], function(err, resp) {
+          if (err) {
+            return reject(err);
+          }
+          return resolve();
+        });
       };
     })(this));
   };
@@ -77,22 +98,27 @@ module.exports = Deployer = (function() {
   };
 
   Deployer.prototype.push = function(branch) {
-    return new q(function(resolve, reject) {
-      return git.push('origin', branch, {
-        args: '--quiet'
-      }, function(err) {
-        if (err) {
-          throw err;
-        }
-        return resolve();
-      });
-    });
+    return new q((function(_this) {
+      return function(resolve, reject) {
+        return _this.git.exec('push', ['origin', branch], function(err, msg) {
+          if (err) {
+            return reject(err);
+          }
+          return resolve();
+        });
+      };
+    })(this));
   };
 
-  Deployer.prototype.showDeployLog = function() {
-    console.log('Deploying to closeheat.');
-    console.log('............ SOME LOG HERE ..........');
-    return console.log('Should be done.');
+  Deployer.prototype.deployLog = function() {
+    return new q(function(resolve, reject) {
+      Log.br();
+      Log.backend('Downloading the Github repo.');
+      Log.backend('Building app.');
+      Log.backend('App is live.');
+      Log.br();
+      return resolve();
+    });
   };
 
   return Deployer;

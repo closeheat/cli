@@ -123,6 +123,10 @@ module.exports = Log = (function() {
     return this.p("" + (chalk.blue('-')) + " " + msg);
   };
 
+  Log.backend = function(msg) {
+    return Log.inner("" + (Color.orange('closeheat')) + " | " + msg);
+  };
+
   return Log;
 
 })();

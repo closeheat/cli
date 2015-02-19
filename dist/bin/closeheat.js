@@ -50,6 +50,7 @@ program.command('init').action(function() {
 });
 
 program.command('deploy').action(function() {
+  Log.logo();
   return new Deployer().deploy();
 });
 
