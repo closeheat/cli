@@ -17,17 +17,18 @@ source = require('vinyl-source-stream')
 buffer = require('vinyl-buffer')
 sourcemaps = require('gulp-sourcemaps')
 
+NPM = require('machinepack-npm')
+
 module.exports =
 class Requirer
   constructor: (@dist, @dist_app) ->
     @modules = []
 
   scan: ->
-    console.log path.join(@dist_app, '**/*.js')
     gulp
       .src(path.join(@dist_app, '**/*.js'))
       .pipe(@scanner().on('error', gutil.log))
-      .on 'end', -> console.log 'scanned'
+      .on('end', -> console.log 'scanned')
 
   registerModule: (module_name) ->
     @modules.push(module_name)
@@ -44,20 +45,28 @@ class Requirer
     @continueBundling() if total == 0
 
     count = 0
+
     _.each @modulesToDownload(), (module) =>
-      npmi name: module, path: @dist, (err, result) =>
-        count += 1
+      NPM.installPackage({
+        name: module
+        loglevel: 'silent'
+        prefix: @dist
+      }).exec({
+        error: (err) ->
+          console.log 'eeeerrr'
+          console.log err
 
-        if result
-          package_file.dependencies[module] = ''
-          util.puts("#{module} installed")
-
-        @continueBundling() if count == total
-
+        success: (name) =>
+          count += 1
+          @continueBundling() if count == total
+          console.log 'succee'
+          console.log name
+      })
 
     fs.writeFileSync(path.join(@dist, 'package.json'), JSON.stringify(package_file))
 
   continueBundling: ->
+    console.log 'cont'
     min_filter = gulpFilter (file) ->
       !/.min./.test(file.path)
 
@@ -93,14 +102,14 @@ class Requirer
     , @finishedBundling)
 
   finishedBundling: ->
-    console.log 'Finighe bundle'
+    # console.log 'Finighe bundle'
 
   modulesToDownload: ->
-    _.uniq(@modules)
+    _.reject _.uniq(@modules), (module) =>
+      fs.existsSync(path.join(@dist, 'node_modules', module))
 
   scanner: ->
     through.obj((file, enc, cb) =>
-      console.log file.path
       if (file.isNull())
         cb(null, file)
         return
@@ -118,7 +127,6 @@ class Requirer
 
         @registerModule(module_name)
       ), walkall.traversers)
-      console.log file.path
 
       cb()
     , @downloadModules)

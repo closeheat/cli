@@ -77,3 +77,6 @@ class Log
         @inner(m)
     else
       @inner(msg)
+
+  @doneLine: (msg) ->
+    @p "#{chalk.blue('-')} #{msg}"

@@ -7,13 +7,18 @@ fs = require 'fs'
 Watcher = require './watcher'
 homePath = require('home-path')
 
+Log = require './log'
+Color = require './color'
+
 module.exports =
 class Server
   constructor: ->
     @src = process.cwd()
-    @dist = "#{homePath()}/.closeheat/tmp/apps/321app-token321/"
+    @dist = "#{homePath()}/.closeheat/tmp/apps/current/"
 
   start: (opts = {}) ->
+    Log.logo()
+
     opts.log = false
     live_reload_host = opts.ip || 'localhost'
 
@@ -29,4 +34,4 @@ class Server
 
     port = opts.port || 9000
     @server = app.start(port)
-    util.puts(chalk.blue("Server started at http://0.0.0.0:#{port}"))
+    Log.doneLine("Server started at " + Color.violet("http://0.0.0.0:#{port}"))

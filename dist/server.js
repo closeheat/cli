@@ -1,4 +1,4 @@
-var Server, Watcher, chalk, charge, fs, homePath, path, serve_static, util;
+var Color, Log, Server, Watcher, chalk, charge, fs, homePath, path, serve_static, util;
 
 path = require('path');
 
@@ -16,10 +16,14 @@ Watcher = require('./watcher');
 
 homePath = require('home-path');
 
+Log = require('./log');
+
+Color = require('./color');
+
 module.exports = Server = (function() {
   function Server() {
     this.src = process.cwd();
-    this.dist = "" + (homePath()) + "/.closeheat/tmp/apps/321app-token321/";
+    this.dist = "" + (homePath()) + "/.closeheat/tmp/apps/current/";
   }
 
   Server.prototype.start = function(opts) {
@@ -27,6 +31,7 @@ module.exports = Server = (function() {
     if (opts == null) {
       opts = {};
     }
+    Log.logo();
     opts.log = false;
     live_reload_host = opts.ip || 'localhost';
     opts.write = {
@@ -39,7 +44,7 @@ module.exports = Server = (function() {
     app = charge(path.join(this.dist, 'app'), opts);
     port = opts.port || 9000;
     this.server = app.start(port);
-    return util.puts(chalk.blue("Server started at http://0.0.0.0:" + port));
+    return Log.doneLine("Server started at " + Color.violet("http://0.0.0.0:" + port));
   };
 
   return Server;

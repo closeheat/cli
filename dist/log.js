@@ -112,6 +112,10 @@ module.exports = Log = (function() {
     }
   };
 
+  Log.doneLine = function(msg) {
+    return this.p("" + (chalk.blue('-')) + " " + msg);
+  };
+
   return Log;
 
 })();

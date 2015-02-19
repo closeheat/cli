@@ -1,4 +1,4 @@
-var Requirer, acorn, browserify, buffer, callback, coffee, fs, gulp, gulpFilter, gutil, htmlparser, npmi, path, source, sourcemaps, through, util, _,
+var NPM, Requirer, acorn, browserify, buffer, callback, coffee, fs, gulp, gulpFilter, gutil, htmlparser, npmi, path, source, sourcemaps, through, util, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 fs = require('fs');
@@ -35,6 +35,8 @@ buffer = require('vinyl-buffer');
 
 sourcemaps = require('gulp-sourcemaps');
 
+NPM = require('machinepack-npm');
+
 module.exports = Requirer = (function() {
   function Requirer(dist, dist_app) {
     this.dist = dist;
@@ -44,7 +46,6 @@ module.exports = Requirer = (function() {
   }
 
   Requirer.prototype.scan = function() {
-    console.log(path.join(this.dist_app, '**/*.js'));
     return gulp.src(path.join(this.dist_app, '**/*.js')).pipe(this.scanner().on('error', gutil.log)).on('end', function() {
       return console.log('scanned');
     });
@@ -69,17 +70,22 @@ module.exports = Requirer = (function() {
     count = 0;
     _.each(this.modulesToDownload(), (function(_this) {
       return function(module) {
-        return npmi({
+        return NPM.installPackage({
           name: module,
-          path: _this.dist
-        }, function(err, result) {
-          count += 1;
-          if (result) {
-            package_file.dependencies[module] = '';
-            util.puts("" + module + " installed");
-          }
-          if (count === total) {
-            return _this.continueBundling();
+          loglevel: 'silent',
+          prefix: _this.dist
+        }).exec({
+          error: function(err) {
+            console.log('eeeerrr');
+            return console.log(err);
+          },
+          success: function(name) {
+            count += 1;
+            if (count === total) {
+              _this.continueBundling();
+            }
+            console.log('succee');
+            return console.log(name);
           }
         });
       };
@@ -89,6 +95,7 @@ module.exports = Requirer = (function() {
 
   Requirer.prototype.continueBundling = function() {
     var min_filter;
+    console.log('cont');
     min_filter = gulpFilter(function(file) {
       return !/.min./.test(file.path);
     });
@@ -118,19 +125,20 @@ module.exports = Requirer = (function() {
     })(this), this.finishedBundling);
   };
 
-  Requirer.prototype.finishedBundling = function() {
-    return console.log('Finighe bundle');
-  };
+  Requirer.prototype.finishedBundling = function() {};
 
   Requirer.prototype.modulesToDownload = function() {
-    return _.uniq(this.modules);
+    return _.reject(_.uniq(this.modules), (function(_this) {
+      return function(module) {
+        return fs.existsSync(path.join(_this.dist, 'node_modules', module));
+      };
+    })(this));
   };
 
   Requirer.prototype.scanner = function() {
     return through.obj((function(_this) {
       return function(file, enc, cb) {
         var ast, walk, walkall;
-        console.log(file.path);
         if (file.isNull()) {
           cb(null, file);
           return;
@@ -152,7 +160,6 @@ module.exports = Requirer = (function() {
           }
           return _this.registerModule(module_name);
         }), walkall.traversers);
-        console.log(file.path);
         return cb();
       };
     })(this), this.downloadModules);
