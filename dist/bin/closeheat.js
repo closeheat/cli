@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var Apps, Authorizer, Cloner, Creator, Deployer, Initializer, Server, fs, images, logo_path, path, pictureTube, program, tube, _;
+var Apps, Authorizer, Cloner, Creator, Deployer, Initializer, Log, Server, fs, images, logo_path, path, program, tube, _;
 
 program = require('commander');
 
@@ -25,6 +25,8 @@ Apps = require('../apps');
 Authorizer = require('../authorizer');
 
 Cloner = require('../cloner');
+
+Log = require('../log');
 
 program.version('0.0.1').usage('<keywords>');
 
@@ -64,30 +66,24 @@ program.command('clone [app-name]').action(function(app_name) {
 });
 
 program.command('help').action(function() {
+  Log.logo();
   return program.help();
 });
 
-fs = require('fs');
+program.parse(process.argv);
 
-pictureTube = require('picture-tube');
-
-tube = pictureTube({
-  cols: 5
-});
-
-tube.pipe(process.stdout);
-
-logo_path = path.resolve(__dirname, '../img/full.png');
-
-fs.createReadStream(logo_path).pipe(tube);
-
-images(logo_path, function(logo) {
-  program.parse(process.argv);
-  if (!program.args.length) {
-    if (fs.existsSync('index.html') || fs.existsSync('index.jade')) {
-      new Server().start();
-    } else {
-      program.help();
-    }
+if (!program.args.length) {
+  if (fs.existsSync('index.html') || fs.existsSync('index.jade')) {
+    new Server().start();
+  } else {
+    Log.logo();
+    program.help();
   }
-});
+  return;
+  tube = pictureTube({
+    cols: 5
+  });
+  tube.pipe(process.stdout);
+  logo_path = path.resolve(__dirname, './img/full.png');
+  fs.createReadStream(logo_path).pipe(tube);
+}

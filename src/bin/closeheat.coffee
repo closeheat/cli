@@ -11,6 +11,7 @@ Deployer = require '../deployer'
 Apps = require '../apps'
 Authorizer = require '../authorizer'
 Cloner = require '../cloner'
+Log = require '../log'
 
 program
   .version('0.0.1')
@@ -83,23 +84,20 @@ program
 program
   .command('help')
   .action ->
+    Log.logo()
     program.help()
 
-fs = require('fs')
-pictureTube = require('picture-tube')
-tube = pictureTube(cols: 5)
-tube.pipe(process.stdout)
-logo_path = path.resolve(__dirname, '../img/full.png')
-fs.createReadStream(logo_path).pipe(tube)
+program.parse(process.argv)
 
-images logo_path, (logo) ->
-  # console.log("#{logo}")
-  program.parse(process.argv)
+unless program.args.length
+  if fs.existsSync('index.html') || fs.existsSync('index.jade')
+    new Server().start()
+  else
+    Log.logo()
+    program.help()
 
-  unless program.args.length
-    if fs.existsSync('index.html') || fs.existsSync('index.jade')
-      new Server().start()
-    else
-      program.help()
-
-    return
+  return
+  tube = pictureTube(cols: 5)
+  tube.pipe(process.stdout)
+  logo_path = path.resolve(__dirname, './img/full.png')
+  fs.createReadStream(logo_path).pipe(tube)
