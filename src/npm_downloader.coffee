@@ -11,17 +11,14 @@ class NpmDownloader
   constructor: (@dist, @modules) ->
 
   downloadAll: =>
-    if _.isEmpty(@missing())
-      return new q (resolve, reject) ->
+    new q (resolve, reject) =>
+      if _.isEmpty(@missing())
         resolve()
 
-    module_downloads = _.map @missing(), (module) =>
-      @download(module)
-
-    console.log 'wha'
-    console.log module_downloads
-    console.log 'up'
-    q.when(module_downloads...)
+      q.each(@missing(), (module) =>
+        @download(module)
+      ).then ->
+        resolve()
 
   missing: =>
     _.reject _.uniq(@modules), (module) =>

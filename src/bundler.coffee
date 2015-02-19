@@ -19,6 +19,7 @@ class Bundler
   constructor: (@dist_app) ->
 
   bundle: ->
+    console.log 'bndling'
     gulp
       .src(path.join(@dist_app, '**/*.js'))
       .pipe(@minFilter())

@@ -34,6 +34,7 @@ module.exports = Bundler = (function() {
   }
 
   Bundler.prototype.bundle = function() {
+    console.log('bndling');
     return gulp.src(path.join(this.dist_app, '**/*.js')).pipe(this.minFilter()).pipe(this.exec().on('error', gutil.log)).on('end', function() {
       return console.log('scanned');
     });

@@ -24,21 +24,18 @@ module.exports = NpmDownloader = (function() {
   }
 
   NpmDownloader.prototype.downloadAll = function() {
-    var module_downloads;
-    if (_.isEmpty(this.missing())) {
-      return new q(function(resolve, reject) {
-        return resolve();
-      });
-    }
-    module_downloads = _.map(this.missing(), (function(_this) {
-      return function(module) {
-        return _this.download(module);
+    return new q((function(_this) {
+      return function(resolve, reject) {
+        if (_.isEmpty(_this.missing())) {
+          resolve();
+        }
+        return q.each(_this.missing(), function(module) {
+          return _this.download(module);
+        }).then(function() {
+          return resolve();
+        });
       };
     })(this));
-    console.log('wha');
-    console.log(module_downloads);
-    console.log('up');
-    return q.when.apply(q, module_downloads);
   };
 
   NpmDownloader.prototype.missing = function() {
