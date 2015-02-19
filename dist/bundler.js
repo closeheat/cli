@@ -34,10 +34,11 @@ module.exports = Bundler = (function() {
   }
 
   Bundler.prototype.bundle = function() {
-    console.log('bndling');
-    return gulp.src(path.join(this.dist_app, '**/*.js')).pipe(this.minFilter()).pipe(this.exec().on('error', gutil.log)).on('end', function() {
-      return console.log('scanned');
-    });
+    return new q((function(_this) {
+      return function(resolve, reject) {
+        return gulp.src(path.join(_this.dist_app, '**/*.js')).pipe(_this.minFilter()).pipe(_this.exec(resolve, reject).on('error', gutil.log));
+      };
+    })(this));
   };
 
   Bundler.prototype.minFilter = function() {
@@ -46,11 +47,7 @@ module.exports = Bundler = (function() {
     });
   };
 
-  Bundler.prototype.finishedBundling = function() {
-    return console.log('Finighe bundle');
-  };
-
-  Bundler.prototype.exec = function() {
+  Bundler.prototype.exec = function(resolve, reject) {
     return through.obj((function(_this) {
       return function(file, enc, cb) {
         var bundler, relative;
@@ -68,7 +65,7 @@ module.exports = Bundler = (function() {
           loadMaps: true
         })).pipe(sourcemaps.write('./')).pipe(gulp.dest(_this.dist_app)).on('end', cb);
       };
-    })(this), this.finishedBundling);
+    })(this), resolve);
   };
 
   return Bundler;

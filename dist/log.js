@@ -75,11 +75,18 @@ module.exports = Log = (function() {
   };
 
   Log.spin = function(msg, fn) {
-    return Spinner.start(msg);
+    if (this.spinning === true) {
+      Spinner.stop();
+    }
+    Spinner.start(msg);
+    return this.spinning = true;
   };
 
   Log.stop = function() {
-    return Spinner.stop();
+    if (this.spinning === true) {
+      Spinner.stop();
+      return this.spinning = false;
+    }
   };
 
   Log.error = function(msg) {

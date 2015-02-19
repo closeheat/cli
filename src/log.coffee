@@ -52,10 +52,15 @@ class Log
     @line("  #{msg}")
 
   @spin: (msg, fn) ->
+    Spinner.stop() if @spinning == true
+
     Spinner.start(msg)
+    @spinning = true
 
   @stop: ->
-    Spinner.stop()
+    if @spinning == true
+      Spinner.stop()
+      @spinning = false
 
   @error: (msg) ->
     @line("#{Color.red('ERROR')} | #{msg}")

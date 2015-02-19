@@ -27,7 +27,7 @@ module.exports = Server = (function() {
   }
 
   Server.prototype.start = function(opts) {
-    var app, live_reload_host, port;
+    var live_reload_host, watcher;
     if (opts == null) {
       opts = {};
     }
@@ -40,11 +40,17 @@ module.exports = Server = (function() {
     opts.cache_control = {
       '**': 'max-age=0, no-cache, no-store'
     };
-    new Watcher(this.src, this.dist).run();
-    app = charge(path.join(this.dist, 'app'), opts);
-    port = opts.port || 9000;
-    this.server = app.start(port);
-    return Log.doneLine("Server started at " + Color.violet("http://0.0.0.0:" + port));
+    watcher = new Watcher(this.src, this.dist);
+    return watcher.build().then((function(_this) {
+      return function() {
+        var app, port;
+        app = charge(path.join(_this.dist, 'app'), opts);
+        port = opts.port || 9000;
+        _this.server = app.start(port);
+        Log.doneLine("Server started at " + Color.violet("http://0.0.0.0:" + port));
+        return watcher.run();
+      };
+    })(this));
   };
 
   return Server;

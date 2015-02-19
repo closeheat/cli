@@ -8,8 +8,11 @@ fs = require('fs-extra')
 path = require 'path'
 tinylr = require 'tiny-lr'
 gulp = require 'gulp'
+q = require 'bluebird'
+moment = require('moment')
 
 Log = require './log'
+Color = require './color'
 
 module.exports =
 class Watcher
@@ -20,8 +23,6 @@ class Watcher
       ignoreInitial: true
 
   run: ->
-    @build()
-
     @watcher
       .on('error', (err) -> util.puts(err))
       .on('all', (e, file) => @build(e, file))
@@ -30,14 +31,22 @@ class Watcher
     tinylr().listen port, ->
 
   build: (e, file) ->
-    if file
-      relative = path.relative(@src, file)
-      Log.spin("#{relative} changed. Rebuilding the app.")
+    new q (resolve, reject) =>
+      if file
+        relative = path.relative(@src, file)
+        Log.inner("#{relative} changed.")
 
-    rimraf.sync(@dist_app)
+      Log.spin("Building the app.")
+      rimraf.sync(@dist_app)
 
-    builder.build(@src, @dist_app).then =>
-      Log.stop() if file
+      builder.build(@src, @dist_app).then(=>
+        new Requirer(@dist, @dist_app).install().then ->
+          tinylr.changed('/')
+          resolve()
+          Log.stop()
+          Log.br()
+          Log.inner("#{Color.violet(moment().format('hh:mm:ss'))} | App built.")
+          Log.br()
 
-      new Requirer(@dist, @dist_app).install().then ->
-        tinylr.changed('/')
+      ).fail (err) ->
+        console.log err

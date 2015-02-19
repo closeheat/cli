@@ -19,21 +19,17 @@ class Bundler
   constructor: (@dist_app) ->
 
   bundle: ->
-    console.log 'bndling'
-    gulp
-      .src(path.join(@dist_app, '**/*.js'))
-      .pipe(@minFilter())
-      .pipe(@exec().on('error', gutil.log))
-      .on 'end', -> console.log 'scanned'
+    new q (resolve, reject) =>
+      gulp
+        .src(path.join(@dist_app, '**/*.js'))
+        .pipe(@minFilter())
+        .pipe(@exec(resolve, reject).on('error', gutil.log))
 
   minFilter: ->
     gulpFilter (file) ->
       !/.min./.test(file.path)
 
-  finishedBundling: ->
-    console.log 'Finighe bundle'
-
-  exec: ->
+  exec: (resolve, reject) ->
     through.obj((file, enc, cb) =>
       if file.isNull()
         cb(null, file)
@@ -56,4 +52,4 @@ class Bundler
         .pipe(gulp.dest(@dist_app))
         .on 'end', cb
 
-    , @finishedBundling)
+    , resolve)

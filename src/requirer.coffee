@@ -26,5 +26,4 @@ class Requirer
   install: ->
     @require_scanner.getRequires().then (modules) =>
       new NpmDownloader(@dist, modules).downloadAll().then =>
-        console.log "bund"
         @bundler.bundle()

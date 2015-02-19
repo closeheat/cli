@@ -44,7 +44,6 @@ module.exports = Requirer = (function() {
     return this.require_scanner.getRequires().then((function(_this) {
       return function(modules) {
         return new NpmDownloader(_this.dist, modules).downloadAll().then(function() {
-          console.log("bund");
           return _this.bundler.bundle();
         });
       };

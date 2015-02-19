@@ -29,9 +29,13 @@ class Server
       "
     opts.cache_control = {'**': 'max-age=0, no-cache, no-store'}
 
-    new Watcher(@src, @dist).run()
-    app = charge(path.join(@dist, 'app'), opts)
+    watcher = new Watcher(@src, @dist)
 
-    port = opts.port || 9000
-    @server = app.start(port)
-    Log.doneLine("Server started at " + Color.violet("http://0.0.0.0:#{port}"))
+    watcher.build().then =>
+      app = charge(path.join(@dist, 'app'), opts)
+
+      port = opts.port || 9000
+      @server = app.start(port)
+      Log.doneLine("Server started at " + Color.violet("http://0.0.0.0:#{port}"))
+
+      watcher.run()

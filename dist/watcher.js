@@ -1,4 +1,4 @@
-var Log, Requirer, Watcher, builder, chalk, chokidar, fs, gulp, path, rimraf, tinylr, util;
+var Color, Log, Requirer, Watcher, builder, chalk, chokidar, fs, gulp, moment, path, q, rimraf, tinylr, util;
 
 builder = require('closeheat-builder');
 
@@ -20,7 +20,13 @@ tinylr = require('tiny-lr');
 
 gulp = require('gulp');
 
+q = require('bluebird');
+
+moment = require('moment');
+
 Log = require('./log');
+
+Color = require('./color');
 
 module.exports = Watcher = (function() {
   function Watcher(src, dist) {
@@ -34,7 +40,6 @@ module.exports = Watcher = (function() {
 
   Watcher.prototype.run = function() {
     var port;
-    this.build();
     this.watcher.on('error', function(err) {
       return util.puts(err);
     }).on('all', (function(_this) {
@@ -47,19 +52,26 @@ module.exports = Watcher = (function() {
   };
 
   Watcher.prototype.build = function(e, file) {
-    var relative;
-    if (file) {
-      relative = path.relative(this.src, file);
-      Log.spin("" + relative + " changed. Rebuilding the app.");
-    }
-    rimraf.sync(this.dist_app);
-    return builder.build(this.src, this.dist_app).then((function(_this) {
-      return function() {
+    return new q((function(_this) {
+      return function(resolve, reject) {
+        var relative;
         if (file) {
-          Log.stop();
+          relative = path.relative(_this.src, file);
+          Log.inner("" + relative + " changed.");
         }
-        return new Requirer(_this.dist, _this.dist_app).install().then(function() {
-          return tinylr.changed('/');
+        Log.spin("Building the app.");
+        rimraf.sync(_this.dist_app);
+        return builder.build(_this.src, _this.dist_app).then(function() {
+          return new Requirer(_this.dist, _this.dist_app).install().then(function() {
+            tinylr.changed('/');
+            resolve();
+            Log.stop();
+            Log.br();
+            Log.inner("" + (Color.violet(moment().format('hh:mm:ss'))) + " | App built.");
+            return Log.br();
+          });
+        }).fail(function(err) {
+          return console.log(err);
         });
       };
     })(this));
