@@ -1,4 +1,4 @@
-var Apps, Authorizer, Log, Table, Urls, git, gulp, q, request, rp, util, _;
+var Apps, Authorizer, Color, Log, Urls, chalk, git, gulp, q, request, rp, table, util, _;
 
 gulp = require('gulp');
 
@@ -14,13 +14,17 @@ _ = require('lodash');
 
 util = require('util');
 
-Table = require('cli-table');
+table = require('text-table');
+
+chalk = require('chalk');
 
 Authorizer = require('./authorizer');
 
 Urls = require('./urls');
 
 Log = require('./log');
+
+Color = require('./color');
 
 module.exports = Apps = (function() {
   function Apps() {}
@@ -55,22 +59,18 @@ module.exports = Apps = (function() {
   };
 
   Apps.prototype.table = function(apps) {
-    var apps_list;
-    util.puts('');
-    util.puts("You have " + apps.length + " apps deployed.");
-    util.puts('');
-    apps_list = new Table({
-      head: ['Name', 'Clone command']
-    });
+    var list;
+    Log.inner("You have " + apps.length + " apps deployed.");
+    Log.br();
+    list = [['', Color.redYellow('Name'), Color.redYellow(' Clone command')]];
     _.each(apps, function(app) {
-      return apps_list.push([app.name, "closeheat clone " + app.slug]);
+      return list.push(['', Color.violet(app.name), Color.bare("closeheat clone " + app.slug)]);
     });
-    util.puts(apps_list.toString());
-    util.puts('');
-    util.puts('');
-    util.puts("Edit any of your apps by cloning it with:");
-    util.puts('');
-    return util.puts("  closeheat clone your-awesome-app");
+    Log.line(table(list));
+    Log.br();
+    Log.line("Edit any of your apps by cloning it with:");
+    Log.br();
+    return Log.inner(Color.violet("closeheat clone your-awesome-app"));
   };
 
   Apps.prototype.noApps = function() {

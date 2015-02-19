@@ -5,11 +5,14 @@ rp = require 'request-promise'
 request = require 'request'
 _ = require 'lodash'
 util = require('util')
-Table = require('cli-table')
+# Table = require('cli-table')
+table = require('text-table')
+chalk = require 'chalk'
 
 Authorizer = require './authorizer'
 Urls = require './urls'
 Log = require './log'
+Color = require './color'
 
 module.exports =
 class Apps
@@ -33,21 +36,19 @@ class Apps
         @noApps()
 
   table: (apps) ->
-    util.puts ''
-    util.puts "You have #{apps.length} apps deployed."
-    util.puts ''
+    Log.inner "You have #{apps.length} apps deployed."
 
-    apps_list = new Table head: ['Name', 'Clone command']
+    Log.br()
 
+    list = [['', Color.redYellow('Name'), Color.redYellow(' Clone command')]]
     _.each apps, (app) ->
-      apps_list.push [app.name, "closeheat clone #{app.slug}"]
+      list.push ['', Color.violet(app.name), Color.bare("closeheat clone #{app.slug}")]
 
-    util.puts(apps_list.toString())
-    util.puts ''
-    util.puts ''
-    util.puts "Edit any of your apps by cloning it with:"
-    util.puts ''
-    util.puts "  closeheat clone your-awesome-app"
+    Log.line(table(list))
+    Log.br()
+    Log.line "Edit any of your apps by cloning it with:"
+    Log.br()
+    Log.inner Color.violet("closeheat clone your-awesome-app")
 
   noApps: ->
     util.puts "You currently have no apps deployed."

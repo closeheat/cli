@@ -40,6 +40,13 @@ class Log
   @line: (text = '') ->
     console.log(text)
 
+  @br: (times = 1) ->
+    _.times times, =>
+      @line()
+
+  @inner: (msg) ->
+    @line("  #{msg}")
+
   @spin: (msg, fn) ->
     Spinner.start(msg)
 

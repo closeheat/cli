@@ -50,6 +50,21 @@ module.exports = Log = (function() {
     return console.log(text);
   };
 
+  Log.br = function(times) {
+    if (times == null) {
+      times = 1;
+    }
+    return _.times(times, (function(_this) {
+      return function() {
+        return _this.line();
+      };
+    })(this));
+  };
+
+  Log.inner = function(msg) {
+    return this.line("  " + msg);
+  };
+
   Log.spin = function(msg, fn) {
     return Spinner.start(msg);
   };
