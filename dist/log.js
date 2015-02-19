@@ -52,6 +52,13 @@ module.exports = Log = (function() {
     return console.log(text);
   };
 
+  Log.p = function(text) {
+    if (text == null) {
+      text = '';
+    }
+    return console.log(text);
+  };
+
   Log.br = function(times) {
     if (times == null) {
       times = 1;
@@ -71,12 +78,38 @@ module.exports = Log = (function() {
     return Spinner.start(msg);
   };
 
-  Log.spinStop = function() {
+  Log.stop = function() {
     return Spinner.stop();
   };
 
   Log.error = function(msg) {
     return this.line("" + (Color.red('ERROR')) + " | " + msg);
+  };
+
+  Log.code = function(msg) {
+    this.br();
+    if (_.isArray(msg)) {
+      return _.each(msg, (function(_this) {
+        return function(m) {
+          return _this.inner(Color.violet(m));
+        };
+      })(this));
+    } else {
+      return this.inner(Color.violet(msg));
+    }
+  };
+
+  Log.secondaryCode = function(msg) {
+    this.br();
+    if (_.isArray(msg)) {
+      return _.each(msg, (function(_this) {
+        return function(m) {
+          return _this.inner(m);
+        };
+      })(this));
+    } else {
+      return this.inner(msg);
+    }
   };
 
   return Log;

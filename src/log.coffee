@@ -41,6 +41,9 @@ class Log
   @line: (text = '') ->
     console.log(text)
 
+  @p: (text = '') ->
+    console.log(text)
+
   @br: (times = 1) ->
     _.times times, =>
       @line()
@@ -51,8 +54,26 @@ class Log
   @spin: (msg, fn) ->
     Spinner.start(msg)
 
-  @spinStop: ->
+  @stop: ->
     Spinner.stop()
 
   @error: (msg) ->
     @line("#{Color.red('ERROR')} | #{msg}")
+
+  @code: (msg) ->
+    @br()
+
+    if _.isArray(msg)
+      _.each msg, (m) =>
+        @inner(Color.violet(m))
+    else
+      @inner(Color.violet(msg))
+
+  @secondaryCode: (msg) ->
+    @br()
+
+    if _.isArray(msg)
+      _.each msg, (m) =>
+        @inner(m)
+    else
+      @inner(msg)

@@ -9,31 +9,36 @@ request = require 'request'
 util = require('util')
 Authorizer = require './authorizer'
 Urls = require './urls'
+Log = require './log'
 
 module.exports =
 class Cloner
   clone: (app_name) ->
-    util.puts "Getting application data for #{app_name}..."
+    Log.logo()
+    Log.spin "Getting application data for #{app_name}."
 
     @getAppData(app_name).then (app) =>
-      util.puts "Cloning the repository..."
+      Log.stop()
+      Log.spin "Cloning Github repository at #{app.github_repo}."
 
       @execCloning(app.github_repo, app.default_branch, app_name).then =>
-        util.puts "Cloned the app code to #{app_name} directory."
-        util.puts '------------------------'
+        Log.stop()
+        Log.inner "Cloned the app code to directory '#{app_name}'."
 
-        util.puts ''
-        util.puts "Run the server by typing:"
-        util.puts "  cd #{app_name}"
-        util.puts "  closeheat"
+        Log.br()
+        Log.line 'Run the server by typing:'
+        Log.code [
+          "cd #{app_name}"
+          'closeheat'
+        ]
 
-        util.puts ''
-        util.puts "The simplest way to deploy changes to closeheat.com is with:"
-        util.puts "  closeheat deploy"
+        Log.br()
+        Log.p 'The quickest way to deploy changes to closeheat.com and Github is with:'
+        Log.secondaryCode 'closeheat deploy'
 
-        util.puts ''
-        util.puts "For more awesome tricks type:"
-        util.puts "  closeheat help"
+        Log.br()
+        Log.p 'For more awesome tricks type:'
+        Log.secondaryCode 'closeheat help'
 
   getAppData: (app_name) ->
     authorizer = new Authorizer
@@ -48,7 +53,7 @@ class Cloner
 
   execCloning: (github_repo, branch, app_name) ->
     new q (resolve, reject) ->
-      git.clone "https://github.com/#{github_repo}", args: app_name, (err) ->
+      git.clone "https://github.com/#{github_repo}", args: "#{app_name}", quiet: true, (err) ->
         throw err if err
 
         resolve()

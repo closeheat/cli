@@ -44,7 +44,7 @@ module.exports = Apps = (function() {
     }, (function(_this) {
       return function(err, resp) {
         var apps, e;
-        Log.spinStop();
+        Log.stop();
         if (err) {
           return Log.error(err);
         }
@@ -66,22 +66,22 @@ module.exports = Apps = (function() {
   Apps.prototype.table = function(apps) {
     var list;
     Log.inner("You have " + apps.length + " apps deployed.");
-    Log.br();
     list = [['', Color.redYellow('Name'), Color.redYellow(' Clone command')]];
     _.each(apps, function(app) {
       return list.push(['', Color.violet(app.name), Color.bare("closeheat clone " + app.slug)]);
     });
+    Log.br();
     Log.line(table(list));
     Log.br();
     Log.line("Edit any of your apps by cloning it with:");
-    Log.br();
-    return Log.inner(Color.violet("closeheat clone your-awesome-app"));
+    return Log.code("closeheat clone your-awesome-app");
   };
 
   Apps.prototype.noApps = function() {
-    util.puts("You currently have no apps deployed.");
-    util.puts("Create an app by typing:");
-    return util.puts("  closeheat create my-awesome-app");
+    Log.inner("You have no apps deployed.");
+    Log.br();
+    Log.line("Create an app by typing:");
+    return Log.code("closeheat create your-awesome-app");
   };
 
   return Apps;
