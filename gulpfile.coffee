@@ -11,10 +11,15 @@ uglify = require 'gulp-uglify'
 insert = require 'gulp-insert'
 acorn = require 'acorn'
 
-gulp.task 'default', ['coffee']
+gulp.task 'default', ['coffee', 'img']
 
 gulp.task 'watch', ->
   gulp.watch('./src/**/*.coffee', ['default'])
+
+gulp.task 'img', ->
+  gulp
+    .src('./src/**/*.png')
+    .pipe gulp.dest('./dist/')
 
 gulp.task 'coffee', ->
   gulp

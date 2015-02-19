@@ -1,6 +1,8 @@
 program = require 'commander'
 _ = require 'lodash'
 fs = require 'fs.extra'
+path = require 'path'
+images = require('ascii-images')
 
 Creator = require '../creator'
 Server = require '../server'
@@ -16,8 +18,8 @@ program
 
 program
   .command('create [app-name]')
-  .alias('new')
-  .description('creates a new app with clean setup and directory structure')
+  .alias('c')
+  .description('Creates a new app with clean setup and directory structure.')
   .option('-f, --framework [name]', 'Framework')
   .option('-t, --template [name]', 'Template')
   .option('--javascript [name]', 'Javascript precompiler')
@@ -83,12 +85,21 @@ program
   .action ->
     program.help()
 
-program.parse(process.argv)
+fs = require('fs')
+pictureTube = require('picture-tube')
+tube = pictureTube(cols: 5)
+tube.pipe(process.stdout)
+logo_path = path.resolve(__dirname, '../img/full.png')
+fs.createReadStream(logo_path).pipe(tube)
 
-unless program.args.length
-  if fs.existsSync('index.html') || fs.existsSync('index.jade')
-    new Server().start()
-  else
-    program.help()
+images logo_path, (logo) ->
+  # console.log("#{logo}")
+  program.parse(process.argv)
 
-  return
+  unless program.args.length
+    if fs.existsSync('index.html') || fs.existsSync('index.jade')
+      new Server().start()
+    else
+      program.help()
+
+    return
