@@ -69,7 +69,7 @@ program
 program
   .command('apps')
   .action ->
-    new Apps().showList()
+    new Apps().list()
 
 program
   .command('login [access-token]')

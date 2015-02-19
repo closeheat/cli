@@ -25,15 +25,13 @@ Spinner = do ->
       util.print sequence[index]
     ), single_spin_ms)
 
-  stop = (stop_message = '') ->
+  stop = ->
     clearInterval timer
 
     # remove spinner
     util.print sequence[index].replace(/./g, "\r")
     # add a colored dash
     util.puts chalk.blue('-')
-
-    util.puts "  #{stop_message}"
 
   {
     start: start

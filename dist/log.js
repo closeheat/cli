@@ -1,4 +1,4 @@
-var Log, bar, fs, images, path, pictureTube, _;
+var Couleurs, Log, Spinner, bar, c256, chalk, colors, fs, images, path, pictureTube, _;
 
 pictureTube = require('picture-tube');
 
@@ -12,18 +12,27 @@ images = require('ascii-images');
 
 _ = require('lodash');
 
+chalk = require('chalk');
+
+colors = require('ansi-256-colors');
+
+c256 = require("colors-256")();
+
+Couleurs = require("couleurs")();
+
+Spinner = require('./spinner');
+
 module.exports = Log = (function() {
   function Log() {}
 
   Log.logo = function() {
-    var logo_path, tube;
-    tube = pictureTube({
-      cols: 5
+    var block_colours, blocks;
+    block_colours = ['#FFBB5D', '#FF6664', '#F8006C', '#3590F3'];
+    blocks = _.map(block_colours, function(hex) {
+      return Couleurs.bg(' ', hex);
     });
-    tube.pipe(process.stdout);
-    logo_path = path.resolve(__dirname, './img/full.png');
-    fs.createReadStream(logo_path).pipe(tube);
-    return this.center('[ closeheat ]');
+    this.line(blocks.join('') + blocks.reverse().join(''));
+    return this.line();
   };
 
   Log.center = function(text) {
@@ -39,6 +48,14 @@ module.exports = Log = (function() {
       text = '';
     }
     return console.log(text);
+  };
+
+  Log.spin = function(msg, fn) {
+    return Spinner.start(msg);
+  };
+
+  Log.spinStop = function() {
+    return Spinner.stop();
   };
 
   return Log;

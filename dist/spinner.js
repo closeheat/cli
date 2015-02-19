@@ -21,14 +21,10 @@ module.exports = Spinner = (function() {
       return util.print(sequence[index]);
     }), single_spin_ms);
   };
-  stop = function(stop_message) {
-    if (stop_message == null) {
-      stop_message = '';
-    }
+  stop = function() {
     clearInterval(timer);
     util.print(sequence[index].replace(/./g, "\r"));
-    util.puts(chalk.blue('-'));
-    return util.puts("  " + stop_message);
+    return util.puts(chalk.blue('-'));
   };
   return {
     start: start,

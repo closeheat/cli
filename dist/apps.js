@@ -1,4 +1,4 @@
-var Apps, Authorizer, Table, Urls, git, gulp, q, request, rp, util, _;
+var Apps, Authorizer, Log, Table, Urls, git, gulp, q, request, rp, util, _;
 
 gulp = require('gulp');
 
@@ -20,16 +20,19 @@ Authorizer = require('./authorizer');
 
 Urls = require('./urls');
 
+Log = require('./log');
+
 module.exports = Apps = (function() {
   function Apps() {}
 
-  Apps.prototype.showList = function() {
+  Apps.prototype.list = function() {
     var authorizer, params;
     authorizer = new Authorizer;
     params = {
       api_token: authorizer.accessToken()
     };
-    util.puts('Getting Your Application Info...');
+    Log.logo();
+    Log.spin('Getting information about your deployed apps.');
     return request({
       url: Urls.appsIndex(),
       qs: params,
@@ -37,8 +40,9 @@ module.exports = Apps = (function() {
     }, (function(_this) {
       return function(err, resp) {
         var apps;
+        Log.spinStop();
         if (err) {
-          throw Error('Error happened');
+          return Log.error(err);
         }
         apps = JSON.parse(resp.body).apps;
         if (apps.length) {

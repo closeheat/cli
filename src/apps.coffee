@@ -9,17 +9,21 @@ Table = require('cli-table')
 
 Authorizer = require './authorizer'
 Urls = require './urls'
+Log = require './log'
 
 module.exports =
 class Apps
-  showList: ->
+  list: ->
     authorizer = new Authorizer
     params =
       api_token: authorizer.accessToken()
 
-    util.puts 'Getting Your Application Info...'
+
+    Log.logo()
+    Log.spin 'Getting information about your deployed apps.'
     request url: Urls.appsIndex(), qs: params, method: 'get', (err, resp) =>
-      throw Error 'Error happened' if err
+      Log.spinStop()
+      return Log.error(err) if err
 
       apps = JSON.parse(resp.body).apps
 

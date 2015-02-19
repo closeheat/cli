@@ -54,7 +54,7 @@ program.command('deploy').action(function() {
 });
 
 program.command('apps').action(function() {
-  return new Apps().showList();
+  return new Apps().list();
 });
 
 program.command('login [access-token]').action(function(access_token) {
