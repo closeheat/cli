@@ -53,7 +53,7 @@ class Cloner
 
   execCloning: (github_repo, branch, app_name) ->
     new q (resolve, reject) ->
-      git.clone "https://github.com/#{github_repo}", args: "#{app_name}", quiet: true, (err) ->
+      git.clone "git@github.com:#{github_repo}.git", args: "#{app_name}", quiet: true, (err) ->
         throw err if err
 
         resolve()

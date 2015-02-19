@@ -70,7 +70,7 @@ module.exports = Cloner = (function() {
 
   Cloner.prototype.execCloning = function(github_repo, branch, app_name) {
     return new q(function(resolve, reject) {
-      return git.clone("https://github.com/" + github_repo, {
+      return git.clone("git@github.com:" + github_repo + ".git", {
         args: "" + app_name,
         quiet: true
       }, function(err) {

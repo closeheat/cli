@@ -71,4 +71,5 @@ class Deployer
       Log.backend('Building app.')
       Log.backend('App is live.')
       Log.br()
+
       resolve()
