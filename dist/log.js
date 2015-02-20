@@ -63,6 +63,10 @@ module.exports = Log = (function() {
     return this.line("  " + msg);
   };
 
+  Log.innerError = function(msg) {
+    return this.line("        " + msg);
+  };
+
   Log.spin = function(msg, fn) {
     if (this.spinning === true) {
       Spinner.stop();

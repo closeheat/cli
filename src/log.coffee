@@ -40,6 +40,9 @@ class Log
   @inner: (msg) ->
     @line("  #{msg}")
 
+  @innerError: (msg) ->
+    @line("        #{msg}")
+
   @spin: (msg, fn) ->
     Spinner.stop() if @spinning == true
 

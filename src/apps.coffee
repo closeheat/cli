@@ -17,11 +17,9 @@ class Apps
     Log.logo()
     Log.spin 'Getting information about your deployed apps.'
     request url: Urls.appsIndex(), qs: params, method: 'get', (err, resp) =>
-      Log.stop()
+      return authorizer.forceLogin(@list) if authorizer.unauthorized(resp)
 
-      if resp.statusCode == 401
-        Log.p 'Please login to closeheat.com to check out your app list.'
-        return authorizer.login(@list)
+      Log.stop()
 
       return Log.error(err) if err
 

@@ -1,4 +1,4 @@
-var Authorizer, Log, Promise, Urls, fs, homePath, inquirer, request;
+var Authorizer, Color, Log, Promise, Urls, fs, homePath, inquirer, request;
 
 fs = require('fs');
 
@@ -13,6 +13,8 @@ Promise = require('bluebird');
 Log = require('./log');
 
 Urls = require('./urls');
+
+Color = require('./color');
 
 module.exports = Authorizer = (function() {
   function Authorizer() {}
@@ -52,10 +54,18 @@ module.exports = Authorizer = (function() {
     ];
     return inquirer.prompt(login_questions, (function(_this) {
       return function(answers) {
-        return _this.getToken(answers).then(cb)["catch"](function(status) {
-          if (status === 401) {
-            Log.error("Wrong password or email. Please try again");
-            return _this.login();
+        return _this.getToken(answers).then(function() {
+          Log.br();
+          return cb();
+        })["catch"](function(resp) {
+          if (resp.code === 401) {
+            if (resp.status === 'locked') {
+              Log.error('Too many invalid logins. Account locked for 1 hour.');
+              return Log.innerError("Check your email for unlock instructions or contact the support at " + (Color.violet('closeheat.com/support')) + ".");
+            } else {
+              Log.error("Wrong password or email. Please try again");
+              return _this.login(cb);
+            }
           } else {
             return Log.backendError();
           }
@@ -77,11 +87,25 @@ module.exports = Authorizer = (function() {
             _this.saveToken(resp.body.access_token);
             return resolve();
           } else {
-            return reject(resp.statusCode);
+            return reject({
+              code: resp.statusCode,
+              status: resp.body.status
+            });
           }
         });
       };
     })(this));
+  };
+
+  Authorizer.prototype.forceLogin = function(cb) {
+    Log.stop();
+    Log.br();
+    Log.p(Color.redYellow('Please login to closeheat.com to check out your app list.'));
+    return this.login(cb);
+  };
+
+  Authorizer.prototype.unauthorized = function(resp) {
+    return resp.statusCode === 401;
   };
 
   return Authorizer;

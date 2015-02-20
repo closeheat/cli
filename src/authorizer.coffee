@@ -6,6 +6,7 @@ Promise = require 'bluebird'
 
 Log = require './log'
 Urls = require './urls'
+Color = require './color'
 
 module.exports =
 class Authorizer
@@ -35,10 +36,18 @@ class Authorizer
     ]
 
     inquirer.prompt login_questions, (answers) =>
-      @getToken(answers).then(cb).catch (status) =>
-        if status == 401
-          Log.error("Wrong password or email. Please try again")
-          @login()
+      @getToken(answers).then(->
+        Log.br()
+        cb()
+      ).catch (resp) =>
+        if resp.code == 401
+          if resp.status == 'locked'
+            Log.error('Too many invalid logins. Account locked for 1 hour.')
+            Log.innerError("Check your email for unlock instructions or contact the support at #{Color.violet('closeheat.com/support')}.")
+          else
+            Log.error("Wrong password or email. Please try again")
+            @login(cb)
+
         else
           Log.backendError()
 
@@ -49,4 +58,13 @@ class Authorizer
           @saveToken(resp.body.access_token)
           resolve()
         else
-          reject(resp.statusCode)
+          reject(code: resp.statusCode, status: resp.body.status)
+
+  forceLogin: (cb) ->
+    Log.stop()
+    Log.br()
+    Log.p Color.redYellow('Please login to closeheat.com to check out your app list.')
+    @login(cb)
+
+  unauthorized: (resp) ->
+    resp.statusCode == 401

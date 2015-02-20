@@ -35,11 +35,10 @@ module.exports = Apps = (function() {
     }, (function(_this) {
       return function(err, resp) {
         var e, parsed_resp;
-        Log.stop();
-        if (resp.statusCode === 401) {
-          Log.p('Please login to closeheat.com to check out your app list.');
-          return authorizer.login(_this.list);
+        if (authorizer.unauthorized(resp)) {
+          return authorizer.forceLogin(_this.list);
         }
+        Log.stop();
         if (err) {
           return Log.error(err);
         }
