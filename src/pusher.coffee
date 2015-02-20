@@ -40,10 +40,7 @@ class Pusher
     ).catch (err) ->
       Log.error(err)
 
-  handleCreationError: (error) =>
-    console.log(error)
-
-  githubNotAuthorized: =>
+  githubNotAuthorized: ->
     Log.error('Github not authorized')
     Log.p "We cannot set you up for deployment because you did not authorize Github."
     Log.br()
@@ -77,7 +74,7 @@ class Pusher
     @initGit().then =>
       @addRemote(username).then =>
 
-      new Deployer().deploy("#{@target}/**").then ->
+      new Deployer().deploy().then ->
         shell.cd('..')
 
   addRemote: (username) =>

@@ -34,8 +34,6 @@ module.exports = Pusher = (function() {
     this.addRemote = __bind(this.addRemote, this);
     this.pushFiles = __bind(this.pushFiles, this);
     this.createAppInBackend = __bind(this.createAppInBackend, this);
-    this.githubNotAuthorized = __bind(this.githubNotAuthorized, this);
-    this.handleCreationError = __bind(this.handleCreationError, this);
     this.git = new Git();
     authorizer = new Authorizer;
     this.token_params = {
@@ -57,10 +55,6 @@ module.exports = Pusher = (function() {
     })(this))["catch"](function(err) {
       return Log.error(err);
     });
-  };
-
-  Pusher.prototype.handleCreationError = function(error) {
-    return console.log(error);
   };
 
   Pusher.prototype.githubNotAuthorized = function() {
@@ -122,7 +116,7 @@ module.exports = Pusher = (function() {
     return this.initGit().then((function(_this) {
       return function() {
         _this.addRemote(username).then(function() {});
-        return new Deployer().deploy("" + _this.target + "/**").then(function() {
+        return new Deployer().deploy().then(function() {
           return shell.cd('..');
         });
       };

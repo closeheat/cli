@@ -19,14 +19,9 @@ Log = require('./log');
 Color = require('./color');
 
 module.exports = Deployer = (function() {
-  var ALL_FILES;
-
   function Deployer() {}
 
-  ALL_FILES = '**';
-
-  Deployer.prototype.deploy = function(files) {
-    this.files = files != null ? files : ALL_FILES;
+  Deployer.prototype.deploy = function() {
     this.git = new Git();
     Log.spin('Deploying the app to closeheat.com via Github.');
     return this.addEverything().then((function(_this) {

@@ -11,9 +11,7 @@ Color = require './color'
 
 module.exports =
 class Deployer
-  ALL_FILES = '**'
-
-  deploy: (@files = ALL_FILES) ->
+  deploy: ->
     @git = new Git()
 
     Log.spin('Deploying the app to closeheat.com via Github.')
