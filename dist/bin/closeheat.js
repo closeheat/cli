@@ -26,7 +26,7 @@ Cloner = require('../cloner');
 
 Log = require('../log');
 
-program.version('0.7.0').usage('<keywords>');
+program.version('0.7.1').usage('<keywords>');
 
 program.command('create [app-name]').alias('c').description('Creates a new app with clean setup and directory structure.').option('-f, --framework [name]', 'Framework').option('-t, --template [name]', 'Template').option('--javascript [name]', 'Javascript precompiler').option('--html [name]', 'HTML precompiler').option('--css [name]', 'CSS precompiler').option('--tmp [path]', 'The path of temporary directory when creating').option('--dist [path]', 'Path of destination of where to create app dir').action(function(name, opts) {
   var settings;
@@ -56,6 +56,8 @@ program.command('apps').description('Shows a list of your deployed apps.').actio
 program.command('login').option('-t, --token [access-token]', 'Access token from closeheat.com.').description('Changes the closeheat.com access token on your computer.').action(function(opts) {
   if (opts.token) {
     return new Authorizer().saveToken(opts.token);
+  } else {
+    return new Authorizer().login();
   }
 });
 

@@ -13,7 +13,7 @@ Cloner = require '../cloner'
 Log = require '../log'
 
 program
-  .version('0.7.0')
+  .version('0.7.1')
   .usage('<keywords>')
 
 program
@@ -81,6 +81,8 @@ program
   .action (opts) ->
     if opts.token
       new Authorizer().saveToken(opts.token)
+    else
+      new Authorizer().login()
 
 program
   .command('clone [app-name]')
