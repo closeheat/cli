@@ -27,14 +27,17 @@ Color = require('./color');
 module.exports = Log = (function() {
   function Log() {}
 
-  Log.logo = function() {
+  Log.logo = function(br) {
     var block_colours, blocks;
+    if (br == null) {
+      br = 1;
+    }
     block_colours = ['#FFBB5D', '#FF6664', '#F8006C', '#3590F3'];
     blocks = _.map(block_colours, function(hex) {
       return Couleurs.bg(' ', hex);
     });
     this.line(blocks.join('') + blocks.reverse().join(''));
-    return this.line();
+    return this.br(br);
   };
 
   Log.center = function(text) {

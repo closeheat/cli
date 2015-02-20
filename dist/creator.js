@@ -1,4 +1,4 @@
-var Creator, Dirs, Prompt, Pusher, Q, TemplateDownloader, Transformer, dirmr, fs, inquirer, _;
+var Color, Creator, Dirs, Log, Prompt, Pusher, Q, TemplateDownloader, Transformer, dirmr, fs, inquirer, _;
 
 inquirer = require('inquirer');
 
@@ -19,6 +19,10 @@ TemplateDownloader = require('./template_downloader');
 Transformer = require('./transformer');
 
 Pusher = require('./pusher');
+
+Log = require('./log');
+
+Color = require('./color');
 
 module.exports = Creator = (function() {
   function Creator() {}
@@ -54,6 +58,8 @@ module.exports = Creator = (function() {
   };
 
   Creator.prototype.createWithSettings = function(answers) {
+    Log.br();
+    Log.spin('Downloading templates and creating app structure.');
     this.dirs.clean();
     return this.dirs.create().then((function(_this) {
       return function() {
@@ -64,12 +70,17 @@ module.exports = Creator = (function() {
             return new Transformer(_this.dirs).transform(answers).then(function() {
               return _this.moveToTarget().then(function() {
                 _this.dirs.clean();
-                console.log("Getting app ready for deployment...");
+                Log.stop();
+                Log.inner("App folder created at " + _this.dirs.target + ".");
+                Log.br();
+                Log.spin('Setting up deployment.');
+                Log.stop();
                 return new Pusher(answers.name, _this.dirs.target).push().then(function() {
-                  console.log("The app " + answers.name + " has been created.");
-                  console.log("Run app server with:");
-                  console.log("  cd " + answers.name);
-                  return console.log("  closeheat");
+                  Log.br();
+                  Log.p("The app " + (Color.violet(answers.name)) + " has been created.");
+                  Log.br();
+                  Log.p("Run app server with:");
+                  return Log.code(["cd " + answers.name, "closeheat"]);
                 });
               });
             });

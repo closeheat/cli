@@ -1,7 +1,3 @@
-gulp = require 'gulp'
-git = require 'gulp-git'
-Q = require 'q'
-
 module.exports =
 class Initializer
   init: ->

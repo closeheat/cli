@@ -1,10 +1,4 @@
-var Initializer, Q, git, gulp;
-
-gulp = require('gulp');
-
-git = require('gulp-git');
-
-Q = require('q');
+var Initializer;
 
 module.exports = Initializer = (function() {
   function Initializer() {}

@@ -34,6 +34,7 @@ program.command('create [app-name]').alias('c').description('Creates a new app w
   var settings;
   settings = _.pick.apply(_, [opts, 'framework', 'template', 'javascript', 'html', 'css', 'dist', 'tmp']);
   settings.name = name;
+  Log.logo();
   if (_.isEmpty(_.omit(settings, 'name'))) {
     return new Creator().createFromPrompt(settings);
   } else {
@@ -41,7 +42,7 @@ program.command('create [app-name]').alias('c').description('Creates a new app w
   }
 });
 
-program.command('server').option('--ip [ip]', 'IP to run LiveReload on (default - localhost)').option('-p, --port [port]', 'Port to run server on (default - 4000)').action(function(opts) {
+program.command('server').alias('s').description('Runs a server which builds and LiveReloads your app.').option('--ip [ip]', 'IP to run LiveReload on (default - localhost)').option('-p, --port [port]', 'Port to run server on (default - 4000)').action(function(opts) {
   return new Server().start(opts);
 });
 
@@ -49,25 +50,25 @@ program.command('init').action(function() {
   return new Initializer().init();
 });
 
-program.command('deploy').action(function() {
+program.command('deploy').alias('d').description('Deploys your app to closeheat.com via Github.').action(function() {
   Log.logo();
   return new Deployer().deploy();
 });
 
-program.command('apps').action(function() {
+program.command('apps').description('Shows a list of your deployed apps.').action(function() {
   return new Apps().list();
 });
 
-program.command('login [access-token]').action(function(access_token) {
+program.command('login [access-token]').description('Changes the closeheat.com access token on your computer.').action(function(access_token) {
   return new Authorizer().login(access_token);
 });
 
-program.command('clone [app-name]').action(function(app_name) {
+program.command('clone [app-name]').description('Clones your apps Github repository.').action(function(app_name) {
   return new Cloner().clone(app_name);
 });
 
-program.command('help').action(function() {
-  Log.logo();
+program.command('help').description('Displays this menu.').action(function() {
+  Log.logo(0);
   return program.help();
 });
 
@@ -77,7 +78,7 @@ if (!program.args.length) {
   if (fs.existsSync('index.html') || fs.existsSync('index.jade')) {
     new Server().start();
   } else {
-    Log.logo();
+    Log.logo(0);
     program.help();
   }
   return;

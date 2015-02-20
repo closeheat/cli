@@ -10,6 +10,9 @@ TemplateDownloader = require './template_downloader'
 Transformer = require './transformer'
 Pusher = require './pusher'
 
+Log = require './log'
+Color = require './color'
+
 module.exports =
 class Creator
   createFromSettings: (settings) ->
@@ -37,6 +40,9 @@ class Creator
       throw Error "Directory #{@dirs.target} already exists"
 
   createWithSettings: (answers) ->
+    Log.br()
+    Log.spin('Downloading templates and creating app structure.')
+
     @dirs.clean()
 
     @dirs.create().then =>
@@ -48,12 +54,21 @@ class Creator
             @moveToTarget().then =>
               @dirs.clean()
 
-              console.log "Getting app ready for deployment..."
+              Log.stop()
+              Log.inner("App folder created at #{@dirs.target}.")
+              Log.br()
+
+              Log.spin 'Setting up deployment.'
+              Log.stop()
               new Pusher(answers.name, @dirs.target).push().then =>
-                console.log "The app #{answers.name} has been created."
-                console.log "Run app server with:"
-                console.log "  cd #{answers.name}"
-                console.log "  closeheat"
+                Log.br()
+                Log.p "The app #{Color.violet(answers.name)} has been created."
+                Log.br()
+                Log.p "Run app server with:"
+                Log.code [
+                  "cd #{answers.name}"
+                  "closeheat"
+                ]
 
   moveToTarget: ->
     deferred = Q.defer()

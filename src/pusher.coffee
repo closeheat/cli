@@ -4,14 +4,20 @@ q = require 'bluebird'
 git = require 'gulp-git'
 fs = require('fs-extra')
 shell = require('shelljs')
+Git = require 'git-wrapper'
 
 Authorizer = require './authorizer'
 Urls = require './urls'
 Deployer = require './deployer'
 
+Log = require './log'
+Color = require './color'
+
 module.exports =
 class Pusher
   constructor: (@name, @target) ->
+    @git = new Git()
+
     authorizer = new Authorizer
 
     @token_params =
@@ -23,36 +29,42 @@ class Pusher
     # add, commit files and push to repo as master (do auto deploy)
 
   push: ->
-    console.log 'pushin'
-    @getGithubUsername().then (username) =>
-      console.log 'auth'
+    @getGithubUsername().then((username) =>
+      Log.inner("Using Github username: #{Color.orange(username)}")
+      Log.spin('Creating closeheat app and Github repository.')
       @createAppInBackend().then (resp) =>
-        console.log 'created'
-        @pushFiles(username).then =>
-          console.log 'files pushed'
+        Log.stop()
+        Log.inner("Created both with name '#{@name}'.")
+
+        @pushFiles(username)
+    ).catch (err) ->
+      Log.error(err)
 
   handleCreationError: (error) =>
     console.log(error)
 
   githubNotAuthorized: =>
-    console.log "We cannot set you up for deployment because you did not authorize Github."
-    console.log ""
-    console.log "Visit #{Urls.authorizeGithub()} and rerun the command."
+    Log.error('Github not authorized')
+    Log.p "We cannot set you up for deployment because you did not authorize Github."
+    Log.br()
+    Log.p "Visit #{Urls.authorizeGithub()} and rerun the command."
 
   createAppInBackend: =>
     new q (resolve, reject) =>
       request { url: Urls.createApp(), qs: _.merge(repo_name: @name, @token_params), method: 'post' }, (err, resp) =>
-        console.log 'created'
-        return @handleCreationError(error) if err
+        return reject(err) if err
 
         resolve(resp)
 
   getGithubUsername: ->
     new q (resolve, reject) =>
       request url: Urls.currentUserInfo(), qs: @token_params, method: 'get', (err, resp) =>
-        throw Error 'Error happened' if err
+        return reject(err) if err
 
-        user_info = JSON.parse(resp.body).user
+        try
+          user_info = JSON.parse(resp.body).user
+        catch e
+          return Log.error('Backend responded with an error.')
 
         if user_info['github_token']
           resolve(user_info['github_username'])
@@ -60,22 +72,26 @@ class Pusher
           @githubNotAuthorized()
 
   pushFiles: (username) =>
-    @initGit().then =>
-      console.log 'inited'
-      @addRemote(username)
-      console.log 'remote added'
+    shell.cd(@target)
 
-      shell.cd(@target)
+    @initGit().then =>
+      @addRemote(username).then =>
+
       new Deployer().deploy("#{@target}/**").then ->
         shell.cd('..')
 
   addRemote: (username) =>
-    content = "[remote \"origin\"]\n        url = git@github.com:#{username}/#{@name}.git\n        fetch = +refs/heads/*:refs/remotes/origin/*"
-    fs.appendFileSync("#{@target}/.git/config", content)
+    new q (resolve, reject) =>
+      git_url = "git@github.com:#{username}/#{@name}.git"
+
+      @git.exec 'remote', ['add', 'origin', git_url], (err, resp) ->
+        return reject(err) if err
+
+        resolve()
 
   initGit: =>
     new q (resolve, reject) =>
-      git.init args: "#{@target} --quiet", (err) ->
-        throw err if (err)
+      @git.exec 'init', [@target], (err, resp) ->
+        return reject(err) if err
 
         resolve()

@@ -1,4 +1,4 @@
-var Authorizer, Deployer, Pusher, Urls, fs, git, q, request, shell, _,
+var Authorizer, Color, Deployer, Git, Log, Pusher, Urls, fs, git, q, request, shell, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 request = require('request');
@@ -13,11 +13,17 @@ fs = require('fs-extra');
 
 shell = require('shelljs');
 
+Git = require('git-wrapper');
+
 Authorizer = require('./authorizer');
 
 Urls = require('./urls');
 
 Deployer = require('./deployer');
+
+Log = require('./log');
+
+Color = require('./color');
 
 module.exports = Pusher = (function() {
   function Pusher(name, target) {
@@ -30,6 +36,7 @@ module.exports = Pusher = (function() {
     this.createAppInBackend = __bind(this.createAppInBackend, this);
     this.githubNotAuthorized = __bind(this.githubNotAuthorized, this);
     this.handleCreationError = __bind(this.handleCreationError, this);
+    this.git = new Git();
     authorizer = new Authorizer;
     this.token_params = {
       api_token: authorizer.accessToken()
@@ -37,18 +44,19 @@ module.exports = Pusher = (function() {
   }
 
   Pusher.prototype.push = function() {
-    console.log('pushin');
     return this.getGithubUsername().then((function(_this) {
       return function(username) {
-        console.log('auth');
+        Log.inner("Using Github username: " + (Color.orange(username)));
+        Log.spin('Creating closeheat app and Github repository.');
         return _this.createAppInBackend().then(function(resp) {
-          console.log('created');
-          return _this.pushFiles(username).then(function() {
-            return console.log('files pushed');
-          });
+          Log.stop();
+          Log.inner("Created both with name '" + _this.name + "'.");
+          return _this.pushFiles(username);
         });
       };
-    })(this));
+    })(this))["catch"](function(err) {
+      return Log.error(err);
+    });
   };
 
   Pusher.prototype.handleCreationError = function(error) {
@@ -56,9 +64,10 @@ module.exports = Pusher = (function() {
   };
 
   Pusher.prototype.githubNotAuthorized = function() {
-    console.log("We cannot set you up for deployment because you did not authorize Github.");
-    console.log("");
-    return console.log("Visit " + (Urls.authorizeGithub()) + " and rerun the command.");
+    Log.error('Github not authorized');
+    Log.p("We cannot set you up for deployment because you did not authorize Github.");
+    Log.br();
+    return Log.p("Visit " + (Urls.authorizeGithub()) + " and rerun the command.");
   };
 
   Pusher.prototype.createAppInBackend = function() {
@@ -71,9 +80,8 @@ module.exports = Pusher = (function() {
           }, _this.token_params),
           method: 'post'
         }, function(err, resp) {
-          console.log('created');
           if (err) {
-            return _this.handleCreationError(error);
+            return reject(err);
           }
           return resolve(resp);
         });
@@ -89,11 +97,16 @@ module.exports = Pusher = (function() {
           qs: _this.token_params,
           method: 'get'
         }, function(err, resp) {
-          var user_info;
+          var e, user_info;
           if (err) {
-            throw Error('Error happened');
+            return reject(err);
           }
-          user_info = JSON.parse(resp.body).user;
+          try {
+            user_info = JSON.parse(resp.body).user;
+          } catch (_error) {
+            e = _error;
+            return Log.error('Backend responded with an error.');
+          }
           if (user_info['github_token']) {
             return resolve(user_info['github_username']);
           } else {
@@ -105,12 +118,10 @@ module.exports = Pusher = (function() {
   };
 
   Pusher.prototype.pushFiles = function(username) {
+    shell.cd(this.target);
     return this.initGit().then((function(_this) {
       return function() {
-        console.log('inited');
-        _this.addRemote(username);
-        console.log('remote added');
-        shell.cd(_this.target);
+        _this.addRemote(username).then(function() {});
         return new Deployer().deploy("" + _this.target + "/**").then(function() {
           return shell.cd('..');
         });
@@ -119,19 +130,26 @@ module.exports = Pusher = (function() {
   };
 
   Pusher.prototype.addRemote = function(username) {
-    var content;
-    content = "[remote \"origin\"]\n        url = git@github.com:" + username + "/" + this.name + ".git\n        fetch = +refs/heads/*:refs/remotes/origin/*";
-    return fs.appendFileSync("" + this.target + "/.git/config", content);
+    return new q((function(_this) {
+      return function(resolve, reject) {
+        var git_url;
+        git_url = "git@github.com:" + username + "/" + _this.name + ".git";
+        return _this.git.exec('remote', ['add', 'origin', git_url], function(err, resp) {
+          if (err) {
+            return reject(err);
+          }
+          return resolve();
+        });
+      };
+    })(this));
   };
 
   Pusher.prototype.initGit = function() {
     return new q((function(_this) {
       return function(resolve, reject) {
-        return git.init({
-          args: "" + _this.target + " --quiet"
-        }, function(err) {
+        return _this.git.exec('init', [_this.target], function(err, resp) {
           if (err) {
-            throw err;
+            return reject(err);
           }
           return resolve();
         });

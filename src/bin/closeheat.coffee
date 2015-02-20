@@ -44,6 +44,8 @@ program
 
     settings.name = name
 
+    Log.logo()
+
     if _.isEmpty(_.omit(settings, 'name'))
       new Creator().createFromPrompt(settings)
     else
@@ -51,6 +53,8 @@ program
 
 program
   .command('server')
+  .alias('s')
+  .description('Runs a server which builds and LiveReloads your app.')
   .option('--ip [ip]', 'IP to run LiveReload on (default - localhost)')
   .option('-p, --port [port]', 'Port to run server on (default - 4000)')
   .action (opts) ->
@@ -63,6 +67,8 @@ program
 
 program
   .command('deploy')
+  .alias('d')
+  .description('Deploys your app to closeheat.com via Github.')
   .action ->
     Log.logo()
 
@@ -70,23 +76,27 @@ program
 
 program
   .command('apps')
+  .description('Shows a list of your deployed apps.')
   .action ->
     new Apps().list()
 
 program
   .command('login [access-token]')
+  .description('Changes the closeheat.com access token on your computer.')
   .action (access_token) ->
     new Authorizer().login(access_token)
 
 program
   .command('clone [app-name]')
+  .description('Clones your apps Github repository.')
   .action (app_name) ->
     new Cloner().clone(app_name)
 
 program
   .command('help')
+  .description('Displays this menu.')
   .action ->
-    Log.logo()
+    Log.logo(0)
     program.help()
 
 program.parse(process.argv)
@@ -95,7 +105,7 @@ unless program.args.length
   if fs.existsSync('index.html') || fs.existsSync('index.jade')
     new Server().start()
   else
-    Log.logo()
+    Log.logo(0)
     program.help()
 
   return

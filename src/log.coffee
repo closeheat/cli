@@ -14,7 +14,7 @@ Color = require './color'
 
 module.exports =
 class Log
-  @logo: ->
+  @logo: (br = 1) ->
     # tube = pictureTube(cols: 5)
     # tube.pipe(process.stdout)
     # logo_path = path.resolve(__dirname, './img/full.png')
@@ -29,7 +29,7 @@ class Log
     blocks = _.map block_colours, (hex) ->
       Couleurs.bg(' ', hex)
     @line blocks.join('') + blocks.reverse().join('')
-    @line()
+    @br(br)
 
   @center: (text) ->
     total = _.min([process.stdout.columns, 80])
