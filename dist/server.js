@@ -1,20 +1,14 @@
-var Color, Log, Server, Watcher, chalk, charge, fs, homePath, path, serve_static, util;
+var Color, Log, Server, Watcher, charge, homePath, path, tinylr;
 
 path = require('path');
 
-serve_static = require('serve-static');
-
 charge = require('charge');
 
-util = require('util');
+homePath = require('home-path');
 
-chalk = require('chalk');
-
-fs = require('fs');
+tinylr = require('tiny-lr');
 
 Watcher = require('./watcher');
-
-homePath = require('home-path');
 
 Log = require('./log');
 
@@ -43,12 +37,16 @@ module.exports = Server = (function() {
     watcher = new Watcher(this.src, this.dist);
     return watcher.build().then((function(_this) {
       return function() {
-        var app, port;
+        var app, lr_port, port;
         app = charge(path.join(_this.dist, 'app'), opts);
         port = opts.port || 9000;
         _this.server = app.start(port);
-        Log.doneLine("Server started at " + Color.violet("http://0.0.0.0:" + port));
-        return watcher.run();
+        lr_port = 35729;
+        return tinylr().listen(lr_port, function() {
+          Log.doneLine("Server started at " + Color.violet("http://0.0.0.0:" + port) + '.');
+          Log.inner("LiveReload up via port " + lr_port + ".");
+          return watcher.run();
+        });
       };
     })(this));
   };

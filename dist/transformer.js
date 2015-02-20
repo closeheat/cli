@@ -1,6 +1,6 @@
-var Preprocessor, Q, Transformer, _;
+var Preprocessor, Promise, Transformer, _;
 
-Q = require('q');
+Promise = require('bluebird');
 
 _ = require('lodash');
 
@@ -13,7 +13,7 @@ module.exports = Transformer = (function() {
   }
 
   Transformer.prototype.transform = function(answers) {
-    return Q.when.apply(Q, this.jobs(answers));
+    return Promise.when([this.jobs(answers)]);
   };
 
   Transformer.prototype.jobs = function(answers) {

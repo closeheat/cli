@@ -1,12 +1,5 @@
-pictureTube = require 'picture-tube'
-path = require 'path'
-fs = require 'fs'
-bar = require('terminal-bar')
-images = require('ascii-images')
-_ = require('lodash')
+_ = require 'lodash'
 chalk = require 'chalk'
-colors = require('ansi-256-colors')
-c256 = require("colors-256")()
 Couleurs = require("couleurs")()
 
 Spinner = require './spinner'
@@ -15,10 +8,6 @@ Color = require './color'
 module.exports =
 class Log
   @logo: (br = 1) ->
-    # tube = pictureTube(cols: 5)
-    # tube.pipe(process.stdout)
-    # logo_path = path.resolve(__dirname, './img/full.png')
-    # fs.createReadStream(logo_path).pipe(tube)
     block_colours = [
       '#FFBB5D'
       '#FF6664'
@@ -63,6 +52,7 @@ class Log
       @spinning = false
 
   @error: (msg) ->
+    @stop()
     @line("#{Color.red('ERROR')} | #{msg}")
 
   @code: (msg) ->

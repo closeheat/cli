@@ -1,16 +1,13 @@
 builder = require 'closeheat-builder'
 chokidar  = require 'chokidar'
 util = require 'util'
-chalk = require 'chalk'
 rimraf = require 'rimraf'
-Requirer = require './requirer'
-fs = require('fs-extra')
 path = require 'path'
 tinylr = require 'tiny-lr'
-gulp = require 'gulp'
-q = require 'bluebird'
-moment = require('moment')
+Promise = require 'bluebird'
+moment = require 'moment'
 
+Requirer = require './requirer'
 Log = require './log'
 Color = require './color'
 
@@ -24,14 +21,11 @@ class Watcher
 
   run: ->
     @watcher
-      .on('error', (err) -> util.puts(err))
+      .on('error', (err) -> Log.error(err))
       .on('all', (e, file) => @build(e, file))
 
-    port = 35729
-    tinylr().listen port, ->
-
   build: (e, file) ->
-    new q (resolve, reject) =>
+    new Promise (resolve, reject) =>
       if file
         relative = path.relative(@src, file)
         Log.inner("#{relative} changed.")

@@ -1,4 +1,4 @@
-var Dirs, Q, fs, homePath, mkdirp, path;
+var Dirs, Promise, fs, homePath, mkdirp, path;
 
 path = require('path');
 
@@ -6,7 +6,7 @@ homePath = require('home-path');
 
 fs = require('fs.extra');
 
-Q = require('q');
+Promise = require('bluebird');
 
 mkdirp = require('mkdirp');
 
@@ -31,27 +31,26 @@ module.exports = Dirs = (function() {
   };
 
   Dirs.prototype.create = function() {
-    var deferred;
-    deferred = Q.defer();
-    mkdirp(this.parts, (function(_this) {
-      return function(parts_error) {
-        return mkdirp(_this.whole, function(whole_error) {
-          return mkdirp(_this.transformed, function(transformed_error) {
-            if (parts_error) {
-              console.log;
-            }
-            if (whole_error) {
-              console.log;
-            }
-            if (transformed_error) {
-              console.log;
-            }
-            return deferred.resolve();
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        return mkdirp(_this.parts, function(parts_error) {
+          return mkdirp(_this.whole, function(whole_error) {
+            return mkdirp(_this.transformed, function(transformed_error) {
+              if (parts_error) {
+                return reject(parts_error);
+              }
+              if (whole_error) {
+                return reject(whole_error);
+              }
+              if (transformed_error) {
+                return reject(transformed_error);
+              }
+              return resolve();
+            });
           });
         });
       };
     })(this));
-    return deferred.promise;
   };
 
   return Dirs;

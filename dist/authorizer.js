@@ -1,8 +1,10 @@
-var Authorizer, fs, homePath;
+var Authorizer, Log, fs, homePath;
 
 fs = require('fs');
 
 homePath = require('home-path');
+
+Log = require('./log');
 
 module.exports = Authorizer = (function() {
   function Authorizer() {}
@@ -13,7 +15,7 @@ module.exports = Authorizer = (function() {
       access_token: access_token
     };
     fs.writeFileSync(this.configFile(), JSON.stringify(config));
-    return console.log("Access token saved.");
+    return Log.doneLine('Access token saved.');
   };
 
   Authorizer.prototype.accessToken = function() {

@@ -1,4 +1,4 @@
-var Color, Creator, Dirs, Log, Prompt, Pusher, Q, TemplateDownloader, Transformer, dirmr, fs, inquirer, _;
+var Color, Creator, Dirs, Log, Promise, Prompt, Pusher, TemplateDownloader, Transformer, dirmr, fs, inquirer, _;
 
 inquirer = require('inquirer');
 
@@ -6,7 +6,7 @@ fs = require('fs.extra');
 
 dirmr = require('dirmr');
 
-Q = require('q');
+Promise = require('bluebird');
 
 _ = require('lodash');
 
@@ -91,18 +91,16 @@ module.exports = Creator = (function() {
   };
 
   Creator.prototype.moveToTarget = function() {
-    var deferred;
-    deferred = Q.defer();
-    dirmr([this.dirs.transformed]).join(this.dirs.target).complete(function(err, result) {
-      if (err) {
-        console.log(err);
-      }
-      if (result) {
-        console.log(result);
-      }
-      return deferred.resolve();
-    });
-    return deferred.promise;
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        return dirmr([_this.dirs.transformed]).join(_this.dirs.target).complete(function(err, result) {
+          if (err) {
+            return reject(err);
+          }
+          return resolve();
+        });
+      };
+    })(this));
   };
 
   return Creator;

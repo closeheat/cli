@@ -1,14 +1,15 @@
-Q = require 'q'
+Promise = require 'bluebird'
 callback = require 'gulp-callback'
-gulp = require('gulp')
+gulp = require 'gulp'
 gutil = require 'gulp-util'
-cssScss = require('gulp-css-scss')
+cssScss = require 'gulp-css-scss'
 path = require 'path'
-js2coffee = require('gulp-js2coffee')
-gulpif = require('gulp-if')
+js2coffee = require 'gulp-js2coffee'
+gulpif = require 'gulp-if'
+html2jade = require 'html2jade'
+through = require 'through2'
 
-html2jade = require('html2jade')
-through = require('through2')
+Log = require './log'
 
 module.exports =
 class Preprocessor
@@ -45,15 +46,12 @@ class Preprocessor
     PREPROCESSORS[tech] || -> callback(-> 'no preprocessor')
 
   exec: (tech) ->
-    deferred = Q.defer()
-
-    gulp
-      .src(path.join(@dirs.whole, "**/*.#{@sourceFor(tech)}"))
-      .pipe(gulpif(@notMinimized, @preprocessorFor(tech)()))
-      .pipe(gulp.dest(@dirs.transformed).on('error', gutil.log))
-      .pipe(callback(-> deferred.resolve()))
-
-    deferred.promise
+    new Promise (resolve, reject) =>
+      gulp
+        .src(path.join(@dirs.whole, "**/*.#{@sourceFor(tech)}"))
+        .pipe(gulpif(@notMinimized, @preprocessorFor(tech)()))
+        .pipe(gulp.dest(@dirs.transformed).on('error', Log.error))
+        .on('end', resolve)
 
   notMinimized: (file) ->
     !file.path.match(/\.min\./)

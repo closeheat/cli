@@ -1,13 +1,6 @@
-gulp = require 'gulp'
-git = require 'gulp-git'
-q = require 'bluebird'
-rp = require 'request-promise'
 request = require 'request'
 _ = require 'lodash'
-util = require('util')
-# Table = require('cli-table')
 table = require('text-table')
-chalk = require 'chalk'
 
 Authorizer = require './authorizer'
 Urls = require './urls'

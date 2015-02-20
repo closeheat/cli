@@ -1,6 +1,6 @@
-var Preprocessor, Q, callback, cssScss, gulp, gulpif, gutil, html2jade, js2coffee, path, through;
+var Log, Preprocessor, Promise, callback, cssScss, gulp, gulpif, gutil, html2jade, js2coffee, path, through;
 
-Q = require('q');
+Promise = require('bluebird');
 
 callback = require('gulp-callback');
 
@@ -19,6 +19,8 @@ gulpif = require('gulp-if');
 html2jade = require('html2jade');
 
 through = require('through2');
+
+Log = require('./log');
 
 module.exports = Preprocessor = (function() {
   function Preprocessor(dirs) {
@@ -77,12 +79,11 @@ module.exports = Preprocessor = (function() {
   };
 
   Preprocessor.prototype.exec = function(tech) {
-    var deferred;
-    deferred = Q.defer();
-    gulp.src(path.join(this.dirs.whole, "**/*." + (this.sourceFor(tech)))).pipe(gulpif(this.notMinimized, this.preprocessorFor(tech)())).pipe(gulp.dest(this.dirs.transformed).on('error', gutil.log)).pipe(callback(function() {
-      return deferred.resolve();
-    }));
-    return deferred.promise;
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        return gulp.src(path.join(_this.dirs.whole, "**/*." + (_this.sourceFor(tech)))).pipe(gulpif(_this.notMinimized, _this.preprocessorFor(tech)())).pipe(gulp.dest(_this.dirs.transformed).on('error', Log.error)).on('end', resolve);
+      };
+    })(this));
   };
 
   Preprocessor.prototype.notMinimized = function(file) {

@@ -1,16 +1,6 @@
-var Color, Deployer, Git, Log, Q, callback, git, gulp, gutil, q;
+var Color, Deployer, Git, Log, Promise;
 
-gulp = require('gulp');
-
-git = require('gulp-git');
-
-Q = require('q');
-
-q = require('bluebird');
-
-callback = require('gulp-callback');
-
-gutil = require('gulp-util');
+Promise = require('bluebird');
 
 Git = require('git-wrapper');
 
@@ -47,7 +37,7 @@ module.exports = Deployer = (function() {
   };
 
   Deployer.prototype.addEverything = function() {
-    return new q((function(_this) {
+    return new Promise((function(_this) {
       return function(resolve, reject) {
         return _this.git.exec('add', ['.'], function(err, resp) {
           if (err) {
@@ -60,7 +50,7 @@ module.exports = Deployer = (function() {
   };
 
   Deployer.prototype.commit = function(msg) {
-    return new q((function(_this) {
+    return new Promise((function(_this) {
       return function(resolve, reject) {
         return _this.git.exec('commit', {
           m: true
@@ -75,7 +65,7 @@ module.exports = Deployer = (function() {
   };
 
   Deployer.prototype.pushToMainBranch = function() {
-    return new q((function(_this) {
+    return new Promise((function(_this) {
       return function(resolve, reject) {
         return _this.getMainBranch().then(function(main_branch) {
           return _this.push(main_branch).then(function() {
@@ -87,13 +77,13 @@ module.exports = Deployer = (function() {
   };
 
   Deployer.prototype.getMainBranch = function() {
-    return new q(function(resolve, reject) {
+    return new Promise(function(resolve, reject) {
       return resolve('master');
     });
   };
 
   Deployer.prototype.push = function(branch) {
-    return new q((function(_this) {
+    return new Promise((function(_this) {
       return function(resolve, reject) {
         return _this.git.exec('push', ['origin', branch], function(err, msg) {
           if (err) {
@@ -106,7 +96,7 @@ module.exports = Deployer = (function() {
   };
 
   Deployer.prototype.deployLog = function() {
-    return new q(function(resolve, reject) {
+    return new Promise(function(resolve, reject) {
       Log.br();
       Log.backend('Downloading the Github repo.');
       Log.backend('Building app.');

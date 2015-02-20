@@ -1,12 +1,9 @@
 path = require 'path'
-serve_static = require 'serve-static'
 charge = require 'charge'
-util = require 'util'
-chalk = require 'chalk'
-fs = require 'fs'
-Watcher = require './watcher'
 homePath = require('home-path')
+tinylr = require 'tiny-lr'
 
+Watcher = require './watcher'
 Log = require './log'
 Color = require './color'
 
@@ -36,6 +33,10 @@ class Server
 
       port = opts.port || 9000
       @server = app.start(port)
-      Log.doneLine("Server started at " + Color.violet("http://0.0.0.0:#{port}"))
 
-      watcher.run()
+      lr_port = 35729
+      tinylr().listen lr_port, ->
+        Log.doneLine("Server started at " + Color.violet("http://0.0.0.0:#{port}") + '.')
+        Log.inner "LiveReload up via port #{lr_port}."
+
+        watcher.run()

@@ -1,4 +1,4 @@
-var Color, Log, Requirer, Watcher, builder, chalk, chokidar, fs, gulp, moment, path, q, rimraf, tinylr, util;
+var Color, Log, Promise, Requirer, Watcher, builder, chokidar, moment, path, rimraf, tinylr, util;
 
 builder = require('closeheat-builder');
 
@@ -6,23 +6,17 @@ chokidar = require('chokidar');
 
 util = require('util');
 
-chalk = require('chalk');
-
 rimraf = require('rimraf');
-
-Requirer = require('./requirer');
-
-fs = require('fs-extra');
 
 path = require('path');
 
 tinylr = require('tiny-lr');
 
-gulp = require('gulp');
-
-q = require('bluebird');
+Promise = require('bluebird');
 
 moment = require('moment');
+
+Requirer = require('./requirer');
 
 Log = require('./log');
 
@@ -39,20 +33,17 @@ module.exports = Watcher = (function() {
   }
 
   Watcher.prototype.run = function() {
-    var port;
-    this.watcher.on('error', function(err) {
-      return util.puts(err);
+    return this.watcher.on('error', function(err) {
+      return Log.error(err);
     }).on('all', (function(_this) {
       return function(e, file) {
         return _this.build(e, file);
       };
     })(this));
-    port = 35729;
-    return tinylr().listen(port, function() {});
   };
 
   Watcher.prototype.build = function(e, file) {
-    return new q((function(_this) {
+    return new Promise((function(_this) {
       return function(resolve, reject) {
         var relative;
         if (file) {

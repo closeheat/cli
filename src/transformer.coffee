@@ -1,4 +1,4 @@
-Q = require 'q'
+Promise = require 'bluebird'
 _ = require 'lodash'
 Preprocessor = require './preprocessor'
 
@@ -8,7 +8,7 @@ class Transformer
     @preprocessor = new Preprocessor(@dirs)
 
   transform: (answers) ->
-    Q.when(@jobs(answers)...)
+    Promise.when([@jobs(answers)])
 
   jobs: (answers) ->
     result = []

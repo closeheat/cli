@@ -1,9 +1,9 @@
-var Color, Log, NPM, NpmDownloader, fs, path, q, _,
+var Color, Log, NPM, NpmDownloader, Promise, fs, path, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 fs = require('fs');
 
-q = require('bluebird');
+Promise = require('bluebird');
 
 _ = require('lodash');
 
@@ -24,12 +24,12 @@ module.exports = NpmDownloader = (function() {
   }
 
   NpmDownloader.prototype.downloadAll = function() {
-    return new q((function(_this) {
+    return new Promise((function(_this) {
       return function(resolve, reject) {
         if (_.isEmpty(_this.missing())) {
           resolve();
         }
-        return q.each(_this.missing(), function(module) {
+        return Promise.each(_this.missing(), function(module) {
           return _this.download(module);
         }).then(function() {
           return resolve();
@@ -47,7 +47,7 @@ module.exports = NpmDownloader = (function() {
   };
 
   NpmDownloader.prototype.download = function(module) {
-    return new q((function(_this) {
+    return new Promise((function(_this) {
       return function(resolve, reject) {
         Log.spin("New require detected. Installing " + (Color.orange(module)) + ".");
         return NPM.installPackage({

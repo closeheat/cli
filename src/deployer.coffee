@@ -1,9 +1,4 @@
-gulp = require 'gulp'
-git = require 'gulp-git'
-Q = require 'q'
-q = require('bluebird')
-callback = require 'gulp-callback'
-gutil = require 'gulp-util'
+Promise = require 'bluebird'
 Git = require 'git-wrapper'
 
 Log = require './log'
@@ -32,38 +27,38 @@ class Deployer
       Log.error(err)
 
   addEverything: ->
-    new q (resolve, reject) =>
+    new Promise (resolve, reject) =>
       @git.exec 'add', ['.'], (err, resp) ->
         return reject(err) if err
 
         resolve()
 
   commit: (msg) ->
-    new q (resolve, reject) =>
+    new Promise (resolve, reject) =>
       @git.exec 'commit', m: true, ["'#{msg}'"], (err, resp) ->
         return reject(err) if err
 
         resolve()
 
   pushToMainBranch: ->
-    new q (resolve, reject) =>
+    new Promise (resolve, reject) =>
       @getMainBranch().then (main_branch) =>
         @push(main_branch).then ->
           resolve(main_branch)
 
   getMainBranch: ->
-    new q (resolve, reject) ->
+    new Promise (resolve, reject) ->
       resolve('master')
 
   push: (branch) ->
-    new q (resolve, reject) =>
+    new Promise (resolve, reject) =>
       @git.exec 'push', ['origin', branch], (err, msg) ->
         return reject(err) if err
 
         resolve()
 
   deployLog: ->
-    new q (resolve, reject) ->
+    new Promise (resolve, reject) ->
       Log.br()
       Log.backend('Downloading the Github repo.')
       Log.backend('Building app.')

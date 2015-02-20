@@ -1,31 +1,5 @@
-var Bundler, Color, Log, NpmDownloader, RequireScanner, Requirer, callback, coffee, fs, gulp, gutil, htmlparser, npmi, path, through, util, _,
+var Bundler, NpmDownloader, RequireScanner, Requirer,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-
-fs = require('fs');
-
-through = require('through2');
-
-path = require('path');
-
-gulp = require('gulp');
-
-gutil = require('gutil');
-
-util = require('util');
-
-coffee = require('gulp-coffee');
-
-_ = require('lodash');
-
-callback = require('gulp-callback');
-
-npmi = require('npmi');
-
-htmlparser = require("htmlparser2");
-
-Log = require('./log');
-
-Color = require('./color');
 
 NpmDownloader = require('./npm_downloader');
 

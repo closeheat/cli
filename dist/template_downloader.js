@@ -1,9 +1,9 @@
-var Q, TemplateDownloader, dirmr, ghdownload, path, _,
+var Promise, TemplateDownloader, dirmr, ghdownload, path, _,
   __slice = [].slice;
 
 _ = require('lodash');
 
-Q = require('q');
+Promise = require('bluebird');
 
 path = require('path');
 
@@ -28,18 +28,15 @@ module.exports = TemplateDownloader = (function() {
   };
 
   TemplateDownloader.prototype.downloadFromGithub = function(template) {
-    var deferred;
-    deferred = Q.defer();
-    ghdownload({
-      user: 'closeheat',
-      repo: "template-" + template,
-      ref: 'master'
-    }, this.templateDir(template)).on('error', function(err) {
-      return console.log('ERROR: ', err);
-    }).on('end', function() {
-      return deferred.resolve();
-    });
-    return deferred.promise;
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        return ghdownload({
+          user: 'closeheat',
+          repo: "template-" + template,
+          ref: 'master'
+        }, _this.templateDir(template)).on('error', reject).on('end', resolve);
+      };
+    })(this));
   };
 
   TemplateDownloader.prototype.templateDir = function(template) {
@@ -55,18 +52,19 @@ module.exports = TemplateDownloader = (function() {
   };
 
   TemplateDownloader.prototype.joinDirs = function() {
-    var deferred;
-    deferred = Q.defer();
-    dirmr(this.templateDirs()).join(this.dirs.whole).complete(function(err, result) {
-      if (err) {
-        console.log('ERROR: ', err);
-      }
-      if (result) {
-        console.log('ERROR: ', result);
-      }
-      return deferred.resolve();
-    });
-    return deferred.promise;
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        return dirmr(_this.templateDirs()).join(_this.dirs.whole).complete(function(err, result) {
+          if (err) {
+            return reject(err);
+          }
+          if (result) {
+            return reject(result);
+          }
+          return resolve();
+        });
+      };
+    })(this));
   };
 
   return TemplateDownloader;

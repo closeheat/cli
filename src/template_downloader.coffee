@@ -1,5 +1,5 @@
 _ = require 'lodash'
-Q = require 'q'
+Promise = require 'bluebird'
 path = require 'path'
 ghdownload = require('github-download')
 dirmr = require('dirmr')
@@ -18,20 +18,15 @@ class TemplateDownloader
 #       @downloadFromGithub(template)
 
   downloadFromGithub: (template) ->
-    deferred = Q.defer()
-
-    ghdownload(
-      user: 'closeheat',
-      repo: "template-#{template}",
-      ref: 'master',
-      @templateDir(template)
-    )
-    .on 'error', (err) ->
-      console.log('ERROR: ', err)
-    .on 'end', ->
-      deferred.resolve()
-
-    deferred.promise
+    new Promise (resolve, reject) =>
+      ghdownload(
+        user: 'closeheat',
+        repo: "template-#{template}",
+        ref: 'master',
+        @templateDir(template)
+      )
+      .on('error', reject)
+      .on('end', resolve)
 
   templateDir: (template) ->
     path.join(@dirs.parts, template)
@@ -41,12 +36,9 @@ class TemplateDownloader
       @templateDir(template)
 
   joinDirs: ->
-    deferred = Q.defer()
+    new Promise (resolve, reject) =>
+      dirmr(@templateDirs()).join(@dirs.whole).complete (err, result) ->
+        return reject(err) if err
+        return reject(result) if result
 
-    dirmr(@templateDirs()).join(@dirs.whole).complete (err, result) ->
-      console.log('ERROR: ', err) if err
-      console.log('ERROR: ', result) if result
-
-      deferred.resolve()
-
-    deferred.promise
+        resolve()

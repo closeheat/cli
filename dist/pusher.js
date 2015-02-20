@@ -1,15 +1,11 @@
-var Authorizer, Color, Deployer, Git, Log, Pusher, Urls, fs, git, q, request, shell, _,
+var Authorizer, Color, Deployer, Git, Log, Promise, Pusher, Urls, request, shell, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 request = require('request');
 
 _ = require('lodash');
 
-q = require('bluebird');
-
-git = require('gulp-git');
-
-fs = require('fs-extra');
+Promise = require('bluebird');
 
 shell = require('shelljs');
 
@@ -65,7 +61,7 @@ module.exports = Pusher = (function() {
   };
 
   Pusher.prototype.createAppInBackend = function() {
-    return new q((function(_this) {
+    return new Promise((function(_this) {
       return function(resolve, reject) {
         return request({
           url: Urls.createApp(),
@@ -84,7 +80,7 @@ module.exports = Pusher = (function() {
   };
 
   Pusher.prototype.getGithubUsername = function() {
-    return new q((function(_this) {
+    return new Promise((function(_this) {
       return function(resolve, reject) {
         return request({
           url: Urls.currentUserInfo(),
@@ -124,7 +120,7 @@ module.exports = Pusher = (function() {
   };
 
   Pusher.prototype.addRemote = function(username) {
-    return new q((function(_this) {
+    return new Promise((function(_this) {
       return function(resolve, reject) {
         var git_url;
         git_url = "git@github.com:" + username + "/" + _this.name + ".git";
@@ -139,7 +135,7 @@ module.exports = Pusher = (function() {
   };
 
   Pusher.prototype.initGit = function() {
-    return new q((function(_this) {
+    return new Promise((function(_this) {
       return function(resolve, reject) {
         return _this.git.exec('init', [_this.target], function(err, resp) {
           if (err) {

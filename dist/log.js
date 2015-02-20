@@ -1,22 +1,8 @@
-var Color, Couleurs, Log, Spinner, bar, c256, chalk, colors, fs, images, path, pictureTube, _;
-
-pictureTube = require('picture-tube');
-
-path = require('path');
-
-fs = require('fs');
-
-bar = require('terminal-bar');
-
-images = require('ascii-images');
+var Color, Couleurs, Log, Spinner, chalk, _;
 
 _ = require('lodash');
 
 chalk = require('chalk');
-
-colors = require('ansi-256-colors');
-
-c256 = require("colors-256")();
 
 Couleurs = require("couleurs")();
 
@@ -93,6 +79,7 @@ module.exports = Log = (function() {
   };
 
   Log.error = function(msg) {
+    this.stop();
     return this.line("" + (Color.red('ERROR')) + " | " + msg);
   };
 

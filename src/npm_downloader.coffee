@@ -1,8 +1,9 @@
 fs = require 'fs'
-q = require 'bluebird'
+Promise = require 'bluebird'
 _ = require 'lodash'
 path = require 'path'
-NPM = require('machinepack-npm')
+NPM = require 'machinepack-npm'
+
 Log = require './log'
 Color = require './color'
 
@@ -11,11 +12,11 @@ class NpmDownloader
   constructor: (@dist, @modules) ->
 
   downloadAll: =>
-    new q (resolve, reject) =>
+    new Promise (resolve, reject) =>
       if _.isEmpty(@missing())
         resolve()
 
-      q.each(@missing(), (module) =>
+      Promise.each(@missing(), (module) =>
         @download(module)
       ).then ->
         resolve()
@@ -25,7 +26,7 @@ class NpmDownloader
       fs.existsSync(path.join(@dist, 'node_modules', module))
 
   download: (module) ->
-    new q (resolve, reject) =>
+    new Promise (resolve, reject) =>
       Log.spin("New require detected. Installing #{Color.orange(module)}.")
       NPM.installPackage({
         name: module

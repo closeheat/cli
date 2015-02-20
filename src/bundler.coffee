@@ -1,5 +1,5 @@
 fs = require 'fs'
-q = require 'bluebird'
+Promise = require 'bluebird'
 _ = require 'lodash'
 path = require 'path'
 gulpFilter = require('gulp-filter')
@@ -9,7 +9,6 @@ source = require('vinyl-source-stream')
 buffer = require('vinyl-buffer')
 sourcemaps = require('gulp-sourcemaps')
 gulp = require 'gulp'
-gutil = require 'gutil'
 
 Log = require './log'
 Color = require './color'
@@ -19,11 +18,11 @@ class Bundler
   constructor: (@dist_app) ->
 
   bundle: ->
-    new q (resolve, reject) =>
+    new Promise (resolve, reject) =>
       gulp
         .src(path.join(@dist_app, '**/*.js'))
         .pipe(@minFilter())
-        .pipe(@exec(resolve, reject).on('error', gutil.log))
+        .pipe(@exec(resolve, reject).on('error', reject))
 
   minFilter: ->
     gulpFilter (file) ->

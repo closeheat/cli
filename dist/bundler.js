@@ -1,8 +1,8 @@
-var Bundler, Color, Log, browserify, buffer, fs, gulp, gulpFilter, gutil, path, q, source, sourcemaps, through, _;
+var Bundler, Color, Log, Promise, browserify, buffer, fs, gulp, gulpFilter, path, source, sourcemaps, through, _;
 
 fs = require('fs');
 
-q = require('bluebird');
+Promise = require('bluebird');
 
 _ = require('lodash');
 
@@ -22,8 +22,6 @@ sourcemaps = require('gulp-sourcemaps');
 
 gulp = require('gulp');
 
-gutil = require('gutil');
-
 Log = require('./log');
 
 Color = require('./color');
@@ -34,9 +32,9 @@ module.exports = Bundler = (function() {
   }
 
   Bundler.prototype.bundle = function() {
-    return new q((function(_this) {
+    return new Promise((function(_this) {
       return function(resolve, reject) {
-        return gulp.src(path.join(_this.dist_app, '**/*.js')).pipe(_this.minFilter()).pipe(_this.exec(resolve, reject).on('error', gutil.log));
+        return gulp.src(path.join(_this.dist_app, '**/*.js')).pipe(_this.minFilter()).pipe(_this.exec(resolve, reject).on('error', reject));
       };
     })(this));
   };

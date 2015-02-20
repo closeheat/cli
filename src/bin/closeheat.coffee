@@ -1,8 +1,7 @@
 program = require 'commander'
 _ = require 'lodash'
-fs = require 'fs.extra'
+fs = require 'fs'
 path = require 'path'
-images = require('ascii-images')
 
 Creator = require '../creator'
 Server = require '../server'
@@ -59,11 +58,6 @@ program
   .option('-p, --port [port]', 'Port to run server on (default - 4000)')
   .action (opts) ->
     new Server().start(opts)
-
-program
-  .command('init')
-  .action ->
-    new Initializer().init()
 
 program
   .command('deploy')

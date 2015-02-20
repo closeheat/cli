@@ -1,9 +1,7 @@
 request = require 'request'
 _ = require 'lodash'
-q = require 'bluebird'
-git = require 'gulp-git'
-fs = require('fs-extra')
-shell = require('shelljs')
+Promise = require 'bluebird'
+shell = require 'shelljs'
 Git = require 'git-wrapper'
 
 Authorizer = require './authorizer'
@@ -47,14 +45,14 @@ class Pusher
     Log.p "Visit #{Urls.authorizeGithub()} and rerun the command."
 
   createAppInBackend: =>
-    new q (resolve, reject) =>
+    new Promise (resolve, reject) =>
       request { url: Urls.createApp(), qs: _.merge(repo_name: @name, @token_params), method: 'post' }, (err, resp) =>
         return reject(err) if err
 
         resolve(resp)
 
   getGithubUsername: ->
-    new q (resolve, reject) =>
+    new Promise (resolve, reject) =>
       request url: Urls.currentUserInfo(), qs: @token_params, method: 'get', (err, resp) =>
         return reject(err) if err
 
@@ -72,13 +70,13 @@ class Pusher
     shell.cd(@target)
 
     @initGit().then =>
-      @addRemote(username).then =>
+      @addRemote(username).then ->
 
       new Deployer().deploy().then ->
         shell.cd('..')
 
   addRemote: (username) =>
-    new q (resolve, reject) =>
+    new Promise (resolve, reject) =>
       git_url = "git@github.com:#{username}/#{@name}.git"
 
       @git.exec 'remote', ['add', 'origin', git_url], (err, resp) ->
@@ -87,7 +85,7 @@ class Pusher
         resolve()
 
   initGit: =>
-    new q (resolve, reject) =>
+    new Promise (resolve, reject) =>
       @git.exec 'init', [@target], (err, resp) ->
         return reject(err) if err
 

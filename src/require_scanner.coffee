@@ -1,15 +1,9 @@
-fs = require 'fs'
 Promise = require 'bluebird'
 _ = require 'lodash'
 path = require 'path'
-gulpFilter = require('gulp-filter')
-through = require('through2')
+through = require 'through2'
 browserify = require 'browserify'
-source = require('vinyl-source-stream')
-buffer = require('vinyl-buffer')
-sourcemaps = require('gulp-sourcemaps')
 gulp = require 'gulp'
-gutil = require 'gutil'
 acorn = require 'acorn'
 
 Log = require './log'

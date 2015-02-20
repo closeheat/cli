@@ -1,7 +1,7 @@
-inquirer = require('inquirer')
-fs = require('fs.extra')
-dirmr = require('dirmr')
-Q = require 'q'
+inquirer = require 'inquirer'
+fs = require 'fs.extra'
+dirmr = require 'dirmr'
+Promise = require 'bluebird'
 _ = require 'lodash'
 
 Prompt = require './prompt'
@@ -71,12 +71,8 @@ class Creator
                 ]
 
   moveToTarget: ->
-    deferred = Q.defer()
+    new Promise (resolve, reject) =>
+      dirmr([@dirs.transformed]).join(@dirs.target).complete (err, result) ->
+        return reject(err) if err
 
-    dirmr([@dirs.transformed]).join(@dirs.target).complete (err, result) ->
-      console.log err if err
-      console.log result if result
-
-      deferred.resolve()
-
-    deferred.promise
+        resolve()

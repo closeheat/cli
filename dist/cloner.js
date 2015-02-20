@@ -1,20 +1,10 @@
-var Authorizer, Cloner, Log, Q, Urls, callback, git, gulp, gutil, q, request, util;
+var Authorizer, Cloner, Git, Log, Promise, Urls, request;
 
-gulp = require('gulp');
-
-git = require('gulp-git');
-
-Q = require('q');
-
-q = require('bluebird');
-
-callback = require('gulp-callback');
-
-gutil = require('gulp-util');
+Promise = require('bluebird');
 
 request = require('request');
 
-util = require('util');
+Git = require('git-wrapper');
 
 Authorizer = require('./authorizer');
 
@@ -46,7 +36,9 @@ module.exports = Cloner = (function() {
           return Log.secondaryCode('closeheat help');
         });
       };
-    })(this));
+    })(this))["catch"](function(err) {
+      return Log.error(err);
+    });
   };
 
   Cloner.prototype.getAppData = function(app_name) {
@@ -55,37 +47,37 @@ module.exports = Cloner = (function() {
     params = {
       api_token: authorizer.accessToken()
     };
-    return new q(function(resolve, reject) {
+    return new Promise(function(resolve, reject) {
       return request({
         url: Urls.appData(app_name),
         qs: params,
         method: 'get'
       }, function(err, resp) {
-        var app;
-        app = JSON.parse(resp.body).app;
+        var app, e;
+        if (err) {
+          return reject(err);
+        }
+        try {
+          app = JSON.parse(resp.body).app;
+        } catch (_error) {
+          e = _error;
+          return reject("App named '" + app_name + "' does not exist or the server is down.");
+        }
         return resolve(app);
       });
     });
   };
 
   Cloner.prototype.execCloning = function(github_repo, branch, app_name) {
-    return new q(function(resolve, reject) {
-      return git.clone("git@github.com:" + github_repo + ".git", {
-        args: "" + app_name,
-        quiet: true
-      }, function(err) {
+    this.git = new Git();
+    return new Promise(function(resolve, reject) {
+      return new Git().exec('clone', ["git@github.com:" + github_repo + ".git", app_name], function(err, resp) {
         if (err) {
-          throw err;
+          return reject(err);
         }
         return resolve();
       });
     });
-  };
-
-  Cloner.prototype.showDeployLog = function() {
-    console.log('Deploying to closeheat.');
-    console.log('............ SOME LOG HERE ..........');
-    return console.log('Should be done.');
   };
 
   return Cloner;

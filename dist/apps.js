@@ -1,22 +1,10 @@
-var Apps, Authorizer, Color, Log, Urls, chalk, git, gulp, q, request, rp, table, util, _;
-
-gulp = require('gulp');
-
-git = require('gulp-git');
-
-q = require('bluebird');
-
-rp = require('request-promise');
+var Apps, Authorizer, Color, Log, Urls, request, table, _;
 
 request = require('request');
 
 _ = require('lodash');
 
-util = require('util');
-
 table = require('text-table');
-
-chalk = require('chalk');
 
 Authorizer = require('./authorizer');
 

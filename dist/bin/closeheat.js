@@ -1,16 +1,14 @@
 #!/usr/bin/env node
 
-var Apps, Authorizer, Cloner, Creator, Deployer, Initializer, Log, Server, fs, images, logo_path, path, program, tube, _;
+var Apps, Authorizer, Cloner, Creator, Deployer, Initializer, Log, Server, fs, logo_path, path, program, tube, _;
 
 program = require('commander');
 
 _ = require('lodash');
 
-fs = require('fs.extra');
+fs = require('fs');
 
 path = require('path');
-
-images = require('ascii-images');
 
 Creator = require('../creator');
 
@@ -44,10 +42,6 @@ program.command('create [app-name]').alias('c').description('Creates a new app w
 
 program.command('server').alias('s').description('Runs a server which builds and LiveReloads your app.').option('--ip [ip]', 'IP to run LiveReload on (default - localhost)').option('-p, --port [port]', 'Port to run server on (default - 4000)').action(function(opts) {
   return new Server().start(opts);
-});
-
-program.command('init').action(function() {
-  return new Initializer().init();
 });
 
 program.command('deploy').alias('d').description('Deploys your app to closeheat.com via Github.').action(function() {
