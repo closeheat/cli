@@ -12,8 +12,7 @@ module.exports = Urls = (function() {
   };
 
   Urls.api = function() {
-    'http://api.closeheat.com';
-    return 'http://10.30.0.1:4000/api';
+    return 'http://api.closeheat.com';
   };
 
   Urls.appsIndex = function() {

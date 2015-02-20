@@ -1,3 +1,5 @@
+Log = require './log'
+
 module.exports =
 Spinner = do ->
   util = require('util')
@@ -17,21 +19,21 @@ Spinner = do ->
     single_spin_ms = 150
     index = 0
 
-    util.print("#{sequence[index]} #{msg}")
+    process.stdout.write("#{sequence[index]} #{msg}")
 
     timer = setInterval((->
-      util.print sequence[index].replace(/./g, "\r")
+      process.stdout.write sequence[index].replace(/./g, "\r")
       index = if index < sequence.length - 1 then index + 1 else 0
-      util.print sequence[index]
+      process.stdout.write sequence[index]
     ), single_spin_ms)
 
   stop = ->
     clearInterval timer
 
     # remove spinner
-    util.print sequence[index].replace(/./g, "\r")
+    process.stdout.write sequence[index].replace(/./g, "\r")
     # add a colored dash
-    util.puts chalk.blue('-')
+    console.log chalk.blue('-')
 
   {
     start: start
