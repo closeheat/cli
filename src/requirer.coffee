@@ -23,7 +23,7 @@ class Requirer
     @bundler = new Bundler(@dist_app)
     @require_scanner = new RequireScanner(@dist_app)
 
-  install: ->
+  install: =>
     @require_scanner.getRequires().then (modules) =>
       new NpmDownloader(@dist, modules).downloadAll().then =>
         @bundler.bundle()

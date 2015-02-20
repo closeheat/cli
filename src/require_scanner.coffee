@@ -1,5 +1,5 @@
 fs = require 'fs'
-q = require 'bluebird'
+Promise = require 'bluebird'
 _ = require 'lodash'
 path = require 'path'
 gulpFilter = require('gulp-filter')
@@ -24,34 +24,37 @@ class RequireScanner
     @modules.push(module)
 
   getRequires: ->
-    new q (resolve, reject) =>
+    new Promise (resolve, reject) =>
       gulp
         .src(path.join(@dist_app, '**/*.js'))
-        .pipe(@scan(resolve, reject).on('error', gutil.log))
-        .on('end', -> console.log 'scanned')
+        .pipe(@scan(resolve, reject).on('error', reject))
 
   finish: (resolve, _done) =>
     resolve(@modules)
 
   scan: (resolve, reject) ->
     through.obj((file, enc, cb) =>
-      if (file.isNull())
-        cb(null, file)
-        return
+      try
+        if (file.isNull())
+          cb(null, file)
+          return
 
-      ast = acorn.parse(file.contents.toString())
-      walk = require('acorn/util/walk')
-      walkall = require('walkall')
+        ast = acorn.parse(file.contents.toString())
+        walk = require('acorn/util/walk')
+        walkall = require('walkall')
 
-      walk.simple(ast, walkall.makeVisitors((node) =>
-        return unless node.type == 'CallExpression'
-        return unless node.callee.name == 'require'
+        walk.simple(ast, walkall.makeVisitors((node) =>
+          return unless node.type == 'CallExpression'
+          return unless node.callee.name == 'require'
 
-        module_name = node.arguments[0].value
-        return unless module_name.match(/^[a-zA-Z]/)
+          module_name = node.arguments[0].value
+          return unless module_name.match(/^[a-zA-Z]/)
 
-        @register(module_name)
-      ), walkall.traversers)
+          @register(module_name)
+        ), walkall.traversers)
 
-      cb()
+        cb()
+
+      catch e
+        reject(e.stack)
     , _.partial(@finish, resolve))

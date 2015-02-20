@@ -48,5 +48,6 @@ class Watcher
           Log.inner("#{Color.violet(moment().format('hh:mm:ss'))} | App built.")
           Log.br()
 
-      ).fail (err) ->
-        console.log err
+      ).catch (err) ->
+        Log.error('Could not compile')
+        Log.error(err)

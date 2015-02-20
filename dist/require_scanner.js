@@ -1,9 +1,9 @@
-var Color, Log, RequireScanner, acorn, browserify, buffer, fs, gulp, gulpFilter, gutil, path, q, source, sourcemaps, through, _,
+var Color, Log, Promise, RequireScanner, acorn, browserify, buffer, fs, gulp, gulpFilter, gutil, path, source, sourcemaps, through, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 fs = require('fs');
 
-q = require('bluebird');
+Promise = require('bluebird');
 
 _ = require('lodash');
 
@@ -43,11 +43,9 @@ module.exports = RequireScanner = (function() {
   };
 
   RequireScanner.prototype.getRequires = function() {
-    return new q((function(_this) {
+    return new Promise((function(_this) {
       return function(resolve, reject) {
-        return gulp.src(path.join(_this.dist_app, '**/*.js')).pipe(_this.scan(resolve, reject).on('error', gutil.log)).on('end', function() {
-          return console.log('scanned');
-        });
+        return gulp.src(path.join(_this.dist_app, '**/*.js')).pipe(_this.scan(resolve, reject).on('error', reject));
       };
     })(this));
   };
@@ -59,29 +57,34 @@ module.exports = RequireScanner = (function() {
   RequireScanner.prototype.scan = function(resolve, reject) {
     return through.obj((function(_this) {
       return function(file, enc, cb) {
-        var ast, walk, walkall;
-        if (file.isNull()) {
-          cb(null, file);
-          return;
+        var ast, e, walk, walkall;
+        try {
+          if (file.isNull()) {
+            cb(null, file);
+            return;
+          }
+          ast = acorn.parse(file.contents.toString());
+          walk = require('acorn/util/walk');
+          walkall = require('walkall');
+          walk.simple(ast, walkall.makeVisitors(function(node) {
+            var module_name;
+            if (node.type !== 'CallExpression') {
+              return;
+            }
+            if (node.callee.name !== 'require') {
+              return;
+            }
+            module_name = node["arguments"][0].value;
+            if (!module_name.match(/^[a-zA-Z]/)) {
+              return;
+            }
+            return _this.register(module_name);
+          }), walkall.traversers);
+          return cb();
+        } catch (_error) {
+          e = _error;
+          return reject(e.stack);
         }
-        ast = acorn.parse(file.contents.toString());
-        walk = require('acorn/util/walk');
-        walkall = require('walkall');
-        walk.simple(ast, walkall.makeVisitors(function(node) {
-          var module_name;
-          if (node.type !== 'CallExpression') {
-            return;
-          }
-          if (node.callee.name !== 'require') {
-            return;
-          }
-          module_name = node["arguments"][0].value;
-          if (!module_name.match(/^[a-zA-Z]/)) {
-            return;
-          }
-          return _this.register(module_name);
-        }), walkall.traversers);
-        return cb();
       };
     })(this), _.partial(this.finish, resolve));
   };

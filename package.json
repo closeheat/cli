@@ -1,6 +1,6 @@
 {
   "name": "closeheat",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "author": "Domas Bitvinskas <domas.bitvinskas@me.com>",
   "contributors": [
     "Justas Palumickas <jpalumickas@gmail.com>"
@@ -25,7 +25,7 @@
     "charge": "0.0.3",
     "chokidar": "^1.0.0-rc3",
     "cli-table": "^0.3.1",
-    "closeheat-builder": "0.0.2",
+    "closeheat-builder": "0.0.7",
     "colors-256": "^1.0.0",
     "commander": "^2.6.0",
     "couleurs": "^3.0.0",
@@ -82,7 +82,7 @@
     "transfer-github": "^0.2.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.0.0",
-    "walkall": "0.0.3"
+    "walkall": "git://github.com/sourcegraph/acorn-walkall.git#e1ee7e478a5d916e43771f01c72049630ef83a2f"
   },
   "keywords": [
     "closeheat",

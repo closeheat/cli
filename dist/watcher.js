@@ -70,8 +70,9 @@ module.exports = Watcher = (function() {
             Log.inner("" + (Color.violet(moment().format('hh:mm:ss'))) + " | App built.");
             return Log.br();
           });
-        }).fail(function(err) {
-          return console.log(err);
+        })["catch"](function(err) {
+          Log.error('Could not compile');
+          return Log.error(err);
         });
       };
     })(this));

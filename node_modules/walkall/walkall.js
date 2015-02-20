@@ -46,6 +46,7 @@ var types = exports.types = [
   'VariableDeclarator',
   'WhileStatement',
   'WithStatement',
+  'Property'
 ];
 
 // makeVisitors returns an object with a property keyed on each AST node type whose value is c.

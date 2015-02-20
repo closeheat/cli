@@ -1,4 +1,5 @@
-var Bundler, Color, Log, NpmDownloader, RequireScanner, Requirer, callback, coffee, fs, gulp, gutil, htmlparser, npmi, path, through, util, _;
+var Bundler, Color, Log, NpmDownloader, RequireScanner, Requirer, callback, coffee, fs, gulp, gutil, htmlparser, npmi, path, through, util, _,
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 fs = require('fs');
 
@@ -36,6 +37,7 @@ module.exports = Requirer = (function() {
   function Requirer(dist, dist_app) {
     this.dist = dist;
     this.dist_app = dist_app;
+    this.install = __bind(this.install, this);
     this.bundler = new Bundler(this.dist_app);
     this.require_scanner = new RequireScanner(this.dist_app);
   }
