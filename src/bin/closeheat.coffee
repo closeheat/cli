@@ -75,10 +75,12 @@ program
     new Apps().list()
 
 program
-  .command('login [access-token]')
+  .command('login')
+  .option('-t, --token [access-token]', 'Access token from closeheat.com.')
   .description('Changes the closeheat.com access token on your computer.')
-  .action (access_token) ->
-    new Authorizer().login(access_token)
+  .action (opts) ->
+    if opts.token
+      new Authorizer().saveToken(opts.token)
 
 program
   .command('clone [app-name]')

@@ -22,5 +22,8 @@ class Urls
   @currentUserInfo: ->
     "#{@api()}/users/me"
 
+  @getToken: ->
+    "#{@api()}/users/token"
+
   @authorizeGithub: ->
     "#{@base()}/authorize-github"

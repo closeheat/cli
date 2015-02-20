@@ -83,6 +83,10 @@ module.exports = Log = (function() {
     return this.line("" + (Color.red('ERROR')) + " | " + msg);
   };
 
+  Log.backendError = function() {
+    return this.error('Backend responded with an error.');
+  };
+
   Log.code = function(msg) {
     this.br();
     if (_.isArray(msg)) {

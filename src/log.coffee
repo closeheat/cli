@@ -55,6 +55,9 @@ class Log
     @stop()
     @line("#{Color.red('ERROR')} | #{msg}")
 
+  @backendError: ->
+    @error('Backend responded with an error.')
+
   @code: (msg) ->
     @br()
 

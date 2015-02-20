@@ -9,7 +9,7 @@ Color = require './color'
 
 module.exports =
 class Apps
-  list: ->
+  list: =>
     authorizer = new Authorizer
     params =
       api_token: authorizer.accessToken()
@@ -18,15 +18,21 @@ class Apps
     Log.spin 'Getting information about your deployed apps.'
     request url: Urls.appsIndex(), qs: params, method: 'get', (err, resp) =>
       Log.stop()
+
+      if resp.statusCode == 401
+        Log.p 'Please login to closeheat.com to check out your app list.'
+        return authorizer.login(@list)
+
       return Log.error(err) if err
 
+      parsed_resp = null
       try
-        apps = JSON.parse(resp.body).apps
+        parsed_resp = JSON.parse(resp.body)
       catch e
-        return Log.error('Backend responded with an error.')
+        return Log.backendError()
 
-      if apps.length
-        @table(apps)
+      if parsed_resp.apps.length
+        @table(parsed_resp.apps)
       else
         @noApps()
 

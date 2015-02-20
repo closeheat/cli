@@ -1,4 +1,5 @@
-var Apps, Authorizer, Color, Log, Urls, request, table, _;
+var Apps, Authorizer, Color, Log, Urls, request, table, _,
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 request = require('request');
 
@@ -15,7 +16,9 @@ Log = require('./log');
 Color = require('./color');
 
 module.exports = Apps = (function() {
-  function Apps() {}
+  function Apps() {
+    this.list = __bind(this.list, this);
+  }
 
   Apps.prototype.list = function() {
     var authorizer, params;
@@ -31,19 +34,24 @@ module.exports = Apps = (function() {
       method: 'get'
     }, (function(_this) {
       return function(err, resp) {
-        var apps, e;
+        var e, parsed_resp;
         Log.stop();
+        if (resp.statusCode === 401) {
+          Log.p('Please login to closeheat.com to check out your app list.');
+          return authorizer.login(_this.list);
+        }
         if (err) {
           return Log.error(err);
         }
+        parsed_resp = null;
         try {
-          apps = JSON.parse(resp.body).apps;
+          parsed_resp = JSON.parse(resp.body);
         } catch (_error) {
           e = _error;
-          return Log.error('Backend responded with an error.');
+          return Log.backendError();
         }
-        if (apps.length) {
-          return _this.table(apps);
+        if (parsed_resp.apps.length) {
+          return _this.table(parsed_resp.apps);
         } else {
           return _this.noApps();
         }

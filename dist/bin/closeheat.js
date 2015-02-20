@@ -53,8 +53,10 @@ program.command('apps').description('Shows a list of your deployed apps.').actio
   return new Apps().list();
 });
 
-program.command('login [access-token]').description('Changes the closeheat.com access token on your computer.').action(function(access_token) {
-  return new Authorizer().login(access_token);
+program.command('login').option('-t, --token [access-token]', 'Access token from closeheat.com.').description('Changes the closeheat.com access token on your computer.').action(function(opts) {
+  if (opts.token) {
+    return new Authorizer().saveToken(opts.token);
+  }
 });
 
 program.command('clone [app-name]').description('Clones your apps Github repository.').action(function(app_name) {

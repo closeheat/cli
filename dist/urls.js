@@ -27,6 +27,10 @@ module.exports = Urls = (function() {
     return "" + (this.api()) + "/users/me";
   };
 
+  Urls.getToken = function() {
+    return "" + (this.api()) + "/users/token";
+  };
+
   Urls.authorizeGithub = function() {
     return "" + (this.base()) + "/authorize-github";
   };
