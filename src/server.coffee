@@ -36,7 +36,11 @@ class Server
 
       lr_port = 35729
       tinylr().listen lr_port, ->
-        Log.doneLine("Server started at " + Color.violet("http://0.0.0.0:#{port}") + '.')
-        Log.inner "LiveReload up via port #{lr_port}."
+        Log.doneLine('Server started at ' + Color.violet("http://localhost:#{port}") + '.')
+
+        if live_reload_host == 'localhost'
+          Log.inner "LiveReload up via port #{lr_port}."
+        else
+          Log.inner "LiveReload up via http://#{live_reload_host}:#{lr_port}."
 
         watcher.run()

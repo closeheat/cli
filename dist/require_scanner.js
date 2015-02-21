@@ -1,5 +1,6 @@
-var Color, Log, Promise, RequireScanner, acorn, browserify, gulp, path, through, _,
-  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+var Color, Log, Promise, RequireScanner, acorn, gulp, path, through, _,
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+  __slice = [].slice;
 
 Promise = require('bluebird');
 
@@ -8,8 +9,6 @@ _ = require('lodash');
 path = require('path');
 
 through = require('through2');
-
-browserify = require('browserify');
 
 gulp = require('gulp');
 
@@ -55,7 +54,7 @@ module.exports = RequireScanner = (function() {
           walk = require('acorn/util/walk');
           walkall = require('walkall');
           walk.simple(ast, walkall.makeVisitors(function(node) {
-            var module_name;
+            var module, module_name, submodules, _ref;
             if (node.type !== 'CallExpression') {
               return;
             }
@@ -66,7 +65,8 @@ module.exports = RequireScanner = (function() {
             if (!module_name.match(/^[a-zA-Z]/)) {
               return;
             }
-            return _this.register(module_name);
+            _ref = module_name.split('/'), module = _ref[0], submodules = 2 <= _ref.length ? __slice.call(_ref, 1) : [];
+            return _this.register(module);
           }), walkall.traversers);
           return cb();
         } catch (_error) {

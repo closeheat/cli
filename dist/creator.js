@@ -66,7 +66,7 @@ module.exports = Creator = (function() {
     return this.dirs.create().then((function(_this) {
       return function() {
         var downloader;
-        downloader = new TemplateDownloader(_this.dirs, answers.framework, answers.template);
+        downloader = new TemplateDownloader(_this.dirs, answers.template, answers.framework);
         return downloader.download().then(function() {
           return downloader.joinDirs().then(function() {
             return new Transformer(_this.dirs).transform(answers).then(function() {

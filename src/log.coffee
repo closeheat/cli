@@ -57,6 +57,7 @@ class Log
 
   @error: (msg, exit = true) ->
     @stop()
+    @br()
     @line("#{Color.red('ERROR')} | #{msg}")
     process.exit() if exit
 

@@ -59,9 +59,9 @@ module.exports = Bundler = (function() {
           debug: true,
           standalone: 'CloseheatStandaloneModule'
         });
-        return bundler.bundle().pipe(source(relative)).pipe(buffer()).pipe(sourcemaps.init({
+        return bundler.bundle().on('error', reject).pipe(source(relative)).pipe(buffer()).pipe(sourcemaps.init({
           loadMaps: true
-        })).pipe(sourcemaps.write('./')).pipe(gulp.dest(_this.dist_app)).on('end', cb);
+        })).pipe(sourcemaps.write('./')).pipe(gulp.dest(_this.dist_app)).on('error', reject).on('end', cb);
       };
     })(this), resolve);
   };

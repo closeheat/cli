@@ -43,12 +43,13 @@ class Bundler
       }
 
       bundler
-        .bundle()
+        .bundle().on('error', reject)
         .pipe(source(relative))
         .pipe(buffer())
         .pipe(sourcemaps.init(loadMaps: true))
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest(@dist_app))
-        .on 'end', cb
+        .on('error', reject)
+        .on('end', cb)
 
     , resolve)

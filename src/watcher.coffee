@@ -28,13 +28,23 @@ class Watcher
     new Promise (resolve, reject) =>
       if file
         relative = path.relative(@src, file)
+        Log.stop()
         Log.inner("#{relative} changed.")
 
-      Log.spin("Building the app.")
+      Log.spin('Building the app.')
       rimraf.sync(@dist_app)
 
       builder.build(@src, @dist_app).then(=>
-        new Requirer(@dist, @dist_app).install().then ->
+        new Requirer(@dist, @dist_app)
+          .on('detected', (module) ->
+            Log.spin("New require detected. Installing #{Color.orange(module)}.")
+          )
+          .on('success', (module) ->
+            Log.stop()
+            Log.inner "#{Color.orange(module)} installed."
+          )
+          .install().then ->
+
           tinylr.changed('/')
           resolve()
           Log.stop()
@@ -42,6 +52,8 @@ class Watcher
           Log.inner("#{Color.violet(moment().format('hh:mm:ss'))} | App built.")
           Log.br()
 
-      ).catch (err) ->
-        Log.error('Could not compile')
-        Log.error(err)
+      ).catch (err) =>
+        Log.error('Could not compile', false)
+        Log.innerError(err, false)
+        Log.br()
+        @run()

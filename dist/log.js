@@ -93,6 +93,7 @@ module.exports = Log = (function() {
       exit = true;
     }
     this.stop();
+    this.br();
     this.line("" + (Color.red('ERROR')) + " | " + msg);
     if (exit) {
       return process.exit();

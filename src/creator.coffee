@@ -47,7 +47,7 @@ class Creator
     @dirs.clean()
 
     @dirs.create().then(=>
-      downloader = new TemplateDownloader(@dirs, answers.framework, answers.template)
+      downloader = new TemplateDownloader(@dirs, answers.template, answers.framework)
 
       downloader.download().then =>
         downloader.joinDirs().then =>

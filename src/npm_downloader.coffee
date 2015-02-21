@@ -4,12 +4,21 @@ _ = require 'lodash'
 path = require 'path'
 NPM = require 'machinepack-npm'
 
-Log = require './log'
-Color = require './color'
-
 module.exports =
 class NpmDownloader
   constructor: (@dist, @modules) ->
+
+  on: (event_name, cb) ->
+    @events ||= {}
+    @events[event_name] = cb
+    @
+
+  emit: (event_name, data) ->
+    @events ||= {}
+    @events.all?(event_name, data)
+
+    @events[event_name]?(data)
+    @
 
   downloadAll: =>
     new Promise (resolve, reject) =>
@@ -27,19 +36,18 @@ class NpmDownloader
 
   download: (module) ->
     new Promise (resolve, reject) =>
-      Log.spin("New require detected. Installing #{Color.orange(module)}.")
+      @emit('detected', module)
       NPM.installPackage({
         name: module
         loglevel: 'silent'
         prefix: @dist
       }).exec({
         error: (err) ->
-          Log.stop()
+          @emit('error', err)
           reject(err)
 
         success: (name) =>
-          Log.stop()
-          Log.inner "#{Color.orange(name)} installed."
+          @emit('success', name)
           resolve()
 
           # Fill the package.json for exports

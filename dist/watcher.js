@@ -48,22 +48,29 @@ module.exports = Watcher = (function() {
         var relative;
         if (file) {
           relative = path.relative(_this.src, file);
+          Log.stop();
           Log.inner("" + relative + " changed.");
         }
-        Log.spin("Building the app.");
+        Log.spin('Building the app.');
         rimraf.sync(_this.dist_app);
         return builder.build(_this.src, _this.dist_app).then(function() {
-          return new Requirer(_this.dist, _this.dist_app).install().then(function() {
-            tinylr.changed('/');
-            resolve();
+          new Requirer(_this.dist, _this.dist_app).on('detected', function(module) {
+            return Log.spin("New require detected. Installing " + (Color.orange(module)) + ".");
+          }).on('success', function(module) {
             Log.stop();
-            Log.br();
-            Log.inner("" + (Color.violet(moment().format('hh:mm:ss'))) + " | App built.");
-            return Log.br();
-          });
+            return Log.inner("" + (Color.orange(module)) + " installed.");
+          }).install().then(function() {});
+          tinylr.changed('/');
+          resolve();
+          Log.stop();
+          Log.br();
+          Log.inner("" + (Color.violet(moment().format('hh:mm:ss'))) + " | App built.");
+          return Log.br();
         })["catch"](function(err) {
-          Log.error('Could not compile');
-          return Log.error(err);
+          Log.error('Could not compile', false);
+          Log.innerError(err, false);
+          Log.br();
+          return _this.run();
         });
       };
     })(this));

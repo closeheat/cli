@@ -2,7 +2,6 @@ Promise = require 'bluebird'
 _ = require 'lodash'
 path = require 'path'
 through = require 'through2'
-browserify = require 'browserify'
 gulp = require 'gulp'
 acorn = require 'acorn'
 
@@ -44,7 +43,8 @@ class RequireScanner
           module_name = node.arguments[0].value
           return unless module_name.match(/^[a-zA-Z]/)
 
-          @register(module_name)
+          [module, submodules...] = module_name.split('/')
+          @register(module)
         ), walkall.traversers)
 
         cb()
