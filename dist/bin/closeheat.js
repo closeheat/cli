@@ -26,7 +26,7 @@ Cloner = require('../cloner');
 
 Log = require('../log');
 
-program.version('0.7.2').usage('<keywords>');
+program.version('0.8.0').usage('<keywords>');
 
 program.command('create [app-name]').description('Creates a new app with clean setup and directory structure.').option('-f, --framework [name]', 'Framework').option('-t, --template [name]', 'Template').option('--javascript [name]', 'Javascript precompiler').option('--html [name]', 'HTML precompiler').option('--css [name]', 'CSS precompiler').option('--tmp [path]', 'The path of temporary directory when creating').option('--dist [path]', 'Path of destination of where to create app dir').option('--no-deploy', 'Do not create Github repo and closeheat app').action(function(name, opts) {
   var includes_template_settings, settings, template_settings;

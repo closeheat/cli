@@ -3,12 +3,15 @@ Promise = require 'bluebird'
 path = require 'path'
 ghdownload = require('github-download')
 dirmr = require('dirmr')
+fs = require 'fs.extra'
 
 module.exports =
 class TemplateDownloader
   constructor: (@dirs, @templates...) ->
 
   download: ->
+    @cleanTemplateDirs()
+
     @downloadFromGithub(@templates[0]).then =>
       @downloadFromGithub(@templates[1])
 
@@ -19,6 +22,8 @@ class TemplateDownloader
 
   downloadFromGithub: (template) ->
     new Promise (resolve, reject) =>
+      return resolve() if fs.existsSync @templateDir(template)
+
       ghdownload(
         user: 'closeheat',
         repo: "template-#{template}",
@@ -34,6 +39,10 @@ class TemplateDownloader
   templateDirs: ->
     _.map @templates, (template) =>
       @templateDir(template)
+
+  cleanTemplateDirs: ->
+    _.each @templateDirs(), (template) ->
+      fs.rmrfSync(template) if fs.existsSync template
 
   joinDirs: ->
     new Promise (resolve, reject) =>

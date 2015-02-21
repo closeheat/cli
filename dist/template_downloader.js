@@ -1,4 +1,4 @@
-var Promise, TemplateDownloader, dirmr, ghdownload, path, _,
+var Promise, TemplateDownloader, dirmr, fs, ghdownload, path, _,
   __slice = [].slice;
 
 _ = require('lodash');
@@ -11,6 +11,8 @@ ghdownload = require('github-download');
 
 dirmr = require('dirmr');
 
+fs = require('fs.extra');
+
 module.exports = TemplateDownloader = (function() {
   function TemplateDownloader() {
     var dirs, templates;
@@ -20,6 +22,7 @@ module.exports = TemplateDownloader = (function() {
   }
 
   TemplateDownloader.prototype.download = function() {
+    this.cleanTemplateDirs();
     return this.downloadFromGithub(this.templates[0]).then((function(_this) {
       return function() {
         return _this.downloadFromGithub(_this.templates[1]);
@@ -30,6 +33,9 @@ module.exports = TemplateDownloader = (function() {
   TemplateDownloader.prototype.downloadFromGithub = function(template) {
     return new Promise((function(_this) {
       return function(resolve, reject) {
+        if (fs.existsSync(_this.templateDir(template))) {
+          return resolve();
+        }
         return ghdownload({
           user: 'closeheat',
           repo: "template-" + template,
@@ -49,6 +55,14 @@ module.exports = TemplateDownloader = (function() {
         return _this.templateDir(template);
       };
     })(this));
+  };
+
+  TemplateDownloader.prototype.cleanTemplateDirs = function() {
+    return _.each(this.templateDirs(), function(template) {
+      if (fs.existsSync(template)) {
+        return fs.rmrfSync(template);
+      }
+    });
   };
 
   TemplateDownloader.prototype.joinDirs = function() {
