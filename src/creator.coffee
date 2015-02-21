@@ -57,8 +57,10 @@ class Creator
 
               Log.stop()
               Log.inner("App folder created at #{@dirs.target}.")
-              Log.br()
 
+              return unless answers.deploy
+
+              Log.br()
               Log.doneLine 'Setting up deployment.'
               new Pusher(answers.name, @dirs.target).push().then =>
                 Log.br()

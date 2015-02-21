@@ -26,6 +26,7 @@ program
   .option('--css [name]', 'CSS precompiler')
   .option('--tmp [path]', 'The path of temporary directory when creating')
   .option('--dist [path]', 'Path of destination of where to create app dir')
+  .option('--no-deploy', 'Do not create Github repo and closeheat app')
   .action (name, opts) ->
     settings = _.pick(
       [
@@ -37,6 +38,7 @@ program
         'css'
         'dist'
         'tmp'
+        'deploy'
       ]...
     )
 
@@ -44,10 +46,21 @@ program
 
     Log.logo()
 
-    if _.isEmpty(_.omit(settings, 'name'))
-      new Creator().createFromPrompt(settings)
-    else
+    template_settings = [
+      'framework'
+      'template'
+      'javascript'
+      'html'
+      'css'
+    ]
+
+    includes_template_settings = _.any _.keys(settings), (setting) ->
+      _.contains(template_settings, setting)
+
+    if includes_template_settings
       new Creator().createFromSettings(settings)
+    else
+      new Creator().createFromPrompt(settings)
 
 program
   .command('server')

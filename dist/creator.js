@@ -74,6 +74,9 @@ module.exports = Creator = (function() {
                 _this.dirs.clean();
                 Log.stop();
                 Log.inner("App folder created at " + _this.dirs.target + ".");
+                if (!answers.deploy) {
+                  return;
+                }
                 Log.br();
                 Log.doneLine('Setting up deployment.');
                 return new Pusher(answers.name, _this.dirs.target).push().then(function() {
