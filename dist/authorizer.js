@@ -60,10 +60,10 @@ module.exports = Authorizer = (function() {
         })["catch"](function(resp) {
           if (resp.code === 401) {
             if (resp.status === 'locked') {
-              Log.error('Too many invalid logins. Account locked for 1 hour.');
+              Log.error('Too many invalid logins. Account locked for 1 hour.', false);
               return Log.innerError("Check your email for unlock instructions or contact the support at " + (Color.violet('closeheat.com/support')) + ".");
             } else {
-              Log.error("Wrong password or email. Please try again");
+              Log.error("Wrong password or email. Please try again", false);
               return _this.login(cb);
             }
           } else {
@@ -106,6 +106,24 @@ module.exports = Authorizer = (function() {
 
   Authorizer.prototype.unauthorized = function(resp) {
     return resp.statusCode === 401;
+  };
+
+  Authorizer.prototype.checkLoggedIn = function(resp, cb) {
+    if (this.unauthorized(resp)) {
+      return this.forceLogin(cb);
+    }
+  };
+
+  Authorizer.prototype.onlyLoggedIn = function(resp) {
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        if (_this.unauthorized(resp)) {
+          return _this.forceLogin(resolve);
+        } else {
+          return resolve();
+        }
+      };
+    })(this));
   };
 
   return Authorizer;

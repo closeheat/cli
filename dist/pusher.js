@@ -1,7 +1,5 @@
-var Authorizer, Color, Deployer, Git, Log, Promise, Pusher, Urls, request, shell, _,
+var Authorized, Color, Deployer, Git, Log, Promise, Pusher, Urls, shell, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-
-request = require('request');
 
 _ = require('lodash');
 
@@ -11,8 +9,6 @@ shell = require('shelljs');
 
 Git = require('git-wrapper');
 
-Authorizer = require('./authorizer');
-
 Urls = require('./urls');
 
 Deployer = require('./deployer');
@@ -21,9 +17,10 @@ Log = require('./log');
 
 Color = require('./color');
 
+Authorized = require('./authorized');
+
 module.exports = Pusher = (function() {
   function Pusher(name, target) {
-    var authorizer;
     this.name = name;
     this.target = target;
     this.initGit = __bind(this.initGit, this);
@@ -31,10 +28,6 @@ module.exports = Pusher = (function() {
     this.pushFiles = __bind(this.pushFiles, this);
     this.createAppInBackend = __bind(this.createAppInBackend, this);
     this.git = new Git();
-    authorizer = new Authorizer;
-    this.token_params = {
-      api_token: authorizer.accessToken()
-    };
   }
 
   Pusher.prototype.push = function() {
@@ -54,20 +47,20 @@ module.exports = Pusher = (function() {
   };
 
   Pusher.prototype.githubNotAuthorized = function() {
-    Log.error('Github not authorized');
-    Log.p("We cannot set you up for deployment because you did not authorize Github.");
+    Log.error('Github not authorized', false);
+    Log.innerError("We cannot set you up for deployment because you did not authorize Github.");
     Log.br();
-    return Log.p("Visit " + (Urls.authorizeGithub()) + " and rerun the command.");
+    return Log.innerError("Visit " + (Urls.authorizeGithub()) + " and rerun the command.");
   };
 
   Pusher.prototype.createAppInBackend = function() {
     return new Promise((function(_this) {
       return function(resolve, reject) {
-        return request({
+        return Authorized.request({
           url: Urls.createApp(),
-          qs: _.merge({
+          qs: {
             repo_name: _this.name
-          }, _this.token_params),
+          },
           method: 'post'
         }, function(err, resp) {
           if (err) {
@@ -82,9 +75,8 @@ module.exports = Pusher = (function() {
   Pusher.prototype.getGithubUsername = function() {
     return new Promise((function(_this) {
       return function(resolve, reject) {
-        return request({
+        return Authorized.request({
           url: Urls.currentUserInfo(),
-          qs: _this.token_params,
           method: 'get'
         }, function(err, resp) {
           var e, user_info;

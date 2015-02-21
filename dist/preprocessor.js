@@ -1,4 +1,4 @@
-var Log, Preprocessor, Promise, callback, cssScss, gulp, gulpif, gutil, html2jade, js2coffee, path, through;
+var Log, Preprocessor, Promise, callback, cssScss, gulp, gulpif, gutil, html2jade, js2coffee, markdown, path, through;
 
 Promise = require('bluebird');
 
@@ -20,6 +20,8 @@ html2jade = require('html2jade');
 
 through = require('through2');
 
+markdown = require('gulp-markdown');
+
 Log = require('./log');
 
 module.exports = Preprocessor = (function() {
@@ -35,7 +37,8 @@ module.exports = Preprocessor = (function() {
       html: 'html',
       jade: 'jade',
       css: 'css',
-      scss: 'scss'
+      scss: 'scss',
+      markdown: 'md'
     };
     return EXTENTIONS[tech];
   };
@@ -45,7 +48,8 @@ module.exports = Preprocessor = (function() {
     PAIRS = {
       coffeescript: 'javascript',
       jade: 'html',
-      scss: 'css'
+      scss: 'css',
+      markdown: 'html'
     };
     return PAIRS[tech];
   };
@@ -69,6 +73,9 @@ module.exports = Preprocessor = (function() {
       })(this),
       scss: function() {
         return cssScss();
+      },
+      markdown: function() {
+        return markdown();
       }
     };
     return PREPROCESSORS[tech] || function() {
@@ -81,7 +88,7 @@ module.exports = Preprocessor = (function() {
   Preprocessor.prototype.exec = function(tech) {
     return new Promise((function(_this) {
       return function(resolve, reject) {
-        return gulp.src(path.join(_this.dirs.whole, "**/*." + (_this.sourceFor(tech)))).pipe(gulpif(_this.notMinimized, _this.preprocessorFor(tech)())).pipe(gulp.dest(_this.dirs.transformed).on('error', Log.error)).on('end', resolve);
+        return gulp.src(path.join(_this.dirs.whole, "**/*." + (_this.sourceFor(tech)))).pipe(gulpif(_this.notMinimized, _this.preprocessorFor(tech)())).pipe(gulp.dest(_this.dirs.transformed).on('error', reject)).on('error', reject).on('end', resolve);
       };
     })(this));
   };

@@ -1,12 +1,10 @@
-var Authorizer, Cloner, Git, Log, Promise, Urls, request;
+var Authorized, Cloner, Git, Log, Promise, Urls;
 
 Promise = require('bluebird');
 
-request = require('request');
-
 Git = require('git-wrapper');
 
-Authorizer = require('./authorizer');
+Authorized = require('./authorized');
 
 Urls = require('./urls');
 
@@ -21,6 +19,7 @@ module.exports = Cloner = (function() {
     return this.getAppData(app_name).then((function(_this) {
       return function(app) {
         Log.stop();
+        Log.br();
         Log.spin("Cloning Github repository at " + app.github_repo + ".");
         return _this.execCloning(app.github_repo, app.default_branch, app_name).then(function() {
           Log.stop();
@@ -42,15 +41,9 @@ module.exports = Cloner = (function() {
   };
 
   Cloner.prototype.getAppData = function(app_name) {
-    var authorizer, params;
-    authorizer = new Authorizer;
-    params = {
-      api_token: authorizer.accessToken()
-    };
     return new Promise(function(resolve, reject) {
-      return request({
+      return Authorized.request({
         url: Urls.appData(app_name),
-        qs: params,
         method: 'get'
       }, function(err, resp) {
         var app, e;

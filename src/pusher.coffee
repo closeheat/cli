@@ -1,25 +1,20 @@
-request = require 'request'
 _ = require 'lodash'
 Promise = require 'bluebird'
 shell = require 'shelljs'
 Git = require 'git-wrapper'
 
-Authorizer = require './authorizer'
 Urls = require './urls'
 Deployer = require './deployer'
 
 Log = require './log'
 Color = require './color'
 
+Authorized = require './authorized'
+
 module.exports =
 class Pusher
   constructor: (@name, @target) ->
     @git = new Git()
-
-    authorizer = new Authorizer
-
-    @token_params =
-      api_token: authorizer.accessToken()
 
     # check if closeheat is github authorized
     # - if not, force auth via link http://closeheat.com/authorize-github
@@ -39,21 +34,21 @@ class Pusher
       Log.error(err)
 
   githubNotAuthorized: ->
-    Log.error('Github not authorized')
-    Log.p "We cannot set you up for deployment because you did not authorize Github."
+    Log.error('Github not authorized', false)
+    Log.innerError "We cannot set you up for deployment because you did not authorize Github."
     Log.br()
-    Log.p "Visit #{Urls.authorizeGithub()} and rerun the command."
+    Log.innerError "Visit #{Urls.authorizeGithub()} and rerun the command."
 
   createAppInBackend: =>
     new Promise (resolve, reject) =>
-      request { url: Urls.createApp(), qs: _.merge(repo_name: @name, @token_params), method: 'post' }, (err, resp) =>
+      Authorized.request { url: Urls.createApp(), qs: { repo_name: @name }, method: 'post' }, (err, resp) =>
         return reject(err) if err
 
         resolve(resp)
 
   getGithubUsername: ->
     new Promise (resolve, reject) =>
-      request url: Urls.currentUserInfo(), qs: @token_params, method: 'get', (err, resp) =>
+      Authorized.request url: Urls.currentUserInfo(), method: 'get', (err, resp) =>
         return reject(err) if err
 
         try

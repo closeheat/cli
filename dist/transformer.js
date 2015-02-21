@@ -13,7 +13,7 @@ module.exports = Transformer = (function() {
   }
 
   Transformer.prototype.transform = function(answers) {
-    return Promise.when([this.jobs(answers)]);
+    return Promise.all(this.jobs(answers));
   };
 
   Transformer.prototype.jobs = function(answers) {

@@ -46,14 +46,16 @@ module.exports = Creator = (function() {
     this.checkDir();
     return inquirer.prompt(Prompt.questions, (function(_this) {
       return function(answers) {
-        return _this.createWithSettings(_.defaults(answers, settings));
+        return _this.createWithSettings(_.defaults(answers, settings))["catch"](function(err) {
+          return console.log(err);
+        });
       };
     })(this));
   };
 
   Creator.prototype.checkDir = function() {
     if (fs.existsSync(this.dirs.target)) {
-      throw Error("Directory " + this.dirs.target + " already exists");
+      return Log.error("Directory " + this.dirs.target + " already exists");
     }
   };
 
@@ -73,8 +75,7 @@ module.exports = Creator = (function() {
                 Log.stop();
                 Log.inner("App folder created at " + _this.dirs.target + ".");
                 Log.br();
-                Log.spin('Setting up deployment.');
-                Log.stop();
+                Log.doneLine('Setting up deployment.');
                 return new Pusher(answers.name, _this.dirs.target).push().then(function() {
                   Log.br();
                   Log.p("The app " + (Color.violet(answers.name)) + " has been created.");
@@ -87,7 +88,9 @@ module.exports = Creator = (function() {
           });
         });
       };
-    })(this));
+    })(this))["catch"](function(e) {
+      return Log.error(e);
+    });
   };
 
   Creator.prototype.moveToTarget = function() {

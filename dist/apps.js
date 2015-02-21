@@ -1,4 +1,4 @@
-var Apps, Authorizer, Color, Log, Urls, request, table, _,
+var Apps, Authorized, Color, Log, Urls, request, table, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 request = require('request');
@@ -7,7 +7,7 @@ _ = require('lodash');
 
 table = require('text-table');
 
-Authorizer = require('./authorizer');
+Authorized = require('./authorized');
 
 Urls = require('./urls');
 
@@ -21,23 +21,14 @@ module.exports = Apps = (function() {
   }
 
   Apps.prototype.list = function() {
-    var authorizer, params;
-    authorizer = new Authorizer;
-    params = {
-      api_token: authorizer.accessToken()
-    };
     Log.logo();
     Log.spin('Getting information about your deployed apps.');
-    return request({
+    return Authorized.request({
       url: Urls.appsIndex(),
-      qs: params,
       method: 'get'
     }, (function(_this) {
       return function(err, resp) {
         var e, parsed_resp;
-        if (authorizer.unauthorized(resp)) {
-          return authorizer.forceLogin(_this.list);
-        }
         Log.stop();
         if (err) {
           return Log.error(err);

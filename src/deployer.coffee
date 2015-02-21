@@ -59,6 +59,7 @@ class Deployer
 
   deployLog: ->
     new Promise (resolve, reject) ->
+      # Will probably do Authorized.request
       Log.br()
       Log.backend('Downloading the Github repo.')
       Log.backend('Building app.')

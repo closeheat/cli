@@ -33,11 +33,12 @@ class Creator
     @checkDir()
 
     inquirer.prompt Prompt.questions, (answers) =>
-      @createWithSettings(_.defaults(answers, settings))
+      @createWithSettings(_.defaults(answers, settings)).catch (err) ->
+        console.log err
 
   checkDir: ->
     if fs.existsSync @dirs.target
-      throw Error "Directory #{@dirs.target} already exists"
+      Log.error "Directory #{@dirs.target} already exists"
 
   createWithSettings: (answers) ->
     Log.br()
@@ -45,7 +46,7 @@ class Creator
 
     @dirs.clean()
 
-    @dirs.create().then =>
+    @dirs.create().then(=>
       downloader = new TemplateDownloader(@dirs, answers.framework, answers.template)
 
       downloader.download().then =>
@@ -58,8 +59,7 @@ class Creator
               Log.inner("App folder created at #{@dirs.target}.")
               Log.br()
 
-              Log.spin 'Setting up deployment.'
-              Log.stop()
+              Log.doneLine 'Setting up deployment.'
               new Pusher(answers.name, @dirs.target).push().then =>
                 Log.br()
                 Log.p "The app #{Color.violet(answers.name)} has been created."
@@ -69,6 +69,8 @@ class Creator
                   "cd #{answers.name}"
                   "closeheat"
                 ]
+    ).catch (e) ->
+      Log.error(e)
 
   moveToTarget: ->
     new Promise (resolve, reject) =>

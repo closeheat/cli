@@ -2,7 +2,7 @@ request = require 'request'
 _ = require 'lodash'
 table = require('text-table')
 
-Authorizer = require './authorizer'
+Authorized = require './authorized'
 Urls = require './urls'
 Log = require './log'
 Color = require './color'
@@ -10,15 +10,9 @@ Color = require './color'
 module.exports =
 class Apps
   list: =>
-    authorizer = new Authorizer
-    params =
-      api_token: authorizer.accessToken()
-
     Log.logo()
     Log.spin 'Getting information about your deployed apps.'
-    request url: Urls.appsIndex(), qs: params, method: 'get', (err, resp) =>
-      return authorizer.forceLogin(@list) if authorizer.unauthorized(resp)
-
+    Authorized.request url: Urls.appsIndex(), method: 'get', (err, resp) =>
       Log.stop()
 
       return Log.error(err) if err

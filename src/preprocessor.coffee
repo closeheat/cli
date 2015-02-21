@@ -8,6 +8,7 @@ js2coffee = require 'gulp-js2coffee'
 gulpif = require 'gulp-if'
 html2jade = require 'html2jade'
 through = require 'through2'
+markdown = require 'gulp-markdown'
 
 Log = require './log'
 
@@ -23,6 +24,7 @@ class Preprocessor
       jade: 'jade'
       css: 'css'
       scss: 'scss'
+      markdown: 'md'
 
     EXTENTIONS[tech]
 
@@ -31,6 +33,7 @@ class Preprocessor
       coffeescript: 'javascript'
       jade: 'html'
       scss: 'css'
+      markdown: 'html'
 
     PAIRS[tech]
 
@@ -42,6 +45,7 @@ class Preprocessor
       coffeescript: -> js2coffee()
       jade: => @jade(nspaces: 2)
       scss: -> cssScss()
+      markdown: -> markdown()
 
     PREPROCESSORS[tech] || -> callback(-> 'no preprocessor')
 
@@ -50,7 +54,8 @@ class Preprocessor
       gulp
         .src(path.join(@dirs.whole, "**/*.#{@sourceFor(tech)}"))
         .pipe(gulpif(@notMinimized, @preprocessorFor(tech)()))
-        .pipe(gulp.dest(@dirs.transformed).on('error', Log.error))
+        .pipe(gulp.dest(@dirs.transformed).on('error', reject))
+        .on('error', reject)
         .on('end', resolve)
 
   notMinimized: (file) ->

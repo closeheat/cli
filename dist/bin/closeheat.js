@@ -26,9 +26,9 @@ Cloner = require('../cloner');
 
 Log = require('../log');
 
-program.version('0.7.1').usage('<keywords>');
+program.version('0.7.2').usage('<keywords>');
 
-program.command('create [app-name]').alias('c').description('Creates a new app with clean setup and directory structure.').option('-f, --framework [name]', 'Framework').option('-t, --template [name]', 'Template').option('--javascript [name]', 'Javascript precompiler').option('--html [name]', 'HTML precompiler').option('--css [name]', 'CSS precompiler').option('--tmp [path]', 'The path of temporary directory when creating').option('--dist [path]', 'Path of destination of where to create app dir').action(function(name, opts) {
+program.command('create [app-name]').description('Creates a new app with clean setup and directory structure.').option('-f, --framework [name]', 'Framework').option('-t, --template [name]', 'Template').option('--javascript [name]', 'Javascript precompiler').option('--html [name]', 'HTML precompiler').option('--css [name]', 'CSS precompiler').option('--tmp [path]', 'The path of temporary directory when creating').option('--dist [path]', 'Path of destination of where to create app dir').action(function(name, opts) {
   var settings;
   settings = _.pick.apply(_, [opts, 'framework', 'template', 'javascript', 'html', 'css', 'dist', 'tmp']);
   settings.name = name;
@@ -40,11 +40,11 @@ program.command('create [app-name]').alias('c').description('Creates a new app w
   }
 });
 
-program.command('server').alias('s').description('Runs a server which builds and LiveReloads your app.').option('--ip [ip]', 'IP to run LiveReload on (default - localhost)').option('-p, --port [port]', 'Port to run server on (default - 4000)').action(function(opts) {
+program.command('server').description('Runs a server which builds and LiveReloads your app.').option('--ip [ip]', 'IP to run LiveReload on (default - localhost)').option('-p, --port [port]', 'Port to run server on (default - 4000)').action(function(opts) {
   return new Server().start(opts);
 });
 
-program.command('deploy').alias('d').description('Deploys your app to closeheat.com via Github.').action(function() {
+program.command('deploy').description('Deploys your app to closeheat.com via Github.').action(function() {
   Log.logo();
   return new Deployer().deploy();
 });

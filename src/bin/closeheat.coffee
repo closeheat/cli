@@ -13,12 +13,11 @@ Cloner = require '../cloner'
 Log = require '../log'
 
 program
-  .version('0.7.1')
+  .version('0.7.2')
   .usage('<keywords>')
 
 program
   .command('create [app-name]')
-  .alias('c')
   .description('Creates a new app with clean setup and directory structure.')
   .option('-f, --framework [name]', 'Framework')
   .option('-t, --template [name]', 'Template')
@@ -52,7 +51,6 @@ program
 
 program
   .command('server')
-  .alias('s')
   .description('Runs a server which builds and LiveReloads your app.')
   .option('--ip [ip]', 'IP to run LiveReload on (default - localhost)')
   .option('-p, --port [port]', 'Port to run server on (default - 4000)')
@@ -61,7 +59,6 @@ program
 
 program
   .command('deploy')
-  .alias('d')
   .description('Deploys your app to closeheat.com via Github.')
   .action ->
     Log.logo()

@@ -40,8 +40,9 @@ class Log
   @inner: (msg) ->
     @line("  #{msg}")
 
-  @innerError: (msg) ->
+  @innerError: (msg, exit = true) ->
     @line("        #{msg}")
+    process.exit() if exit
 
   @spin: (msg, fn) ->
     Spinner.stop() if @spinning == true
@@ -54,9 +55,10 @@ class Log
       Spinner.stop()
       @spinning = false
 
-  @error: (msg) ->
+  @error: (msg, exit = true) ->
     @stop()
     @line("#{Color.red('ERROR')} | #{msg}")
+    process.exit() if exit
 
   @backendError: ->
     @error('Backend responded with an error.')

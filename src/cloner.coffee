@@ -1,8 +1,7 @@
 Promise = require 'bluebird'
-request = require 'request'
 Git = require 'git-wrapper'
 
-Authorizer = require './authorizer'
+Authorized = require './authorized'
 Urls = require './urls'
 Log = require './log'
 
@@ -14,6 +13,7 @@ class Cloner
 
     @getAppData(app_name).then((app) =>
       Log.stop()
+      Log.br()
       Log.spin "Cloning Github repository at #{app.github_repo}."
 
       @execCloning(app.github_repo, app.default_branch, app_name).then =>
@@ -38,12 +38,8 @@ class Cloner
       Log.error(err)
 
   getAppData: (app_name) ->
-    authorizer = new Authorizer
-    params =
-      api_token: authorizer.accessToken()
-
     new Promise (resolve, reject) ->
-      request url: Urls.appData(app_name), qs: params, method: 'get', (err, resp) ->
+      Authorized.request url: Urls.appData(app_name), method: 'get', (err, resp) ->
         return reject(err) if err
 
         try

@@ -8,7 +8,7 @@ class Transformer
     @preprocessor = new Preprocessor(@dirs)
 
   transform: (answers) ->
-    Promise.when([@jobs(answers)])
+    Promise.all(@jobs(answers))
 
   jobs: (answers) ->
     result = []

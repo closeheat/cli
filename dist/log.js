@@ -63,8 +63,14 @@ module.exports = Log = (function() {
     return this.line("  " + msg);
   };
 
-  Log.innerError = function(msg) {
-    return this.line("        " + msg);
+  Log.innerError = function(msg, exit) {
+    if (exit == null) {
+      exit = true;
+    }
+    this.line("        " + msg);
+    if (exit) {
+      return process.exit();
+    }
   };
 
   Log.spin = function(msg, fn) {
@@ -82,9 +88,15 @@ module.exports = Log = (function() {
     }
   };
 
-  Log.error = function(msg) {
+  Log.error = function(msg, exit) {
+    if (exit == null) {
+      exit = true;
+    }
     this.stop();
-    return this.line("" + (Color.red('ERROR')) + " | " + msg);
+    this.line("" + (Color.red('ERROR')) + " | " + msg);
+    if (exit) {
+      return process.exit();
+    }
   };
 
   Log.backendError = function() {

@@ -42,10 +42,10 @@ class Authorizer
       ).catch (resp) =>
         if resp.code == 401
           if resp.status == 'locked'
-            Log.error('Too many invalid logins. Account locked for 1 hour.')
+            Log.error('Too many invalid logins. Account locked for 1 hour.', false)
             Log.innerError("Check your email for unlock instructions or contact the support at #{Color.violet('closeheat.com/support')}.")
           else
-            Log.error("Wrong password or email. Please try again")
+            Log.error("Wrong password or email. Please try again", false)
             @login(cb)
 
         else
@@ -68,3 +68,14 @@ class Authorizer
 
   unauthorized: (resp) ->
     resp.statusCode == 401
+
+  checkLoggedIn: (resp, cb) ->
+    if @unauthorized(resp)
+      @forceLogin(cb)
+
+  onlyLoggedIn: (resp) ->
+    new Promise (resolve, reject) =>
+      if @unauthorized(resp)
+        @forceLogin(resolve)
+      else
+        resolve()
