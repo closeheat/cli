@@ -1,4 +1,3 @@
-builder = require 'closeheat-builder'
 chokidar  = require 'chokidar'
 util = require 'util'
 rimraf = require 'rimraf'
@@ -6,6 +5,8 @@ path = require 'path'
 tinylr = require 'tiny-lr'
 Promise = require 'bluebird'
 moment = require 'moment'
+
+Builder = require 'closeheat-builder'
 
 Requirer = require './requirer'
 Log = require './log'
@@ -34,17 +35,15 @@ class Watcher
       Log.spin('Building the app.')
       rimraf.sync(@dist_app)
 
-      builder.build(@src, @dist_app).then(=>
-        new Requirer(@dist, @dist_app)
-          .on('detected', (module) ->
-            Log.spin("New require detected. Installing #{Color.orange(module)}.")
-          )
-          .on('success', (module) ->
-            Log.stop()
-            Log.inner "#{Color.orange(module)} installed."
-          )
-          .install().then ->
-
+      new Builder(@src, @dist)
+        .on('module-detected', (module) ->
+          Log.spin("New require detected. Installing #{Color.orange(module)}.")
+        )
+        .on('module-installed', (module) ->
+          Log.stop()
+          Log.inner "#{Color.orange(module)} installed."
+        )
+        .build().then(->
           tinylr.changed('/')
           resolve()
           Log.stop()

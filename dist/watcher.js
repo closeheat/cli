@@ -1,6 +1,4 @@
-var Color, Log, Promise, Requirer, Watcher, builder, chokidar, moment, path, rimraf, tinylr, util;
-
-builder = require('closeheat-builder');
+var Builder, Color, Log, Promise, Requirer, Watcher, chokidar, moment, path, rimraf, tinylr, util;
 
 chokidar = require('chokidar');
 
@@ -15,6 +13,8 @@ tinylr = require('tiny-lr');
 Promise = require('bluebird');
 
 moment = require('moment');
+
+Builder = require('closeheat-builder');
 
 Requirer = require('./requirer');
 
@@ -53,13 +53,12 @@ module.exports = Watcher = (function() {
         }
         Log.spin('Building the app.');
         rimraf.sync(_this.dist_app);
-        return builder.build(_this.src, _this.dist_app).then(function() {
-          new Requirer(_this.dist, _this.dist_app).on('detected', function(module) {
-            return Log.spin("New require detected. Installing " + (Color.orange(module)) + ".");
-          }).on('success', function(module) {
-            Log.stop();
-            return Log.inner("" + (Color.orange(module)) + " installed.");
-          }).install().then(function() {});
+        return new Builder(_this.src, _this.dist).on('module-detected', function(module) {
+          return Log.spin("New require detected. Installing " + (Color.orange(module)) + ".");
+        }).on('module-installed', function(module) {
+          Log.stop();
+          return Log.inner("" + (Color.orange(module)) + " installed.");
+        }).build().then(function() {
           tinylr.changed('/');
           resolve();
           Log.stop();
