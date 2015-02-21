@@ -8,7 +8,6 @@ moment = require 'moment'
 
 Builder = require 'closeheat-builder'
 
-Requirer = require './requirer'
 Log = require './log'
 Color = require './color'
 

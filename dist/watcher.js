@@ -1,4 +1,4 @@
-var Builder, Color, Log, Promise, Requirer, Watcher, chokidar, moment, path, rimraf, tinylr, util;
+var Builder, Color, Log, Promise, Watcher, chokidar, moment, path, rimraf, tinylr, util;
 
 chokidar = require('chokidar');
 
@@ -15,8 +15,6 @@ Promise = require('bluebird');
 moment = require('moment');
 
 Builder = require('closeheat-builder');
-
-Requirer = require('./requirer');
 
 Log = require('./log');
 

@@ -13,7 +13,7 @@ Cloner = require '../cloner'
 Log = require '../log'
 
 program
-  .version('0.8.1')
+  .version('0.8.2')
   .usage('<keywords>')
 
 program
