@@ -10,9 +10,13 @@ class Transformer
   transform: (answers) ->
     Promise.all(@jobs(answers))
 
+  remove: ->
+    @preprocessor.remove()
+
   jobs: (answers) ->
     result = []
 
+    answers.javascript = 'jsx' if answers.framework == 'react'
     _.each [answers.html, answers.javascript, answers.css], (tech) =>
       result.push @preprocessor.exec(tech)
 

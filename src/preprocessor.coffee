@@ -8,6 +8,7 @@ js2coffee = require 'gulp-js2coffee'
 gulpif = require 'gulp-if'
 html2jade = require 'html2jade'
 through = require 'through2'
+marked = require 'marked'
 markdown = require 'gulp-markdown'
 
 Log = require './log'
@@ -25,6 +26,7 @@ class Preprocessor
       css: 'css'
       scss: 'scss'
       markdown: 'md'
+      jsx: 'jsx'
 
     EXTENTIONS[tech]
 

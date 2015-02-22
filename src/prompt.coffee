@@ -14,17 +14,13 @@ module.exports =
           value: 'react'
         }
         {
-          name: 'Ember.js'
-          value: 'ember'
-        }
-        {
           name: 'None'
           value: 'none'
         }
       ],
     }
       {
-        message: 'Template?'
+        message: 'Front end framework?'
         name: 'template'
         type: 'list'
         choices: [

@@ -1,4 +1,4 @@
-var Log, Preprocessor, Promise, callback, cssScss, gulp, gulpif, gutil, html2jade, js2coffee, markdown, path, through;
+var Log, Preprocessor, Promise, callback, cssScss, gulp, gulpif, gutil, html2jade, js2coffee, markdown, marked, path, through;
 
 Promise = require('bluebird');
 
@@ -20,6 +20,8 @@ html2jade = require('html2jade');
 
 through = require('through2');
 
+marked = require('marked');
+
 markdown = require('gulp-markdown');
 
 Log = require('./log');
@@ -38,7 +40,8 @@ module.exports = Preprocessor = (function() {
       jade: 'jade',
       css: 'css',
       scss: 'scss',
-      markdown: 'md'
+      markdown: 'md',
+      jsx: 'jsx'
     };
     return EXTENTIONS[tech];
   };

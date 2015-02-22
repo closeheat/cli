@@ -16,9 +16,16 @@ module.exports = Transformer = (function() {
     return Promise.all(this.jobs(answers));
   };
 
+  Transformer.prototype.remove = function() {
+    return this.preprocessor.remove();
+  };
+
   Transformer.prototype.jobs = function(answers) {
     var result;
     result = [];
+    if (answers.framework === 'react') {
+      answers.javascript = 'jsx';
+    }
     _.each([answers.html, answers.javascript, answers.css], (function(_this) {
       return function(tech) {
         return result.push(_this.preprocessor.exec(tech));
