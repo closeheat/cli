@@ -1,5 +1,4 @@
-var Promise, TemplateDownloader, dirmr, fs, ghdownload, path, _,
-  __slice = [].slice;
+var Promise, TemplateDownloader, dirmr, fs, ghdownload, gulp, inject, path, _;
 
 _ = require('lodash');
 

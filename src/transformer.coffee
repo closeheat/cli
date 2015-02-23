@@ -18,6 +18,8 @@ class Transformer
 
     answers.javascript = 'jsx' if answers.framework == 'react'
     _.each [answers.html, answers.javascript, answers.css], (tech) =>
+      return unless tech
+
       result.push @preprocessor.exec(tech)
 
     result

@@ -15,6 +15,8 @@ class Dirs
     @parts = path.join(@tmp, 'parts')
     @whole = path.join(@tmp, 'whole')
     @transformed = path.join(@tmp, 'transformed')
+    @src = settings.src
+    @dist = settings.dist
 
   clean: ->
     fs.rmrfSync(@tmp) if fs.existsSync @tmp

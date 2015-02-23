@@ -22,6 +22,8 @@ module.exports = Dirs = (function() {
     this.parts = path.join(this.tmp, 'parts');
     this.whole = path.join(this.tmp, 'whole');
     this.transformed = path.join(this.tmp, 'transformed');
+    this.src = settings.src;
+    this.dist = settings.dist;
   }
 
   Dirs.prototype.clean = function() {

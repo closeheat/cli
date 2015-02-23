@@ -101,6 +101,22 @@ program
     new Cloner().clone(app_name)
 
 program
+  .command('transform [type] [language]')
+  .description('Transforms files in current dir to other language.')
+  .action (type, language) ->
+    Log.logo()
+
+    Dirs = require '../dirs'
+    Transformer = require '../transformer'
+    dirs = new Dirs(name: 'transforming', src: process.cwd(), dist: process.cwd())
+
+    settings = {}
+    settings[type] = language
+
+    new Transformer(dirs).transform(settings).then =>
+      console.log('transformed', settings)
+
+program
   .command('help')
   .description('Displays this menu.')
   .action ->

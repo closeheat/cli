@@ -54,9 +54,9 @@ class Preprocessor
   exec: (tech) ->
     new Promise (resolve, reject) =>
       gulp
-        .src(path.join(@dirs.whole, "**/*.#{@sourceFor(tech)}"))
+        .src(path.join(@dirs.src || @dirs.whole, "**/*.#{@sourceFor(tech)}"))
         .pipe(gulpif(@notMinimized, @preprocessorFor(tech)()))
-        .pipe(gulp.dest(@dirs.transformed).on('error', reject))
+        .pipe(gulp.dest(@dirs.dist || @dirs.transformed).on('error', reject))
         .on('error', reject)
         .on('end', resolve)
 

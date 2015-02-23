@@ -28,6 +28,9 @@ module.exports = Transformer = (function() {
     }
     _.each([answers.html, answers.javascript, answers.css], (function(_this) {
       return function(tech) {
+        if (!tech) {
+          return;
+        }
         return result.push(_this.preprocessor.exec(tech));
       };
     })(this));

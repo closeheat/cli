@@ -69,6 +69,25 @@ program.command('clone [app-name]').description('Clones your apps Github reposit
   return new Cloner().clone(app_name);
 });
 
+program.command('transform [type] [language]').description('Transforms files in current dir to other language.').action(function(type, language) {
+  var Dirs, Transformer, dirs, settings;
+  Log.logo();
+  Dirs = require('../dirs');
+  Transformer = require('../transformer');
+  dirs = new Dirs({
+    name: 'transforming',
+    src: process.cwd(),
+    dist: process.cwd()
+  });
+  settings = {};
+  settings[type] = language;
+  return new Transformer(dirs).transform(settings).then((function(_this) {
+    return function() {
+      return console.log('transformed', settings);
+    };
+  })(this));
+});
+
 program.command('help').description('Displays this menu.').action(function() {
   Log.logo(0);
   return program.help();

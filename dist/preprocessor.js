@@ -91,7 +91,7 @@ module.exports = Preprocessor = (function() {
   Preprocessor.prototype.exec = function(tech) {
     return new Promise((function(_this) {
       return function(resolve, reject) {
-        return gulp.src(path.join(_this.dirs.whole, "**/*." + (_this.sourceFor(tech)))).pipe(gulpif(_this.notMinimized, _this.preprocessorFor(tech)())).pipe(gulp.dest(_this.dirs.transformed).on('error', reject)).on('error', reject).on('end', resolve);
+        return gulp.src(path.join(_this.dirs.src || _this.dirs.whole, "**/*." + (_this.sourceFor(tech)))).pipe(gulpif(_this.notMinimized, _this.preprocessorFor(tech)())).pipe(gulp.dest(_this.dirs.dist || _this.dirs.transformed).on('error', reject)).on('error', reject).on('end', resolve);
       };
     })(this));
   };
