@@ -6,6 +6,7 @@ dirmr = require('dirmr')
 fs = require 'fs.extra'
 gulp = require 'gulp'
 inject = require 'gulp-inject'
+gutil = require('gulp-util')
 
 module.exports =
 class TemplateDownloader
@@ -53,6 +54,8 @@ class TemplateDownloader
         resolve()
 
   injectAssets: =>
+    @silenceGutil()
+
     new Promise (resolve, reject) =>
       paths = gulp.src([
         path.join(@dirs.whole, 'css/**/*.min.css')
@@ -67,4 +70,11 @@ class TemplateDownloader
         .pipe(inject(paths, relative: true, removeTags: true))
         .pipe(gulp.dest(@dirs.whole))
         .on('error', reject)
-        .on('end', resolve)
+        .on('end', (=> @restoreGutil(); resolve()))
+
+  silenceGutil: ->
+    @original_log = gutil.log
+    gutil.log = gutil.noop
+
+  restoreGutil: ->
+    gutil.log = @original_log

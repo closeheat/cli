@@ -1,4 +1,4 @@
-var Promise, TemplateDownloader, dirmr, fs, ghdownload, gulp, inject, path, _,
+var Promise, TemplateDownloader, dirmr, fs, ghdownload, gulp, gutil, inject, path, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 _ = require('lodash');
@@ -16,6 +16,8 @@ fs = require('fs.extra');
 gulp = require('gulp');
 
 inject = require('gulp-inject');
+
+gutil = require('gulp-util');
 
 module.exports = TemplateDownloader = (function() {
   function TemplateDownloader(dirs, template, framework) {
@@ -90,6 +92,7 @@ module.exports = TemplateDownloader = (function() {
   };
 
   TemplateDownloader.prototype.injectAssets = function() {
+    this.silenceGutil();
     return new Promise((function(_this) {
       return function(resolve, reject) {
         var paths;
@@ -99,9 +102,21 @@ module.exports = TemplateDownloader = (function() {
         return gulp.src(path.join(_this.dirs.whole, 'index.html')).pipe(inject(paths, {
           relative: true,
           removeTags: true
-        })).pipe(gulp.dest(_this.dirs.whole)).on('error', reject).on('end', resolve);
+        })).pipe(gulp.dest(_this.dirs.whole)).on('error', reject).on('end', (function() {
+          _this.restoreGutil();
+          return resolve();
+        }));
       };
     })(this));
+  };
+
+  TemplateDownloader.prototype.silenceGutil = function() {
+    this.original_log = gutil.log;
+    return gutil.log = gutil.noop;
+  };
+
+  TemplateDownloader.prototype.restoreGutil = function() {
+    return gutil.log = this.original_log;
   };
 
   return TemplateDownloader;
