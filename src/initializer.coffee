@@ -17,6 +17,7 @@ class Initializer
         name: 'name'
         default: default_app_name
       }, (answer) ->
+        Log.br()
         Pusher = require './pusher'
         pusher = new Pusher(answer.name, process.cwd())
         pusher.push()

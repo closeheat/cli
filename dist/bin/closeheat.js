@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var Apps, Authorizer, Cloner, Creator, Deployer, Initializer, Log, Server, Updater, fs, path, pkg, program, _;
+var Apps, Authorizer, Cloner, Creator, Deployer, Log, Server, Updater, fs, path, pkg, program, _;
 
 program = require('commander');
 
@@ -15,8 +15,6 @@ pkg = require('../../package.json');
 Creator = require('../creator');
 
 Server = require('../server');
-
-Initializer = require('../initializer');
 
 Deployer = require('../deployer');
 

@@ -25,6 +25,7 @@ module.exports = Initializer = (function() {
         "default": default_app_name
       }, function(answer) {
         var Pusher, pusher;
+        Log.br();
         Pusher = require('./pusher');
         pusher = new Pusher(answer.name, process.cwd());
         return pusher.push();
