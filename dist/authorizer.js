@@ -1,4 +1,4 @@
-var Authorizer, Color, Log, Promise, Urls, fs, homePath, inquirer, request;
+var Authorizer, Color, Log, Promise, Urls, fs, homePath, inquirer, path, request;
 
 fs = require('fs');
 
@@ -9,6 +9,8 @@ inquirer = require('inquirer');
 request = require('request');
 
 Promise = require('bluebird');
+
+path = require('path');
 
 Log = require('./log');
 
@@ -24,6 +26,9 @@ module.exports = Authorizer = (function() {
     config = {
       access_token: access_token
     };
+    if (!fs.existsSync(this.configDir())) {
+      fs.mkdirSync(this.configDir());
+    }
     fs.writeFileSync(this.configFile(), JSON.stringify(config));
     return Log.doneLine('Access token saved.');
   };
@@ -33,7 +38,11 @@ module.exports = Authorizer = (function() {
   };
 
   Authorizer.prototype.configFile = function() {
-    return "" + (homePath()) + "/.closeheat/config.json";
+    return path.join(this.configDir(), 'config.json');
+  };
+
+  Authorizer.prototype.configDir = function() {
+    return path.join(homePath(), '.closeheat');
   };
 
   Authorizer.prototype.login = function(cb) {

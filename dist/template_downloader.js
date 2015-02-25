@@ -1,4 +1,5 @@
-var Promise, TemplateDownloader, dirmr, fs, ghdownload, gulp, inject, path, _;
+var Promise, TemplateDownloader, dirmr, fs, ghdownload, gulp, inject, path, _,
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 _ = require('lodash');
 
@@ -12,19 +13,23 @@ dirmr = require('dirmr');
 
 fs = require('fs.extra');
 
+gulp = require('gulp');
+
+inject = require('gulp-inject');
+
 module.exports = TemplateDownloader = (function() {
-  function TemplateDownloader() {
-    var dirs, templates;
-    dirs = arguments[0], templates = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+  function TemplateDownloader(dirs, template, framework) {
     this.dirs = dirs;
-    this.templates = templates;
+    this.template = template;
+    this.framework = framework;
+    this.injectAssets = __bind(this.injectAssets, this);
   }
 
   TemplateDownloader.prototype.download = function() {
     this.cleanTemplateDirs();
-    return this.downloadFromGithub(this.templates[0]).then((function(_this) {
+    return this.downloadFromGithub(this.template).then((function(_this) {
       return function() {
-        return _this.downloadFromGithub(_this.templates[1]);
+        return _this.downloadFromGithub(_this.framework);
       };
     })(this));
   };
@@ -49,7 +54,7 @@ module.exports = TemplateDownloader = (function() {
   };
 
   TemplateDownloader.prototype.templateDirs = function() {
-    return _.map(this.templates, (function(_this) {
+    return _.map([this.template, this.framework], (function(_this) {
       return function(template) {
         return _this.templateDir(template);
       };
@@ -64,6 +69,10 @@ module.exports = TemplateDownloader = (function() {
     });
   };
 
+  TemplateDownloader.prototype.merge = function() {
+    return this.joinDirs().then(this.injectAssets);
+  };
+
   TemplateDownloader.prototype.joinDirs = function() {
     return new Promise((function(_this) {
       return function(resolve, reject) {
@@ -76,6 +85,21 @@ module.exports = TemplateDownloader = (function() {
           }
           return resolve();
         });
+      };
+    })(this));
+  };
+
+  TemplateDownloader.prototype.injectAssets = function() {
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        var paths;
+        paths = gulp.src([path.join(_this.dirs.whole, 'css/**/*.min.css'), path.join(_this.dirs.whole, 'css/**/*.css'), path.join(_this.dirs.whole, 'js/**/*.min.js'), path.join(_this.dirs.whole, 'js/**/*.js')], {
+          read: false
+        });
+        return gulp.src(path.join(_this.dirs.whole, 'index.html')).pipe(inject(paths, {
+          relative: true,
+          removeTags: true
+        })).pipe(gulp.dest(_this.dirs.whole)).on('error', reject).on('end', resolve);
       };
     })(this));
   };

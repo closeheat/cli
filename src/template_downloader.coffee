@@ -4,21 +4,18 @@ path = require 'path'
 ghdownload = require('github-download')
 dirmr = require('dirmr')
 fs = require 'fs.extra'
+gulp = require 'gulp'
+inject = require 'gulp-inject'
 
 module.exports =
 class TemplateDownloader
-  constructor: (@dirs, @templates...) ->
+  constructor: (@dirs, @template, @framework) ->
 
   download: ->
     @cleanTemplateDirs()
 
-    @downloadFromGithub(@templates[0]).then =>
-      @downloadFromGithub(@templates[1])
-
-#     Q.when(@downloadMultipleFromGithub()...).all()
-#   downloadMultipleFromGithub: ->
-#     _.map @templates, (template) =>
-#       @downloadFromGithub(template)
+    @downloadFromGithub(@template).then =>
+      @downloadFromGithub(@framework)
 
   downloadFromGithub: (template) ->
     new Promise (resolve, reject) =>
@@ -37,17 +34,37 @@ class TemplateDownloader
     path.join(@dirs.parts, template)
 
   templateDirs: ->
-    _.map @templates, (template) =>
+    _.map [@template, @framework], (template) =>
       @templateDir(template)
 
   cleanTemplateDirs: ->
     _.each @templateDirs(), (template) ->
       fs.rmrfSync(template) if fs.existsSync template
 
+  merge: ->
+    @joinDirs().then(@injectAssets)
+
   joinDirs: ->
     new Promise (resolve, reject) =>
-      dirmr(@templateDirs()).join(@dirs.whole).complete (err, result) ->
+      dirmr(@templateDirs()).join(@dirs.whole).complete (err, result) =>
         return reject(err) if err
         return reject(result) if result
 
         resolve()
+
+  injectAssets: =>
+    new Promise (resolve, reject) =>
+      paths = gulp.src([
+        path.join(@dirs.whole, 'css/**/*.min.css')
+        path.join(@dirs.whole, 'css/**/*.css')
+        path.join(@dirs.whole, 'js/**/*.min.js')
+        path.join(@dirs.whole, 'js/**/*.js')
+      ]
+      , read: false)
+
+      gulp
+        .src(path.join(@dirs.whole, 'index.html'))
+        .pipe(inject(paths, relative: true, removeTags: true))
+        .pipe(gulp.dest(@dirs.whole))
+        .on('error', reject)
+        .on('end', resolve)

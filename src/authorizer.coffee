@@ -3,6 +3,7 @@ homePath = require('home-path')
 inquirer = require 'inquirer'
 request = require 'request'
 Promise = require 'bluebird'
+path = require 'path'
 
 Log = require './log'
 Urls = require './urls'
@@ -12,6 +13,7 @@ module.exports =
 class Authorizer
   saveToken: (access_token) ->
     config = { access_token: access_token }
+    fs.mkdirSync(@configDir()) unless fs.existsSync @configDir()
     fs.writeFileSync(@configFile(), JSON.stringify(config))
     Log.doneLine('Access token saved.')
 
@@ -19,7 +21,10 @@ class Authorizer
     JSON.parse(fs.readFileSync(@configFile()).toString()).access_token
 
   configFile: ->
-    "#{homePath()}/.closeheat/config.json"
+    path.join(@configDir(), 'config.json')
+
+  configDir: ->
+    path.join(homePath(), '.closeheat')
 
   login: (cb = ->) ->
     login_questions =  [

@@ -50,7 +50,7 @@ class Creator
       downloader = new TemplateDownloader(@dirs, answers.template, answers.framework)
 
       downloader.download().then =>
-        downloader.joinDirs().then =>
+        downloader.merge().then =>
           new Transformer(@dirs).transform(answers).then =>
             @moveToTarget().then =>
               @dirs.clean()
