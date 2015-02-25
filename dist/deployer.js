@@ -1,4 +1,4 @@
-var Authorized, Color, Deployer, Git, Initializer, Log, Promise, Urls, inquirer, _;
+var Authorized, Color, Deployer, Git, Initializer, Log, Promise, Urls, inquirer, open, _;
 
 Promise = require('bluebird');
 
@@ -7,6 +7,8 @@ Git = require('git-wrapper');
 inquirer = require('inquirer');
 
 _ = require('lodash');
+
+open = require('open');
 
 Initializer = require('./initializer');
 
@@ -21,10 +23,11 @@ Color = require('./color');
 module.exports = Deployer = (function() {
   var GITHUB_REPO_REGEX;
 
-  function Deployer() {}
+  function Deployer() {
+    this.git = new Git();
+  }
 
   Deployer.prototype.deploy = function() {
-    this.git = new Git();
     Log.spin('Deploying the app to closeheat.com via Github.');
     return this.addEverything().then((function(_this) {
       return function() {
@@ -227,6 +230,24 @@ module.exports = Deployer = (function() {
         });
       };
     })(this));
+  };
+
+  Deployer.prototype.open = function() {
+    return this.getOriginRepo().then(function(repo) {
+      return Authorized.request({
+        url: Urls.deployedSlug(),
+        repo: repo,
+        method: 'post',
+        json: true
+      }, (function(_this) {
+        return function(err, resp) {
+          var url;
+          url = "http://" + resp.body.slug + ".closeheatapp.com";
+          Log.p("Opening your app at " + url + ".");
+          return open(url);
+        };
+      })(this));
+    });
   };
 
   return Deployer;

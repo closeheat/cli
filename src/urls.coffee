@@ -11,10 +11,13 @@ class Urls
   @api: ->
     # 'http://staging.closeheat.com/api'
     'http://api.closeheat.com'
-    'http://10.30.0.1:4000/api'
+    # 'http://10.30.0.1:4000/api'
 
   @appsIndex: ->
     "#{@api()}/apps"
+
+  @deployedSlug: ->
+    "#{@api()}/deploy/slug"
 
   @deployStatus: ->
     "#{@api()}/deploy/status"

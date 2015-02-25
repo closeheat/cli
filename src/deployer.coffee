@@ -2,6 +2,7 @@ Promise = require 'bluebird'
 Git = require 'git-wrapper'
 inquirer = require 'inquirer'
 _ = require 'lodash'
+open = require 'open'
 
 Initializer = require './initializer'
 Authorized = require './authorized'
@@ -12,9 +13,10 @@ Color = require './color'
 
 module.exports =
 class Deployer
-  deploy: ->
+  constructor: ->
     @git = new Git()
 
+  deploy: ->
     Log.spin('Deploying the app to closeheat.com via Github.')
     @addEverything().then(=>
       Log.stop()
@@ -131,3 +133,10 @@ class Deployer
         return reject(err) if err
 
         resolve(resp.match(GITHUB_REPO_REGEX)[1])
+
+  open: ->
+    @getOriginRepo().then (repo) ->
+      Authorized.request url: Urls.deployedSlug(), repo: repo, method: 'post', json: true, (err, resp) =>
+        url = "http://#{resp.body.slug}.closeheatapp.com"
+        Log.p "Opening your app at #{url}."
+        open(url)

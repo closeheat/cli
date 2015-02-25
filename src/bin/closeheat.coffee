@@ -81,6 +81,14 @@ new Updater().update().then ->
       new Deployer().deploy()
 
   program
+    .command('open')
+    .description('Opens your deployed app in the browser.')
+    .action ->
+      Log.logo()
+
+      new Deployer().open()
+
+  program
     .command('apps')
     .description('Shows a list of your deployed apps.')
     .action ->

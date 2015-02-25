@@ -53,6 +53,10 @@ new Updater().update().then(function() {
     Log.logo();
     return new Deployer().deploy();
   });
+  program.command('open').description('Opens your deployed app in the browser.').action(function() {
+    Log.logo();
+    return new Deployer().open();
+  });
   program.command('apps').description('Shows a list of your deployed apps.').action(function() {
     return new Apps().list();
   });
