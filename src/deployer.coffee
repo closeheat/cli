@@ -122,9 +122,14 @@ class Deployer
 
   requestAndLogStatus: (repo) ->
     Authorized.request url: Urls.deployStatus(), repo: repo, method: 'post', json: true, (err, resp) =>
-      Log.fromBackendStatus(resp.body.status) if resp.body.status != @status
-      @status = resp.body.status
-      @slug = resp.body.slug
+      if resp.body.status != @status
+        Log.fromBackendStatus(resp.body.status)
+        @status = resp.body.status
+        @slug = resp.body.slug
+      else
+        @try ||= 0
+        Log.error 'Deployment timed out.' if @try > 10
+        @try += 1
 
   GITHUB_REPO_REGEX = /origin*.+:(.+\/.+).git \(push\)/
   getOriginRepo: ->

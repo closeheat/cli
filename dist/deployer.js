@@ -210,9 +210,15 @@ module.exports = Deployer = (function() {
       return function(err, resp) {
         if (resp.body.status !== _this.status) {
           Log.fromBackendStatus(resp.body.status);
+          _this.status = resp.body.status;
+          return _this.slug = resp.body.slug;
+        } else {
+          _this["try"] || (_this["try"] = 0);
+          if (_this["try"] > 10) {
+            Log.error('Deployment timed out.');
+          }
+          return _this["try"] += 1;
         }
-        _this.status = resp.body.status;
-        return _this.slug = resp.body.slug;
       };
     })(this));
   };
