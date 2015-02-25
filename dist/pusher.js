@@ -38,7 +38,11 @@ module.exports = Pusher = (function() {
         return _this.createAppInBackend().then(function(resp) {
           Log.stop();
           Log.inner("Created both with name '" + _this.name + "'.");
-          return _this.pushFiles(username);
+          return _this.pushFiles(username).then(function() {
+            Log.br();
+            Log.p("The app " + (Color.violet(_this.name)) + " has been created.");
+            return Log.br();
+          });
         });
       };
     })(this))["catch"](function(err) {

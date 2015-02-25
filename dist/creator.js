@@ -80,9 +80,6 @@ module.exports = Creator = (function() {
                 Log.br();
                 Log.doneLine('Setting up deployment.');
                 return new Pusher(answers.name, _this.dirs.target).push().then(function() {
-                  Log.br();
-                  Log.p("The app " + (Color.violet(answers.name)) + " has been created.");
-                  Log.br();
                   Log.p("Run app server with:");
                   return Log.code(["cd " + answers.name, "closeheat"]);
                 });

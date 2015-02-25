@@ -1,4 +1,22 @@
+inquirer = require 'inquirer'
+path = require 'path'
+Promise = require 'bluebird'
+
+Urls = require './urls'
+Authorized = require './authorized'
+Log = require './log'
+
 module.exports =
 class Initializer
   init: ->
-    console.log "NOT YET IMPLEMENTED"
+    default_app_name = path.basename(process.cwd())
+
+    new Promise (resolve, reject) ->
+      inquirer.prompt {
+        message: 'How should we name your Github repo?'
+        name: 'name'
+        default: default_app_name
+      }, (answer) ->
+        Pusher = require './pusher'
+        pusher = new Pusher(answer.name, process.cwd())
+        pusher.push()

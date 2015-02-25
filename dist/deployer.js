@@ -1,8 +1,12 @@
-var Color, Deployer, Git, Log, Promise;
+var Color, Deployer, Git, Initializer, Log, Promise, inquirer;
 
 Promise = require('bluebird');
 
 Git = require('git-wrapper');
+
+inquirer = require('inquirer');
+
+Initializer = require('./initializer');
 
 Log = require('./log');
 
@@ -55,9 +59,6 @@ module.exports = Deployer = (function() {
         return _this.git.exec('commit', {
           m: true
         }, ["'" + msg + "'"], function(err, resp) {
-          if (err) {
-            return reject(err);
-          }
           return resolve();
         });
       };
@@ -67,10 +68,59 @@ module.exports = Deployer = (function() {
   Deployer.prototype.pushToMainBranch = function() {
     return new Promise((function(_this) {
       return function(resolve, reject) {
-        return _this.getMainBranch().then(function(main_branch) {
-          return _this.push(main_branch).then(function() {
-            return resolve(main_branch);
+        return _this.ensureAppAndRepoExist().then(function() {
+          return _this.getMainBranch().then(function(main_branch) {
+            return _this.push(main_branch).then(function() {
+              return resolve(main_branch);
+            });
           });
+        });
+      };
+    })(this));
+  };
+
+  Deployer.prototype.ensureAppAndRepoExist = function() {
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        return _this.repoExist().then(function(exist) {
+          if (exist) {
+            return resolve();
+          } else {
+            return _this.askToCreateApp().then(resolve);
+          }
+        });
+      };
+    })(this));
+  };
+
+  Deployer.prototype.askToCreateApp = function() {
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        return inquirer.prompt({
+          message: 'This app is not deployed yet. Would you like create a new closeheat app and deploy via Github?',
+          type: 'confirm',
+          name: 'create'
+        }, function(answer) {
+          if (answer.create) {
+            return new Initializer().init().then(resolve);
+          } else {
+            return Log.error('You cannot deploy this app without the closeheat backend and Github setup');
+          }
+        });
+      };
+    })(this));
+  };
+
+  Deployer.prototype.repoExist = function() {
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        return _this.git.exec('remote', function(err, msg) {
+          var origin;
+          if (err) {
+            return reject(err);
+          }
+          origin = msg.match(/origin/);
+          return resolve(origin);
         });
       };
     })(this));

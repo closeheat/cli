@@ -29,7 +29,11 @@ class Pusher
         Log.stop()
         Log.inner("Created both with name '#{@name}'.")
 
-        @pushFiles(username)
+        @pushFiles(username).then =>
+          Log.br()
+          Log.p "The app #{Color.violet(@name)} has been created."
+          Log.br()
+
     ).catch (err) ->
       Log.error(err)
 

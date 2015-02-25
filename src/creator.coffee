@@ -63,9 +63,6 @@ class Creator
               Log.br()
               Log.doneLine 'Setting up deployment.'
               new Pusher(answers.name, @dirs.target).push().then =>
-                Log.br()
-                Log.p "The app #{Color.violet(answers.name)} has been created."
-                Log.br()
                 Log.p "Run app server with:"
                 Log.code [
                   "cd #{answers.name}"
