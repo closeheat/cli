@@ -96,7 +96,7 @@ module.exports = TemplateDownloader = (function() {
     return new Promise((function(_this) {
       return function(resolve, reject) {
         var paths;
-        paths = gulp.src([path.join(_this.dirs.whole, 'css/**/*.min.css'), path.join(_this.dirs.whole, 'css/**/*.css'), path.join(_this.dirs.whole, 'js/**/*.min.js'), path.join(_this.dirs.whole, 'js/**/*.js')], {
+        paths = gulp.src([path.join(_this.dirs.whole, '**/*.min.css'), path.join(_this.dirs.whole, '**/*.css'), path.join(_this.dirs.whole, '**/*.min.js'), path.join(_this.dirs.whole, 'js/*.js')], {
           read: false
         });
         return gulp.src(path.join(_this.dirs.whole, 'index.html')).pipe(inject(paths, {

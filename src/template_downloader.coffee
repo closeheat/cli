@@ -58,10 +58,10 @@ class TemplateDownloader
 
     new Promise (resolve, reject) =>
       paths = gulp.src([
-        path.join(@dirs.whole, 'css/**/*.min.css')
-        path.join(@dirs.whole, 'css/**/*.css')
-        path.join(@dirs.whole, 'js/**/*.min.js')
-        path.join(@dirs.whole, 'js/**/*.js')
+        path.join(@dirs.whole, '**/*.min.css')
+        path.join(@dirs.whole, '**/*.css')
+        path.join(@dirs.whole, '**/*.min.js')
+        path.join(@dirs.whole, 'js/*.js')
       ]
       , read: false)
 
