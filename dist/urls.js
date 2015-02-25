@@ -12,11 +12,16 @@ module.exports = Urls = (function() {
   };
 
   Urls.api = function() {
-    return 'http://api.closeheat.com';
+    'http://api.closeheat.com';
+    return 'http://10.30.0.1:4000/api';
   };
 
   Urls.appsIndex = function() {
     return "" + (this.api()) + "/apps";
+  };
+
+  Urls.deployStatus = function() {
+    return "" + (this.api()) + "/deploy/status";
   };
 
   Urls.createApp = function() {

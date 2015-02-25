@@ -138,6 +138,18 @@ module.exports = Log = (function() {
     return Log.inner("" + (Color.orange('closeheat')) + " | " + msg);
   };
 
+  Log.fromBackendStatus = function(status) {
+    if (status === 'download_github_repo') {
+      return this.backend('Downloading the Github repo.');
+    } else if (status === 'build') {
+      return this.backend('Building app.');
+    } else if (status === 'deployed') {
+      return this.backend('App is live.');
+    } else {
+      return this.backend('Unknown status.');
+    }
+  };
+
   return Log;
 
 })();

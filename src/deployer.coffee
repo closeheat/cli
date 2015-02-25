@@ -1,8 +1,11 @@
 Promise = require 'bluebird'
 Git = require 'git-wrapper'
 inquirer = require 'inquirer'
+_ = require 'lodash'
 
 Initializer = require './initializer'
+Authorized = require './authorized'
+Urls = require './urls'
 
 Log = require './log'
 Color = require './color'
@@ -21,8 +24,9 @@ class Deployer
         Log.inner('Pushing to Github.')
         @pushToMainBranch().then (branch)=>
           Log.inner("Pushed to #{branch} branch on Github.")
-          @deployLog().then ->
-            Log.p("App deployed to #{Color.violet('http://blablabla.closeheatapp.com')}.")
+          @deployLog().then (deployed_name) ->
+            url = "http://#{deployed_name}.closeheatapp.com"
+            Log.p("App deployed to #{Color.violet(url)}.")
             Log.p('Open it quicker with:')
             Log.code('closeheat open')
 
@@ -89,12 +93,41 @@ class Deployer
         resolve()
 
   deployLog: ->
-    new Promise (resolve, reject) ->
-      # Will probably do Authorized.request
-      Log.br()
-      Log.backend('Downloading the Github repo.')
-      Log.backend('Building app.')
-      Log.backend('App is live.')
-      Log.br()
+    new Promise (resolve, reject) =>
+      @getOriginRepo().then (repo) =>
+        @pollAndLogUntilDeployed(repo).then =>
+          Log.br()
+          resolve(@slug)
 
-      resolve()
+  pollAndLogUntilDeployed: (repo) ->
+    new Promise (resolve, reject) =>
+      @status = 'none'
+      Log.br()
+      @promiseWhile(
+        (=> @status != 'deployed'),
+        (=> @requestAndLogStatus(repo))
+      ).then(resolve)
+
+  promiseWhile: (condition, action) ->
+    new Promise (resolve, reject) ->
+      repeat = ->
+        if !condition()
+          return resolve()
+        Promise.cast(action()).then(->
+          _.delay(repeat, 1000)).catch(reject)
+
+      process.nextTick repeat
+
+  requestAndLogStatus: (repo) ->
+    Authorized.request url: Urls.deployStatus(), repo: repo, method: 'post', json: true, (err, resp) =>
+      Log.fromBackendStatus(resp.body.status) if resp.body.status != @status
+      @status = resp.body.status
+      @slug = resp.body.slug
+
+  GITHUB_REPO_REGEX = /origin*.+:(.+\/.+).git \(push\)/
+  getOriginRepo: ->
+    new Promise (resolve, reject) =>
+      @git.exec 'remote', ['--verbose'], (err, resp) ->
+        return reject(err) if err
+
+        resolve(resp.match(GITHUB_REPO_REGEX)[1])

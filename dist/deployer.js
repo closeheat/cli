@@ -1,4 +1,4 @@
-var Color, Deployer, Git, Initializer, Log, Promise, inquirer;
+var Authorized, Color, Deployer, Git, Initializer, Log, Promise, Urls, inquirer, _;
 
 Promise = require('bluebird');
 
@@ -6,13 +6,21 @@ Git = require('git-wrapper');
 
 inquirer = require('inquirer');
 
+_ = require('lodash');
+
 Initializer = require('./initializer');
+
+Authorized = require('./authorized');
+
+Urls = require('./urls');
 
 Log = require('./log');
 
 Color = require('./color');
 
 module.exports = Deployer = (function() {
+  var GITHUB_REPO_REGEX;
+
   function Deployer() {}
 
   Deployer.prototype.deploy = function() {
@@ -27,8 +35,10 @@ module.exports = Deployer = (function() {
           Log.inner('Pushing to Github.');
           return _this.pushToMainBranch().then(function(branch) {
             Log.inner("Pushed to " + branch + " branch on Github.");
-            return _this.deployLog().then(function() {
-              Log.p("App deployed to " + (Color.violet('http://blablabla.closeheatapp.com')) + ".");
+            return _this.deployLog().then(function(deployed_name) {
+              var url;
+              url = "http://" + deployed_name + ".closeheatapp.com";
+              Log.p("App deployed to " + (Color.violet(url)) + ".");
               Log.p('Open it quicker with:');
               return Log.code('closeheat open');
             });
@@ -146,14 +156,77 @@ module.exports = Deployer = (function() {
   };
 
   Deployer.prototype.deployLog = function() {
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        return _this.getOriginRepo().then(function(repo) {
+          return _this.pollAndLogUntilDeployed(repo).then(function() {
+            Log.br();
+            return resolve(_this.slug);
+          });
+        });
+      };
+    })(this));
+  };
+
+  Deployer.prototype.pollAndLogUntilDeployed = function(repo) {
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        _this.status = 'none';
+        Log.br();
+        return _this.promiseWhile((function() {
+          return _this.status !== 'deployed';
+        }), (function() {
+          return _this.requestAndLogStatus(repo);
+        })).then(resolve);
+      };
+    })(this));
+  };
+
+  Deployer.prototype.promiseWhile = function(condition, action) {
     return new Promise(function(resolve, reject) {
-      Log.br();
-      Log.backend('Downloading the Github repo.');
-      Log.backend('Building app.');
-      Log.backend('App is live.');
-      Log.br();
-      return resolve();
+      var repeat;
+      repeat = function() {
+        if (!condition()) {
+          return resolve();
+        }
+        return Promise.cast(action()).then(function() {
+          return _.delay(repeat, 1000);
+        })["catch"](reject);
+      };
+      return process.nextTick(repeat);
     });
+  };
+
+  Deployer.prototype.requestAndLogStatus = function(repo) {
+    return Authorized.request({
+      url: Urls.deployStatus(),
+      repo: repo,
+      method: 'post',
+      json: true
+    }, (function(_this) {
+      return function(err, resp) {
+        if (resp.body.status !== _this.status) {
+          Log.fromBackendStatus(resp.body.status);
+        }
+        _this.status = resp.body.status;
+        return _this.slug = resp.body.slug;
+      };
+    })(this));
+  };
+
+  GITHUB_REPO_REGEX = /origin*.+:(.+\/.+).git \(push\)/;
+
+  Deployer.prototype.getOriginRepo = function() {
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        return _this.git.exec('remote', ['--verbose'], function(err, resp) {
+          if (err) {
+            return reject(err);
+          }
+          return resolve(resp.match(GITHUB_REPO_REGEX)[1]);
+        });
+      };
+    })(this));
   };
 
   return Deployer;

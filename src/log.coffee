@@ -87,3 +87,13 @@ class Log
 
   @backend: (msg) ->
     Log.inner("#{Color.orange('closeheat')} | #{msg}")
+
+  @fromBackendStatus: (status) ->
+    if status == 'download_github_repo'
+      @backend('Downloading the Github repo.')
+    else if status == 'build'
+      @backend('Building app.')
+    else if status == 'deployed'
+      @backend('App is live.')
+    else
+      @backend('Unknown status.')
