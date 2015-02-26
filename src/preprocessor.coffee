@@ -45,7 +45,7 @@ class Preprocessor
   preprocessorFor: (tech) ->
     PREPROCESSORS =
       coffeescript: -> js2coffee()
-      jade: => @jade(nspaces: 2)
+      jade: => @jade(nspaces: 2, doNotEncode: true)
       scss: -> cssScss()
       markdown: -> markdown()
 

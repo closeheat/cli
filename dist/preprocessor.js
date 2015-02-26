@@ -70,7 +70,8 @@ module.exports = Preprocessor = (function() {
       jade: (function(_this) {
         return function() {
           return _this.jade({
-            nspaces: 2
+            nspaces: 2,
+            doNotEncode: true
           });
         };
       })(this),
