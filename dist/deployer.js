@@ -1,4 +1,4 @@
-var Authorized, Color, Deployer, Git, Initializer, Log, Promise, Urls, inquirer, open, _;
+var Authorized, Color, Deployer, Git, Initializer, Log, Promise, Urls, fs, inquirer, open, _;
 
 Promise = require('bluebird');
 
@@ -9,6 +9,8 @@ inquirer = require('inquirer');
 _ = require('lodash');
 
 open = require('open');
+
+fs = require('fs.extra');
 
 Initializer = require('./initializer');
 
@@ -29,21 +31,23 @@ module.exports = Deployer = (function() {
 
   Deployer.prototype.deploy = function() {
     Log.spin('Deploying the app to closeheat.com via Github.');
-    return this.addEverything().then((function(_this) {
+    return this.initGit().then((function(_this) {
       return function() {
-        Log.stop();
-        Log.inner('All files added.');
-        return _this.commit('Deploy via CLI').then(function() {
-          Log.inner('Files commited.');
-          Log.inner('Pushing to Github.');
-          return _this.pushToMainBranch().then(function(branch) {
-            Log.inner("Pushed to " + branch + " branch on Github.");
-            return _this.deployLog().then(function(deployed_name) {
-              var url;
-              url = "http://" + deployed_name + ".closeheatapp.com";
-              Log.p("App deployed to " + (Color.violet(url)) + ".");
-              Log.p('Open it quicker with:');
-              return Log.code('closeheat open');
+        return _this.addEverything().then(function() {
+          Log.stop();
+          Log.inner('All files added.');
+          return _this.commit('Deploy via CLI').then(function() {
+            Log.inner('Files commited.');
+            Log.inner('Pushing to Github.');
+            return _this.pushToMainBranch().then(function(branch) {
+              Log.inner("Pushed to " + branch + " branch on Github.");
+              return _this.deployLog().then(function(deployed_name) {
+                var url;
+                url = "http://" + deployed_name + ".closeheatapp.com";
+                Log.p("App deployed to " + (Color.violet(url)) + ".");
+                Log.p('Open it quicker with:');
+                return Log.code('closeheat open');
+              });
             });
           });
         });
@@ -51,6 +55,20 @@ module.exports = Deployer = (function() {
     })(this))["catch"](function(err) {
       return Log.error(err);
     });
+  };
+
+  Deployer.prototype.initGit = function() {
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        if (fs.existsSync('.git')) {
+          return resolve();
+        } else {
+          return _this.git.exec('init', function(err, resp) {
+            return resolve();
+          });
+        }
+      };
+    })(this));
   };
 
   Deployer.prototype.addEverything = function() {

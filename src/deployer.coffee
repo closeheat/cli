@@ -3,6 +3,7 @@ Git = require 'git-wrapper'
 inquirer = require 'inquirer'
 _ = require 'lodash'
 open = require 'open'
+fs = require 'fs.extra'
 
 Initializer = require './initializer'
 Authorized = require './authorized'
@@ -18,22 +19,31 @@ class Deployer
 
   deploy: ->
     Log.spin('Deploying the app to closeheat.com via Github.')
-    @addEverything().then(=>
-      Log.stop()
-      Log.inner('All files added.')
-      @commit('Deploy via CLI').then =>
-        Log.inner('Files commited.')
-        Log.inner('Pushing to Github.')
-        @pushToMainBranch().then (branch)=>
-          Log.inner("Pushed to #{branch} branch on Github.")
-          @deployLog().then (deployed_name) ->
-            url = "http://#{deployed_name}.closeheatapp.com"
-            Log.p("App deployed to #{Color.violet(url)}.")
-            Log.p('Open it quicker with:')
-            Log.code('closeheat open')
+    @initGit().then(=>
+      @addEverything().then =>
+        Log.stop()
+        Log.inner('All files added.')
+        @commit('Deploy via CLI').then =>
+          Log.inner('Files commited.')
+          Log.inner('Pushing to Github.')
+          @pushToMainBranch().then (branch)=>
+            Log.inner("Pushed to #{branch} branch on Github.")
+            @deployLog().then (deployed_name) ->
+              url = "http://#{deployed_name}.closeheatapp.com"
+              Log.p("App deployed to #{Color.violet(url)}.")
+              Log.p('Open it quicker with:')
+              Log.code('closeheat open')
 
     ).catch (err) ->
       Log.error(err)
+
+  initGit: ->
+    new Promise (resolve, reject) =>
+      if fs.existsSync('.git')
+        resolve()
+      else
+        @git.exec 'init', (err, resp) ->
+          resolve()
 
   addEverything: ->
     new Promise (resolve, reject) =>
