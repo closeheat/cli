@@ -97,7 +97,7 @@ new Updater().update().then ->
   program
     .command('login')
     .option('-t, --token [access-token]', 'Access token from closeheat.com.')
-    .description('Changes the closeheat.com access token on your computer.')
+    .description('Log in to closeheat.com with this computer.')
     .action (opts) ->
       if opts.token
         new Authorizer().saveToken(opts.token)
@@ -106,13 +106,13 @@ new Updater().update().then ->
 
   program
     .command('clone [app-name]')
-    .description('Clones your apps Github repository.')
+    .description('Clones the Github repository of an app.')
     .action (app_name) ->
       new Cloner().clone(app_name)
 
   program
     .command('transform [type] [language]')
-    .description('Transforms files in current dir to other language.')
+    .description('Transforms files in current dir to other language (Experimental).')
     .action (type, language) ->
       Log.logo()
 

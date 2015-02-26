@@ -11,13 +11,15 @@ Promise = require('bluebird');
 mkdirp = require('mkdirp');
 
 module.exports = Dirs = (function() {
+  var tmp_token;
+
+  tmp_token = '353cleaned5sometime';
+
   function Dirs(settings) {
-    var tmp_token;
     if (settings == null) {
       settings = {};
     }
     this.target = path.join(settings.dist || process.cwd(), settings.name);
-    tmp_token = '353cleaned5sometime';
     this.tmp = settings.tmp || ("" + (homePath()) + "/.closeheat/tmp/creations/" + tmp_token + "/");
     this.parts = path.join(this.tmp, 'parts');
     this.whole = path.join(this.tmp, 'whole');
@@ -53,6 +55,10 @@ module.exports = Dirs = (function() {
         });
       };
     })(this));
+  };
+
+  Dirs.buildTmp = function() {
+    return "" + (homePath()) + "/.closeheat/tmp/builds/" + tmp_token + "/";
   };
 
   return Dirs;

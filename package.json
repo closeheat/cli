@@ -1,6 +1,6 @@
 {
   "name": "closeheat",
-  "version": "0.12.1",
+  "version": "0.12.2",
   "author": "Domas Bitvinskas <domas.bitvinskas@me.com>",
   "contributors": [
     "Justas Palumickas <jpalumickas@gmail.com>"
@@ -21,7 +21,7 @@
     "charge": "0.0.3",
     "check-update": "0.0.7",
     "chokidar": "^1.0.0-rc3",
-    "closeheat-builder": "0.3.0",
+    "closeheat-builder": "0.4.5",
     "commander": "^2.6.0",
     "couleurs": "^3.0.0",
     "dirmr": "0.0.3",

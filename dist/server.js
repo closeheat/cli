@@ -38,7 +38,7 @@ module.exports = Server = (function() {
     return watcher.build().then((function(_this) {
       return function() {
         var app, lr_port, port;
-        app = charge(path.join(_this.dist, 'app'), opts);
+        app = charge(_this.dist, opts);
         port = opts.port || 9000;
         _this.server = app.start(port);
         lr_port = 35729;

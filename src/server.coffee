@@ -29,7 +29,7 @@ class Server
     watcher = new Watcher(@src, @dist)
 
     watcher.build().then =>
-      app = charge(path.join(@dist, 'app'), opts)
+      app = charge(@dist, opts)
 
       port = opts.port || 9000
       @server = app.start(port)

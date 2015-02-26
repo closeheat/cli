@@ -60,17 +60,17 @@ new Updater().update().then(function() {
   program.command('apps').description('Shows a list of your deployed apps.').action(function() {
     return new Apps().list();
   });
-  program.command('login').option('-t, --token [access-token]', 'Access token from closeheat.com.').description('Changes the closeheat.com access token on your computer.').action(function(opts) {
+  program.command('login').option('-t, --token [access-token]', 'Access token from closeheat.com.').description('Log in to closeheat.com with this computer.').action(function(opts) {
     if (opts.token) {
       return new Authorizer().saveToken(opts.token);
     } else {
       return new Authorizer().login();
     }
   });
-  program.command('clone [app-name]').description('Clones your apps Github repository.').action(function(app_name) {
+  program.command('clone [app-name]').description('Clones the Github repository of an app.').action(function(app_name) {
     return new Cloner().clone(app_name);
   });
-  program.command('transform [type] [language]').description('Transforms files in current dir to other language.').action(function(type, language) {
+  program.command('transform [type] [language]').description('Transforms files in current dir to other language (Experimental).').action(function(type, language) {
     var Dirs, Transformer, dirs, settings;
     Log.logo();
     Dirs = require('../dirs');

@@ -9,14 +9,14 @@ _ = require 'lodash'
 
 Builder = require 'closeheat-builder'
 
+Dirs = require './dirs'
+
 Log = require './log'
 Color = require './color'
 
 module.exports =
 class Watcher
   constructor: (@src, @dist) ->
-    @dist_app = path.join(@dist, 'app')
-
     @watcher = chokidar.watch @src,
       ignored: /.git/
       ignoreInitial: true
@@ -33,9 +33,9 @@ class Watcher
 
   execBuild: (resolve, reject) ->
     Log.spin('Building the app.')
-    rimraf.sync(@dist_app)
+    rimraf.sync(@dist)
 
-    new Builder(@src, @dist)
+    new Builder(@src, @dist, Dirs.buildTmp())
     .on('module-detected', (module) ->
       Log.spin("New require detected. Installing #{Color.orange(module)}.")
     )

@@ -6,10 +6,11 @@ mkdirp = require('mkdirp')
 
 module.exports =
 class Dirs
+  tmp_token = '353cleaned5sometime'
+
   constructor: (settings = {}) ->
     @target = path.join(settings.dist || process.cwd(), settings.name)
 
-    tmp_token = '353cleaned5sometime'
     @tmp = settings.tmp || "#{homePath()}/.closeheat/tmp/creations/#{tmp_token}/"
 
     @parts = path.join(@tmp, 'parts')
@@ -31,3 +32,6 @@ class Dirs
             return reject(transformed_error) if transformed_error
 
             resolve()
+
+  @buildTmp: ->
+    "#{homePath()}/.closeheat/tmp/builds/#{tmp_token}/"

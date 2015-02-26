@@ -1,4 +1,4 @@
-var Builder, Color, Log, Promise, Watcher, chokidar, moment, path, rimraf, tinylr, util, _,
+var Builder, Color, Dirs, Log, Promise, Watcher, chokidar, moment, path, rimraf, tinylr, util, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 chokidar = require('chokidar');
@@ -19,6 +19,8 @@ _ = require('lodash');
 
 Builder = require('closeheat-builder');
 
+Dirs = require('./dirs');
+
 Log = require('./log');
 
 Color = require('./color');
@@ -28,7 +30,6 @@ module.exports = Watcher = (function() {
     this.src = src;
     this.dist = dist;
     this.build = __bind(this.build, this);
-    this.dist_app = path.join(this.dist, 'app');
     this.watcher = chokidar.watch(this.src, {
       ignored: /.git/,
       ignoreInitial: true
@@ -58,8 +59,8 @@ module.exports = Watcher = (function() {
 
   Watcher.prototype.execBuild = function(resolve, reject) {
     Log.spin('Building the app.');
-    rimraf.sync(this.dist_app);
-    return new Builder(this.src, this.dist).on('module-detected', function(module) {
+    rimraf.sync(this.dist);
+    return new Builder(this.src, this.dist, Dirs.buildTmp()).on('module-detected', function(module) {
       return Log.spin("New require detected. Installing " + (Color.orange(module)) + ".");
     }).on('module-installed', function(module) {
       Log.stop();
