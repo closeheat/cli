@@ -25,7 +25,7 @@ class Pusher
     @getGithubUsername().then((username) =>
       Log.inner("Using Github username: #{Color.orange(username)}")
       Log.spin('Creating closeheat app and Github repository.')
-      @createAppInBackend().then (resp) =>
+      @createAppInBackend().then =>
         Log.stop()
         Log.inner("Created both with name '#{@name}'.")
 
@@ -45,8 +45,9 @@ class Pusher
 
   createAppInBackend: =>
     new Promise (resolve, reject) =>
-      Authorized.request { url: Urls.createApp(), qs: { repo_name: @name }, method: 'post' }, (err, resp) =>
+      Authorized.request { url: Urls.createApp(), qs: { repo_name: @name }, method: 'post', json: true }, (err, resp) =>
         return reject(err) if err
+        return reject(resp.body.msg) if resp.body.status == 'error'
 
         resolve(resp)
 

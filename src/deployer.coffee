@@ -131,9 +131,9 @@ class Deployer
       process.nextTick repeat
 
   requestAndLogStatus: (repo) ->
-    Authorized.request url: Urls.deployStatus(), repo: repo, method: 'post', json: true, (err, resp) =>
+    Authorized.request url: Urls.deployStatus(), qs: { repo: repo }, method: 'post', json: true, (err, resp) =>
       if resp.body.status != @status
-        Log.fromBackendStatus(resp.body.status)
+        Log.fromBackendStatus(resp.body.status, resp.body.msg)
         @status = resp.body.status
         @slug = resp.body.slug
       else

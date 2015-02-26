@@ -221,13 +221,15 @@ module.exports = Deployer = (function() {
   Deployer.prototype.requestAndLogStatus = function(repo) {
     return Authorized.request({
       url: Urls.deployStatus(),
-      repo: repo,
+      qs: {
+        repo: repo
+      },
       method: 'post',
       json: true
     }, (function(_this) {
       return function(err, resp) {
         if (resp.body.status !== _this.status) {
-          Log.fromBackendStatus(resp.body.status);
+          Log.fromBackendStatus(resp.body.status, resp.body.msg);
           _this.status = resp.body.status;
           return _this.slug = resp.body.slug;
         } else {

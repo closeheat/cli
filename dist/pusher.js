@@ -35,7 +35,7 @@ module.exports = Pusher = (function() {
       return function(username) {
         Log.inner("Using Github username: " + (Color.orange(username)));
         Log.spin('Creating closeheat app and Github repository.');
-        return _this.createAppInBackend().then(function(resp) {
+        return _this.createAppInBackend().then(function() {
           Log.stop();
           Log.inner("Created both with name '" + _this.name + "'.");
           return _this.pushFiles(username).then(function() {
@@ -65,10 +65,14 @@ module.exports = Pusher = (function() {
           qs: {
             repo_name: _this.name
           },
-          method: 'post'
+          method: 'post',
+          json: true
         }, function(err, resp) {
           if (err) {
             return reject(err);
+          }
+          if (resp.body.status === 'error') {
+            return reject(resp.body.msg);
           }
           return resolve(resp);
         });
