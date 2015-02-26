@@ -1,10 +1,18 @@
-var Color, Couleurs, Log, Spinner, chalk, _;
+var Color, Couleurs, Log, Spinner, chalk, opbeat, _;
 
 _ = require('lodash');
 
 chalk = require('chalk');
 
-Couleurs = require("couleurs")();
+Couleurs = require('couleurs')();
+
+opbeat = require('opbeat')({
+  organizationId: '1979aa4688cb49b7962c8658bfbc649b',
+  appId: 'c19a8164de',
+  secretToken: 'f12b94d66534f8cc856401008ddd06b627bc5d53',
+  clientLogLevel: 'fatal',
+  active: 'true'
+});
 
 Spinner = require('./spinner');
 
@@ -95,6 +103,7 @@ module.exports = Log = (function() {
     this.stop();
     this.br();
     this.line("" + (Color.red('ERROR')) + " | " + msg);
+    opbeat.captureError(new Error(msg));
     if (exit) {
       return process.exit();
     }

@@ -1,6 +1,6 @@
 {
   "name": "closeheat",
-  "version": "0.12.4",
+  "version": "0.12.5",
   "author": "Domas Bitvinskas <domas.bitvinskas@me.com>",
   "contributors": [
     "Justas Palumickas <jpalumickas@gmail.com>"
@@ -46,6 +46,7 @@
     "marked": "^0.3.3",
     "mkdirp": "^0.5.0",
     "moment": "^2.9.0",
+    "opbeat": "^1.1.2",
     "open": "0.0.5",
     "path": "^0.11.14",
     "request": "^2.53.0",
