@@ -48,7 +48,7 @@ module.exports = Deployer = (function() {
                 url = "http://" + deployed_name + ".closeheatapp.com";
                 Log.p("App deployed to " + (Color.violet(url)) + ".");
                 Log.p('Open it quicker with:');
-                return Log.code('closeheat open');
+                return Log.code("cd " + deployed_name + " && closeheat open");
               });
             });
           });
@@ -194,7 +194,6 @@ module.exports = Deployer = (function() {
   };
 
   Deployer.prototype.open = function() {
-    console.log('getting ori');
     return this.getOriginRepo().then((function(_this) {
       return function(repo) {
         return _this.getSlug(repo).then(function(slug) {

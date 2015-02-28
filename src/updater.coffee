@@ -29,7 +29,7 @@ class Updater
     Config.update('last_update_check', Date.now())
 
   askForUpdate: (version) ->
-    Log.p "A new version (#{version}) of closeheat is available. Run #{Color.violet('npm install -g closeheat')} to update."
+    Log.p "A new version (#{version}) of closeheat is available. Run #{Color.violet('npm update closeheat -g')} to update."
     Log.br()
 
   checkForUpdate: ->

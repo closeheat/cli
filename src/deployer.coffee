@@ -33,7 +33,7 @@ class Deployer
               url = "http://#{deployed_name}.closeheatapp.com"
               Log.p("App deployed to #{Color.violet(url)}.")
               Log.p('Open it quicker with:')
-              Log.code('closeheat open')
+              Log.code("cd #{deployed_name} && closeheat open")
 
     ).catch (err) ->
       Log.error(err)
@@ -114,7 +114,6 @@ class Deployer
         resolve(resp.match(GITHUB_REPO_REGEX)[1])
 
   open: ->
-    console.log 'getting ori'
     @getOriginRepo().then (repo) =>
       @getSlug(repo).then (slug) ->
         url = "http://#{slug}.closeheatapp.com"

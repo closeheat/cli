@@ -49,7 +49,7 @@ module.exports = Updater = (function() {
   };
 
   Updater.prototype.askForUpdate = function(version) {
-    Log.p("A new version (" + version + ") of closeheat is available. Run " + (Color.violet('npm install -g closeheat')) + " to update.");
+    Log.p("A new version (" + version + ") of closeheat is available. Run " + (Color.violet('npm update closeheat -g')) + " to update.");
     return Log.br();
   };
 
