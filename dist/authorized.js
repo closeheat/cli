@@ -1,4 +1,4 @@
-var Authorized, Authorizer, request, _,
+var Authorized, Authorizer, Log, request, _,
   __slice = [].slice;
 
 request = require('request');
@@ -6,6 +6,8 @@ request = require('request');
 _ = require('lodash');
 
 Authorizer = require('./authorizer');
+
+Log = require('./log');
 
 module.exports = Authorized = (function() {
   function Authorized() {}
@@ -29,6 +31,9 @@ module.exports = Authorized = (function() {
   Authorized.loginOnUnauthorized = function(opts, cb) {
     return function(err, resp) {
       var authorizer;
+      if (err) {
+        Log.error(err);
+      }
       authorizer = new Authorizer();
       if (authorizer.unauthorized(resp)) {
         return authorizer.forceLogin(function() {

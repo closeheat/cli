@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var Apps, Authorizer, Cloner, Creator, Deployer, Log, Server, Updater, fs, path, pkg, program, _;
+var Apps, Authorizer, Cloner, Creator, DeployLog, Deployer, Log, Server, Updater, fs, path, pkg, program, _;
 
 program = require('commander');
 
@@ -28,6 +28,8 @@ Log = require('../log');
 
 Updater = require('../updater');
 
+DeployLog = require('../deploy_log');
+
 new Updater().update().then(function() {
   var logo_path, tube;
   program.version(pkg.version).usage('<keywords>');
@@ -52,6 +54,10 @@ new Updater().update().then(function() {
   program.command('deploy').description('Deploys your app to closeheat.com via Github.').action(function() {
     Log.logo();
     return new Deployer().deploy();
+  });
+  program.command('log').description('Polls the log of the last deployment. Usable: git push origin master && closeheat log').action(function() {
+    Log.logo();
+    return new DeployLog().fromCurrentCommit();
   });
   program.command('open').description('Opens your deployed app in the browser.').action(function() {
     Log.logo();

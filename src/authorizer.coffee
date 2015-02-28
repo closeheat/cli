@@ -51,6 +51,8 @@ class Authorizer
   getToken: (answers) ->
     new Promise (resolve, reject) =>
       request url: Urls.getToken(), qs: answers, method: 'post', json: true, (err, resp) =>
+        Log.error(err) if err
+
         if resp.statusCode == 200
           @saveToken(resp.body.access_token)
           resolve()
@@ -69,10 +71,3 @@ class Authorizer
   checkLoggedIn: (resp, cb) ->
     if @unauthorized(resp)
       @forceLogin(cb)
-
-  onlyLoggedIn: (resp) ->
-    new Promise (resolve, reject) =>
-      if @unauthorized(resp)
-        @forceLogin(resolve)
-      else
-        resolve()

@@ -79,6 +79,9 @@ module.exports = Authorizer = (function() {
           method: 'post',
           json: true
         }, function(err, resp) {
+          if (err) {
+            Log.error(err);
+          }
           if (resp.statusCode === 200) {
             _this.saveToken(resp.body.access_token);
             return resolve();
@@ -108,18 +111,6 @@ module.exports = Authorizer = (function() {
     if (this.unauthorized(resp)) {
       return this.forceLogin(cb);
     }
-  };
-
-  Authorizer.prototype.onlyLoggedIn = function(resp) {
-    return new Promise((function(_this) {
-      return function(resolve, reject) {
-        if (_this.unauthorized(resp)) {
-          return _this.forceLogin(resolve);
-        } else {
-          return resolve();
-        }
-      };
-    })(this));
   };
 
   return Authorizer;

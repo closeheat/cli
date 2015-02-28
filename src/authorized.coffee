@@ -2,6 +2,7 @@ request = require 'request'
 _ = require 'lodash'
 
 Authorizer = require './authorizer'
+Log = require './log'
 
 module.exports =
 class Authorized
@@ -16,6 +17,7 @@ class Authorized
 
   @loginOnUnauthorized: (opts, cb) =>
     (err, resp) =>
+      Log.error(err) if err
       authorizer = new Authorizer()
 
       if authorizer.unauthorized(resp)

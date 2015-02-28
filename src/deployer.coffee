@@ -8,6 +8,7 @@ fs = require 'fs.extra'
 Initializer = require './initializer'
 Authorized = require './authorized'
 Urls = require './urls'
+DeployLog = require './deploy_log'
 
 Log = require './log'
 Color = require './color'
@@ -26,9 +27,9 @@ class Deployer
         @commit('Deploy via CLI').then =>
           Log.inner('Files commited.')
           Log.inner('Pushing to Github.')
-          @pushToMainBranch().then (branch)=>
+          @pushToMainBranch().then (branch) ->
             Log.inner("Pushed to #{branch} branch on Github.")
-            @deployLog().then (deployed_name) ->
+            new DeployLog().fromCurrentCommit().then (deployed_name) ->
               url = "http://#{deployed_name}.closeheatapp.com"
               Log.p("App deployed to #{Color.violet(url)}.")
               Log.p('Open it quicker with:')
@@ -104,43 +105,6 @@ class Deployer
 
         resolve()
 
-  deployLog: ->
-    new Promise (resolve, reject) =>
-      @getOriginRepo().then (repo) =>
-        @pollAndLogUntilDeployed(repo).then =>
-          Log.br()
-          resolve(@slug)
-
-  pollAndLogUntilDeployed: (repo) ->
-    new Promise (resolve, reject) =>
-      @status = 'none'
-      Log.br()
-      @promiseWhile(
-        (=> @status != 'deployed'),
-        (=> @requestAndLogStatus(repo))
-      ).then(resolve)
-
-  promiseWhile: (condition, action) ->
-    new Promise (resolve, reject) ->
-      repeat = ->
-        if !condition()
-          return resolve()
-        Promise.cast(action()).then(->
-          _.delay(repeat, 1000)).catch(reject)
-
-      process.nextTick repeat
-
-  requestAndLogStatus: (repo) ->
-    Authorized.request url: Urls.deployStatus(), qs: { repo: repo }, method: 'post', json: true, (err, resp) =>
-      if resp.body.status != @status
-        Log.fromBackendStatus(resp.body.status, resp.body.msg)
-        @status = resp.body.status
-        @slug = resp.body.slug
-      else
-        @try ||= 0
-        Log.error 'Deployment timed out.' if @try > 10
-        @try += 1
-
   GITHUB_REPO_REGEX = /origin*.+:(.+\/.+).git \(push\)/
   getOriginRepo: ->
     new Promise (resolve, reject) =>
@@ -150,8 +114,20 @@ class Deployer
         resolve(resp.match(GITHUB_REPO_REGEX)[1])
 
   open: ->
-    @getOriginRepo().then (repo) ->
-      Authorized.request url: Urls.deployedSlug(), repo: repo, method: 'post', json: true, (err, resp) =>
-        url = "http://#{resp.body.slug}.closeheatapp.com"
+    console.log 'getting ori'
+    @getOriginRepo().then (repo) =>
+      @getSlug(repo).then (slug) ->
+        url = "http://#{slug}.closeheatapp.com"
         Log.p "Opening your app at #{url}."
         open(url)
+
+  getSlug: (repo) ->
+    new Promise (resolve, reject) ->
+      Authorized.request url: Urls.deployedSlug(), qs: { repo: repo }, method: 'post', json: true, (err, resp) ->
+        return reject(err) if err
+
+        if _.isUndefined(resp.body.slug)
+          msg = "Could not find your closeheat app with GitHub repo '#{repo}'. Please deploy the app via UI"
+          return Log.error(msg)
+
+        resolve(resp.body.slug)

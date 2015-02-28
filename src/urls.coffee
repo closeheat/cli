@@ -19,8 +19,11 @@ class Urls
   @deployedSlug: ->
     "#{@api()}/deploy/slug"
 
-  @deployStatus: ->
-    "#{@api()}/deploy/status"
+  @latestBuild: (slug) ->
+    "#{@api()}/apps/#{slug}/builds/latest"
+
+  @buildForCLI: (slug) ->
+    "#{@api()}/apps/#{slug}/builds/for_cli"
 
   @createApp: ->
     "#{@api()}/apps"

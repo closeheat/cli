@@ -23,8 +23,12 @@ module.exports = Urls = (function() {
     return "" + (this.api()) + "/deploy/slug";
   };
 
-  Urls.deployStatus = function() {
-    return "" + (this.api()) + "/deploy/status";
+  Urls.latestBuild = function(slug) {
+    return "" + (this.api()) + "/apps/" + slug + "/builds/latest";
+  };
+
+  Urls.buildForCLI = function(slug) {
+    return "" + (this.api()) + "/apps/" + slug + "/builds/for_cli";
   };
 
   Urls.createApp = function() {

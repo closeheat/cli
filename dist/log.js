@@ -1,10 +1,12 @@
-var Color, Couleurs, Log, Spinner, chalk, opbeat, _;
+var Color, Couleurs, Log, Promise, Spinner, chalk, opbeat, _;
 
 _ = require('lodash');
 
 chalk = require('chalk');
 
 Couleurs = require('couleurs')();
+
+Promise = require('bluebird');
 
 opbeat = require('opbeat')({
   organizationId: '1979aa4688cb49b7962c8658bfbc649b',
@@ -103,10 +105,19 @@ module.exports = Log = (function() {
     this.stop();
     this.br();
     this.line("" + (Color.red('ERROR')) + " | " + msg);
-    opbeat.captureError(new Error(msg));
-    if (exit) {
-      return process.exit();
-    }
+    return this.sendErrorLog(msg).then(function() {
+      if (exit) {
+        return process.exit();
+      }
+    });
+  };
+
+  Log.sendErrorLog = function(msg) {
+    return new Promise(function(resolve, reject) {
+      opbeat.on('logged', resolve);
+      opbeat.on('error', resolve);
+      return opbeat.captureError(new Error(msg));
+    });
   };
 
   Log.backendError = function() {
@@ -145,24 +156,6 @@ module.exports = Log = (function() {
 
   Log.backend = function(msg) {
     return Log.inner("" + (Color.orange('closeheat')) + " | " + msg);
-  };
-
-  Log.fromBackendStatus = function(status, msg) {
-    if (status === 'download_github_repo') {
-      return this.backend('Downloading the Github repo.');
-    } else if (status === 'build') {
-      return this.backend('Building app.');
-    } else if (status === 'deployed') {
-      return this.backend('App is live.');
-    } else if (status === 'error') {
-      if (msg) {
-        return this.error(msg);
-      } else {
-        return this.backendError();
-      }
-    } else {
-      return this.backend('Unknown status.');
-    }
   };
 
   return Log;

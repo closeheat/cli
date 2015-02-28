@@ -1,6 +1,7 @@
 _ = require 'lodash'
 chalk = require 'chalk'
 Couleurs = require('couleurs')()
+Promise = require 'bluebird'
 opbeat = require('opbeat')(
   organizationId: '1979aa4688cb49b7962c8658bfbc649b'
   appId: 'c19a8164de'
@@ -66,8 +67,16 @@ class Log
     @stop()
     @br()
     @line("#{Color.red('ERROR')} | #{msg}")
-    opbeat.captureError(new Error(msg))
-    process.exit() if exit
+
+    @sendErrorLog(msg).then ->
+      process.exit() if exit
+
+  @sendErrorLog: (msg) ->
+    new Promise (resolve, reject) ->
+      opbeat.on 'logged', resolve
+      opbeat.on 'error', resolve
+
+      opbeat.captureError(new Error(msg))
 
   @backendError: ->
     @error('Backend responded with an error.')
@@ -95,18 +104,3 @@ class Log
 
   @backend: (msg) ->
     Log.inner("#{Color.orange('closeheat')} | #{msg}")
-
-  @fromBackendStatus: (status, msg) ->
-    if status == 'download_github_repo'
-      @backend('Downloading the Github repo.')
-    else if status == 'build'
-      @backend('Building app.')
-    else if status == 'deployed'
-      @backend('App is live.')
-    else if status == 'error'
-      if msg
-        @error(msg)
-      else
-        @backendError()
-    else
-      @backend('Unknown status.')

@@ -1,4 +1,4 @@
-var Authorized, Color, Deployer, Git, Initializer, Log, Promise, Urls, fs, inquirer, open, _;
+var Authorized, Color, DeployLog, Deployer, Git, Initializer, Log, Promise, Urls, fs, inquirer, open, _;
 
 Promise = require('bluebird');
 
@@ -17,6 +17,8 @@ Initializer = require('./initializer');
 Authorized = require('./authorized');
 
 Urls = require('./urls');
+
+DeployLog = require('./deploy_log');
 
 Log = require('./log');
 
@@ -41,7 +43,7 @@ module.exports = Deployer = (function() {
             Log.inner('Pushing to Github.');
             return _this.pushToMainBranch().then(function(branch) {
               Log.inner("Pushed to " + branch + " branch on Github.");
-              return _this.deployLog().then(function(deployed_name) {
+              return new DeployLog().fromCurrentCommit().then(function(deployed_name) {
                 var url;
                 url = "http://" + deployed_name + ".closeheatapp.com";
                 Log.p("App deployed to " + (Color.violet(url)) + ".");
@@ -176,73 +178,6 @@ module.exports = Deployer = (function() {
     })(this));
   };
 
-  Deployer.prototype.deployLog = function() {
-    return new Promise((function(_this) {
-      return function(resolve, reject) {
-        return _this.getOriginRepo().then(function(repo) {
-          return _this.pollAndLogUntilDeployed(repo).then(function() {
-            Log.br();
-            return resolve(_this.slug);
-          });
-        });
-      };
-    })(this));
-  };
-
-  Deployer.prototype.pollAndLogUntilDeployed = function(repo) {
-    return new Promise((function(_this) {
-      return function(resolve, reject) {
-        _this.status = 'none';
-        Log.br();
-        return _this.promiseWhile((function() {
-          return _this.status !== 'deployed';
-        }), (function() {
-          return _this.requestAndLogStatus(repo);
-        })).then(resolve);
-      };
-    })(this));
-  };
-
-  Deployer.prototype.promiseWhile = function(condition, action) {
-    return new Promise(function(resolve, reject) {
-      var repeat;
-      repeat = function() {
-        if (!condition()) {
-          return resolve();
-        }
-        return Promise.cast(action()).then(function() {
-          return _.delay(repeat, 1000);
-        })["catch"](reject);
-      };
-      return process.nextTick(repeat);
-    });
-  };
-
-  Deployer.prototype.requestAndLogStatus = function(repo) {
-    return Authorized.request({
-      url: Urls.deployStatus(),
-      qs: {
-        repo: repo
-      },
-      method: 'post',
-      json: true
-    }, (function(_this) {
-      return function(err, resp) {
-        if (resp.body.status !== _this.status) {
-          Log.fromBackendStatus(resp.body.status, resp.body.msg);
-          _this.status = resp.body.status;
-          return _this.slug = resp.body.slug;
-        } else {
-          _this["try"] || (_this["try"] = 0);
-          if (_this["try"] > 10) {
-            Log.error('Deployment timed out.');
-          }
-          return _this["try"] += 1;
-        }
-      };
-    })(this));
-  };
-
   GITHUB_REPO_REGEX = /origin*.+:(.+\/.+).git \(push\)/;
 
   Deployer.prototype.getOriginRepo = function() {
@@ -259,20 +194,39 @@ module.exports = Deployer = (function() {
   };
 
   Deployer.prototype.open = function() {
-    return this.getOriginRepo().then(function(repo) {
-      return Authorized.request({
-        url: Urls.deployedSlug(),
-        repo: repo,
-        method: 'post',
-        json: true
-      }, (function(_this) {
-        return function(err, resp) {
+    console.log('getting ori');
+    return this.getOriginRepo().then((function(_this) {
+      return function(repo) {
+        return _this.getSlug(repo).then(function(slug) {
           var url;
-          url = "http://" + resp.body.slug + ".closeheatapp.com";
+          url = "http://" + slug + ".closeheatapp.com";
           Log.p("Opening your app at " + url + ".");
           return open(url);
-        };
-      })(this));
+        });
+      };
+    })(this));
+  };
+
+  Deployer.prototype.getSlug = function(repo) {
+    return new Promise(function(resolve, reject) {
+      return Authorized.request({
+        url: Urls.deployedSlug(),
+        qs: {
+          repo: repo
+        },
+        method: 'post',
+        json: true
+      }, function(err, resp) {
+        var msg;
+        if (err) {
+          return reject(err);
+        }
+        if (_.isUndefined(resp.body.slug)) {
+          msg = "Could not find your closeheat app with GitHub repo '" + repo + "'. Please deploy the app via UI";
+          return Log.error(msg);
+        }
+        return resolve(resp.body.slug);
+      });
     });
   };
 

@@ -12,6 +12,7 @@ Authorizer = require '../authorizer'
 Cloner = require '../cloner'
 Log = require '../log'
 Updater = require '../updater'
+DeployLog = require '../deploy_log'
 
 new Updater().update().then ->
   program
@@ -79,6 +80,14 @@ new Updater().update().then ->
       Log.logo()
 
       new Deployer().deploy()
+
+  program
+    .command('log')
+    .description('Polls the log of the last deployment. Usable: git push origin master && closeheat log')
+    .action ->
+      Log.logo()
+
+      new DeployLog().fromCurrentCommit()
 
   program
     .command('open')
