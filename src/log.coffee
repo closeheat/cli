@@ -12,6 +12,8 @@ opbeat = require('opbeat')(
 
 Spinner = require './spinner'
 Color = require './color'
+Authorizer = require './authorizer'
+Config = require './config'
 
 module.exports =
 class Log
@@ -76,7 +78,11 @@ class Log
       opbeat.on 'logged', resolve
       opbeat.on 'error', resolve
 
-      opbeat.captureError(new Error(msg))
+      opbeat.captureError new Error(msg),
+        extra:
+          closeheat_version: Config.version()
+          token: new Authorizer().accessToken()
+          cwd: process.cwd()
 
   @backendError: ->
     @error('Backend responded with an error.')

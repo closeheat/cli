@@ -1,4 +1,4 @@
-var Color, Couleurs, Log, Promise, Spinner, chalk, opbeat, _;
+var Authorizer, Color, Config, Couleurs, Log, Promise, Spinner, chalk, opbeat, _;
 
 _ = require('lodash');
 
@@ -19,6 +19,10 @@ opbeat = require('opbeat')({
 Spinner = require('./spinner');
 
 Color = require('./color');
+
+Authorizer = require('./authorizer');
+
+Config = require('./config');
 
 module.exports = Log = (function() {
   function Log() {}
@@ -116,7 +120,13 @@ module.exports = Log = (function() {
     return new Promise(function(resolve, reject) {
       opbeat.on('logged', resolve);
       opbeat.on('error', resolve);
-      return opbeat.captureError(new Error(msg));
+      return opbeat.captureError(new Error(msg), {
+        extra: {
+          closeheat_version: Config.version(),
+          token: new Authorizer().accessToken(),
+          cwd: process.cwd()
+        }
+      });
     });
   };
 
