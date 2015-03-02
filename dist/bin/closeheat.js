@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var Apps, Authorizer, Cloner, Creator, DeployLog, Deployer, Log, Server, Updater, fs, path, pkg, program, _;
+var Analytics, Apps, Authorizer, Cloner, Config, Creator, DeployLog, Deployer, Log, Server, Updater, analytics, fs, path, pkg, program, _;
 
 program = require('commander');
 
@@ -9,6 +9,12 @@ _ = require('lodash');
 fs = require('fs');
 
 path = require('path');
+
+Analytics = require('analytics-node');
+
+analytics = new Analytics('pVSvIAsACZTmgRBXLJAoiz9c1zNbIOhU', {
+  flushAt: 1
+});
 
 pkg = require('../../package.json');
 
@@ -30,8 +36,17 @@ Updater = require('../updater');
 
 DeployLog = require('../deploy_log');
 
+Config = require('../config');
+
 new Updater().update().then(function() {
   var logo_path, tube;
+  analytics.track({
+    userId: new Authorizer().accessToken(),
+    event: 'Command run',
+    properties: {
+      command: process.argv.join(' ')
+    }
+  });
   program.version(pkg.version).usage('<keywords>');
   program.command('create [app-name]').description('Creates a new app with clean setup and directory structure.').option('-f, --framework [name]', 'Framework').option('-t, --template [name]', 'Template').option('--javascript [name]', 'Javascript precompiler').option('--html [name]', 'HTML precompiler').option('--css [name]', 'CSS precompiler').option('--tmp [path]', 'The path of temporary directory when creating').option('--dist [path]', 'Path of destination of where to create app dir').option('--no-deploy', 'Do not create Github repo and closeheat app').action(function(name, opts) {
     var includes_template_settings, settings, template_settings;

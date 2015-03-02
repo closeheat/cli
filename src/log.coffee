@@ -82,7 +82,6 @@ class Log
         extra:
           closeheat_version: Config.version()
           token: new Authorizer().accessToken()
-          cwd: process.cwd()
 
   @backendError: ->
     @error('Backend responded with an error.')

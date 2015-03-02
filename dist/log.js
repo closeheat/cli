@@ -123,8 +123,7 @@ module.exports = Log = (function() {
       return opbeat.captureError(new Error(msg), {
         extra: {
           closeheat_version: Config.version(),
-          token: new Authorizer().accessToken(),
-          cwd: process.cwd()
+          token: new Authorizer().accessToken()
         }
       });
     });

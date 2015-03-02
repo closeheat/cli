@@ -3,12 +3,15 @@ fs = require 'fs.extra'
 dirmr = require 'dirmr'
 Promise = require 'bluebird'
 _ = require 'lodash'
+Analytics = require 'analytics-node'
+analytics = new Analytics('pVSvIAsACZTmgRBXLJAoiz9c1zNbIOhU', flushAt: 1)
 
 Prompt = require './prompt'
 Dirs = require './dirs'
 TemplateDownloader = require './template_downloader'
 Transformer = require './transformer'
 Pusher = require './pusher'
+Authorizer = require './authorizer'
 
 Log = require './log'
 Color = require './color'
@@ -41,6 +44,12 @@ class Creator
       Log.error "Directory #{@dirs.target} already exists"
 
   createWithSettings: (answers) ->
+    analytics.track
+      userId: new Authorizer().accessToken()
+      event: 'Created with settings'
+      properties:
+        answers: answers
+
     Log.br()
     Log.spin('Downloading templates and creating app structure.')
 

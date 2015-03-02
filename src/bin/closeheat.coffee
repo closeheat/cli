@@ -2,6 +2,8 @@ program = require 'commander'
 _ = require 'lodash'
 fs = require 'fs'
 path = require 'path'
+Analytics = require 'analytics-node'
+analytics = new Analytics('pVSvIAsACZTmgRBXLJAoiz9c1zNbIOhU', flushAt: 1)
 
 pkg = require '../../package.json'
 Creator = require '../creator'
@@ -13,8 +15,15 @@ Cloner = require '../cloner'
 Log = require '../log'
 Updater = require '../updater'
 DeployLog = require '../deploy_log'
+Config = require '../config'
 
 new Updater().update().then ->
+  analytics.track
+    userId: new Authorizer().accessToken()
+    event: 'Command run'
+    properties:
+      command: process.argv.join(' ')
+
   program
     .version(pkg.version)
     .usage('<keywords>')
