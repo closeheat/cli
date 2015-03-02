@@ -163,8 +163,12 @@ module.exports = Log = (function() {
     return this.p("" + (chalk.blue('-')) + " " + msg);
   };
 
-  Log.backend = function(msg) {
-    return Log.inner("" + (Color.orange('closeheat')) + " | " + msg);
+  Log.backend = function(data) {
+    if (data.type === 'error') {
+      return Log.inner("" + (Color.orange('closeheat')) + " | " + (Color.red(data.message)));
+    } else {
+      return Log.inner("" + (Color.orange('closeheat')) + " | " + data.message);
+    }
   };
 
   return Log;

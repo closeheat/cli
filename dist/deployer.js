@@ -57,6 +57,8 @@ module.exports = Deployer = (function() {
       };
     })(this))["catch"](function(err) {
       return Log.error(err);
+    })["finally"](function() {
+      return process.exit(0);
     });
   };
 

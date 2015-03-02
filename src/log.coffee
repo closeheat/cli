@@ -107,5 +107,8 @@ class Log
   @doneLine: (msg) ->
     @p "#{chalk.blue('-')} #{msg}"
 
-  @backend: (msg) ->
-    Log.inner("#{Color.orange('closeheat')} | #{msg}")
+  @backend: (data) ->
+    if data.type == 'error'
+      Log.inner("#{Color.orange('closeheat')} | #{Color.red(data.message)}")
+    else
+      Log.inner("#{Color.orange('closeheat')} | #{data.message}")

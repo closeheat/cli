@@ -27,7 +27,7 @@ class DeployLog
       @status = 'none'
       Log.br()
       @promiseWhile(
-        (=> @status != 'success'),
+        (=> !_.contains(['success', 'failed', null], @status)),
         (=> @requestAndLogStatus(repo))
       ).then(resolve)
 

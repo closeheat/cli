@@ -22,7 +22,8 @@ class BackendLogger
       @last_status = build.status
 
   diff: (build) ->
-    _.difference(build.log, @old_log)
+    _.select build.log, (new_data) =>
+      !_.contains(_.map(@old_log, 'message'), new_data.message)
 
   @fromBackendStatus: (status, msg) ->
     if status == 'download_github_repo'

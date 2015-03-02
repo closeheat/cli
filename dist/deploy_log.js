@@ -44,7 +44,7 @@ module.exports = DeployLog = (function() {
         _this.status = 'none';
         Log.br();
         return _this.promiseWhile((function() {
-          return _this.status !== 'success';
+          return !_.contains(['success', 'failed', null], _this.status);
         }), (function() {
           return _this.requestAndLogStatus(repo);
         })).then(resolve);

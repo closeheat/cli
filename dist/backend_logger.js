@@ -29,7 +29,11 @@ module.exports = BackendLogger = (function() {
   };
 
   BackendLogger.prototype.diff = function(build) {
-    return _.difference(build.log, this.old_log);
+    return _.select(build.log, (function(_this) {
+      return function(new_data) {
+        return !_.contains(_.map(_this.old_log, 'message'), new_data.message);
+      };
+    })(this));
   };
 
   BackendLogger.fromBackendStatus = function(status, msg) {

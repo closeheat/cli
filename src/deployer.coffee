@@ -35,9 +35,10 @@ class Deployer
               Log.p('Open it quicker with:')
               Log.code("cd #{deployed_name}")
               Log.code('closeheat open')
-
-    ).catch (err) ->
+    ).catch((err) ->
       Log.error(err)
+    ).finally ->
+      process.exit(0)
 
   initGit: ->
     new Promise (resolve, reject) =>
