@@ -33,7 +33,8 @@ class Deployer
               url = "http://#{deployed_name}.closeheatapp.com"
               Log.p("App deployed to #{Color.violet(url)}.")
               Log.p('Open it quicker with:')
-              Log.code("cd #{deployed_name} && closeheat open")
+              Log.code("cd #{deployed_name}")
+              Log.code('closeheat open')
 
     ).catch (err) ->
       Log.error(err)

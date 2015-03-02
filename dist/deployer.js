@@ -48,7 +48,8 @@ module.exports = Deployer = (function() {
                 url = "http://" + deployed_name + ".closeheatapp.com";
                 Log.p("App deployed to " + (Color.violet(url)) + ".");
                 Log.p('Open it quicker with:');
-                return Log.code("cd " + deployed_name + " && closeheat open");
+                Log.code("cd " + deployed_name);
+                return Log.code('closeheat open');
               });
             });
           });
