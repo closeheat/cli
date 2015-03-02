@@ -97,8 +97,11 @@ class Deployer
         resolve(origin)
 
   getMainBranch: ->
-    new Promise (resolve, reject) ->
-      resolve('master')
+    new Promise (resolve, reject) =>
+      @git.exec 'symbolic-ref', ['--short', 'HEAD'], (err, msg) ->
+        return reject(err) if err
+
+        resolve(msg.trim())
 
   push: (branch) ->
     new Promise (resolve, reject) =>

@@ -163,9 +163,16 @@ module.exports = Deployer = (function() {
   };
 
   Deployer.prototype.getMainBranch = function() {
-    return new Promise(function(resolve, reject) {
-      return resolve('master');
-    });
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        return _this.git.exec('symbolic-ref', ['--short', 'HEAD'], function(err, msg) {
+          if (err) {
+            return reject(err);
+          }
+          return resolve(msg.trim());
+        });
+      };
+    })(this));
   };
 
   Deployer.prototype.push = function(branch) {
