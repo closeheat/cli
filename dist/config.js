@@ -12,7 +12,14 @@ module.exports = Config = (function() {
   function Config() {}
 
   Config.file = function() {
-    return path.join(this.dir(), 'config.json');
+    var config_path;
+    config_path = path.join(this.dir(), 'config.json');
+    if (!fs.existsSync(config_path)) {
+      fs.writeFileSync(config_path, JSON.stringify({
+        access_token: 'none'
+      }));
+    }
+    return config_path;
   };
 
   Config.fileContents = function() {

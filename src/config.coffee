@@ -6,7 +6,9 @@ fs = require 'fs'
 module.exports =
 class Config
   @file: ->
-    path.join(@dir(), 'config.json')
+    config_path = path.join(@dir(), 'config.json')
+    fs.writeFileSync(config_path, JSON.stringify(access_token: 'none')) unless fs.existsSync(config_path)
+    config_path
 
   @fileContents: ->
     JSON.parse(fs.readFileSync(@file()).toString())
