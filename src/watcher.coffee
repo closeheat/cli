@@ -1,4 +1,3 @@
-chokidar  = require 'chokidar'
 util = require 'util'
 rimraf = require 'rimraf'
 path = require 'path'
@@ -6,6 +5,7 @@ tinylr = require 'tiny-lr'
 Promise = require 'bluebird'
 moment = require 'moment'
 _ = require 'lodash'
+gulp = require 'gulp'
 
 Builder = require 'closeheat-builder'
 
@@ -17,14 +17,15 @@ Color = require './color'
 module.exports =
 class Watcher
   constructor: (@src, @dist) ->
-    @watcher = chokidar.watch @src,
-      ignored: /.git/
-      ignoreInitial: true
+    @watcher = gulp.watch(path.join(@src, '**/*.*'))
 
   run: ->
+    debouncedBuild = _.debounce(@build, 2500, leading: true)
+
     @watcher
       .on('error', (err) -> Log.error(err))
-      .on('all', _.throttle(((e, file) => @build(e, file)), 2000))
+      .on('change', debouncedBuild)
+      .on('all', debouncedBuild)
 
   build: (e, file) =>
     new Promise (resolve, reject) =>

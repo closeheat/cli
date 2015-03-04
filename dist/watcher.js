@@ -1,7 +1,5 @@
-var Builder, Color, Dirs, Log, Promise, Watcher, chokidar, moment, path, rimraf, tinylr, util, _,
+var Builder, Color, Dirs, Log, Promise, Watcher, gulp, moment, path, rimraf, tinylr, util, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-
-chokidar = require('chokidar');
 
 util = require('util');
 
@@ -17,6 +15,8 @@ moment = require('moment');
 
 _ = require('lodash');
 
+gulp = require('gulp');
+
 Builder = require('closeheat-builder');
 
 Dirs = require('./dirs');
@@ -30,20 +30,17 @@ module.exports = Watcher = (function() {
     this.src = src;
     this.dist = dist;
     this.build = __bind(this.build, this);
-    this.watcher = chokidar.watch(this.src, {
-      ignored: /.git/,
-      ignoreInitial: true
-    });
+    this.watcher = gulp.watch(path.join(this.src, '**/*.*'));
   }
 
   Watcher.prototype.run = function() {
+    var debouncedBuild;
+    debouncedBuild = _.debounce(this.build, 2500, {
+      leading: true
+    });
     return this.watcher.on('error', function(err) {
       return Log.error(err);
-    }).on('all', _.throttle(((function(_this) {
-      return function(e, file) {
-        return _this.build(e, file);
-      };
-    })(this)), 2000));
+    }).on('change', debouncedBuild).on('all', debouncedBuild);
   };
 
   Watcher.prototype.build = function(e, file) {

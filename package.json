@@ -20,7 +20,6 @@
     "chalk": "^0.5.1",
     "charge": "0.0.3",
     "check-update": "0.0.7",
-    "chokidar": "^1.0.0-rc3",
     "closeheat-builder": "0.4.5",
     "commander": "^2.6.0",
     "couleurs": "^3.0.0",
