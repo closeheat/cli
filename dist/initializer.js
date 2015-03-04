@@ -1,2 +1,38 @@
-var Authorized,Initializer,Log,Promise,Urls,inquirer,path;inquirer=require("inquirer"),path=require("path"),Promise=require("bluebird"),Urls=require("./urls"),Authorized=require("./authorized"),Log=require("./log"),module.exports=Initializer=function(){function r(){}return r.prototype.init=function(){var r;return r=path.basename(process.cwd()),new Promise(function(){return inquirer.prompt({message:"How should we name your GitHub repo?",name:"name","default":r},function(r){var e,i;return Log.br(),e=require("./pusher"),i=new e(r.name,process.cwd()),i.push()})})},r}();
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImluaXRpYWxpemVyLmNvZmZlZSIsImluaXRpYWxpemVyLmpzIl0sIm5hbWVzIjpbIkF1dGhvcml6ZWQiLCJJbml0aWFsaXplciIsIkxvZyIsIlByb21pc2UiLCJVcmxzIiwiaW5xdWlyZXIiLCJwYXRoIiwicmVxdWlyZSIsIm1vZHVsZSIsImV4cG9ydHMiLCJwcm90b3R5cGUiLCJpbml0IiwiZGVmYXVsdF9hcHBfbmFtZSIsImJhc2VuYW1lIiwicHJvY2VzcyIsImN3ZCIsInByb21wdCIsIm1lc3NhZ2UiLCJuYW1lIiwiZGVmYXVsdCIsImFuc3dlciIsIlB1c2hlciIsInB1c2hlciIsImJyIiwicHVzaCJdLCJtYXBwaW5ncyI6IkFBQUEsR0FBQUEsWUFBQUMsWUFBQUMsSUFBQUMsUUFBQUMsS0FBQUMsU0FBQUMsSUFBQUQsVUFBV0UsUUFBUSxZQUFuQkQsS0FDT0MsUUFBUSxRQURmSixRQUVVSSxRQUFRLFlBRmxCSCxLQUlPRyxRQUFRLFVBSmZQLFdBS2FPLFFBQVEsZ0JBTHJCTCxJQU1NSyxRQUFRLFNBTmRDLE9BUU9DLFFBQ0RSLFlBQUEsV0NNSixRQUFTQSxNQW9CVCxNRHpCQUEsR0FBQVMsVUFBQUMsS0FBTSxXQUNKLEdBQUFDLEVDU0EsT0RUQUEsR0FBbUJOLEtBQUtPLFNBQVNDLFFBQVFDLE9BRXJDLEdBQUFaLFNBQVEsV0NRVixNRFBBRSxVQUFTVyxRQUNQQyxRQUFTLHVDQUNUQyxLQUFNLE9BQ05DLFVBQVNQLEdBQ1IsU0FBQ1EsR0FDRixHQUFBQyxHQUFBQyxDQ1dBLE9EWEFwQixLQUFJcUIsS0FDSkYsRUFBU2QsUUFBUSxZQUNqQmUsRUFBYSxHQUFBRCxHQUFPRCxFQUFPRixLQUFNSixRQUFRQyxPQUN6Q08sRUFBT0UsWUNhTnZCIiwiZmlsZSI6ImluaXRpYWxpemVyLmpzIiwic291cmNlc0NvbnRlbnQiOlsiaW5xdWlyZXIgPSByZXF1aXJlICdpbnF1aXJlcidcbnBhdGggPSByZXF1aXJlICdwYXRoJ1xuUHJvbWlzZSA9IHJlcXVpcmUgJ2JsdWViaXJkJ1xuXG5VcmxzID0gcmVxdWlyZSAnLi91cmxzJ1xuQXV0aG9yaXplZCA9IHJlcXVpcmUgJy4vYXV0aG9yaXplZCdcbkxvZyA9IHJlcXVpcmUgJy4vbG9nJ1xuXG5tb2R1bGUuZXhwb3J0cyA9XG5jbGFzcyBJbml0aWFsaXplclxuICBpbml0OiAtPlxuICAgIGRlZmF1bHRfYXBwX25hbWUgPSBwYXRoLmJhc2VuYW1lKHByb2Nlc3MuY3dkKCkpXG5cbiAgICBuZXcgUHJvbWlzZSAocmVzb2x2ZSwgcmVqZWN0KSAtPlxuICAgICAgaW5xdWlyZXIucHJvbXB0IHtcbiAgICAgICAgbWVzc2FnZTogJ0hvdyBzaG91bGQgd2UgbmFtZSB5b3VyIEdpdEh1YiByZXBvPydcbiAgICAgICAgbmFtZTogJ25hbWUnXG4gICAgICAgIGRlZmF1bHQ6IGRlZmF1bHRfYXBwX25hbWVcbiAgICAgIH0sIChhbnN3ZXIpIC0+XG4gICAgICAgIExvZy5icigpXG4gICAgICAgIFB1c2hlciA9IHJlcXVpcmUgJy4vcHVzaGVyJ1xuICAgICAgICBwdXNoZXIgPSBuZXcgUHVzaGVyKGFuc3dlci5uYW1lLCBwcm9jZXNzLmN3ZCgpKVxuICAgICAgICBwdXNoZXIucHVzaCgpXG4iLG51bGxdLCJzb3VyY2VSb290IjoiL3NvdXJjZS8ifQ==
+var Authorized, Initializer, Log, Promise, Urls, inquirer, path;
+
+inquirer = require('inquirer');
+
+path = require('path');
+
+Promise = require('bluebird');
+
+Urls = require('./urls');
+
+Authorized = require('./authorized');
+
+Log = require('./log');
+
+module.exports = Initializer = (function() {
+  function Initializer() {}
+
+  Initializer.prototype.init = function() {
+    var default_app_name;
+    default_app_name = path.basename(process.cwd());
+    return new Promise(function(resolve, reject) {
+      return inquirer.prompt({
+        message: 'How should we name your GitHub repo?',
+        name: 'name',
+        "default": default_app_name
+      }, function(answer) {
+        var Pusher, pusher;
+        Log.br();
+        Pusher = require('./pusher');
+        pusher = new Pusher(answer.name, process.cwd());
+        return pusher.push();
+      });
+    });
+  };
+
+  return Initializer;
+
+})();

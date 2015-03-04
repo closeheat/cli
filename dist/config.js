@@ -1,2 +1,51 @@
-var Config,fs,homePath,path,pkg;homePath=require("home-path"),path=require("path"),pkg=require("../package.json"),fs=require("fs"),module.exports=Config=function(){function e(){}return e.file=function(){var e;return e=path.join(this.dir(),"config.json"),fs.existsSync(e)||fs.writeFileSync(e,JSON.stringify({access_token:"none"})),e},e.fileContents=function(){return JSON.parse(fs.readFileSync(this.file()).toString())},e.dir=function(){var e;return e=path.join(homePath(),".closeheat"),fs.existsSync(e)||fs.mkdirSync(e),e},e.version=function(){return pkg.version},e.update=function(e,n){var i;return i=this.fileContents(),i[e]=n,fs.writeFileSync(this.file(),JSON.stringify(i))},e}();
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImNvbmZpZy5jb2ZmZWUiLCJjb25maWcuanMiXSwibmFtZXMiOlsiQ29uZmlnIiwiZnMiLCJob21lUGF0aCIsInBhdGgiLCJwa2ciLCJyZXF1aXJlIiwibW9kdWxlIiwiZXhwb3J0cyIsImZpbGUiLCJjb25maWdfcGF0aCIsImpvaW4iLCJ0aGlzIiwiZGlyIiwiZXhpc3RzU3luYyIsIndyaXRlRmlsZVN5bmMiLCJKU09OIiwic3RyaW5naWZ5IiwiYWNjZXNzX3Rva2VuIiwiZmlsZUNvbnRlbnRzIiwicGFyc2UiLCJyZWFkRmlsZVN5bmMiLCJ0b1N0cmluZyIsInJlc3VsdCIsIm1rZGlyU3luYyIsInZlcnNpb24iLCJ1cGRhdGUiLCJrZXkiLCJ2YWwiLCJjb250ZW50cyJdLCJtYXBwaW5ncyI6IkFBQUEsR0FBQUEsUUFBQUMsR0FBQUMsU0FBQUMsS0FBQUMsR0FBQUYsVUFBV0csUUFBUSxhQUFuQkYsS0FDT0UsUUFBUSxRQURmRCxJQUVNQyxRQUFRLG1CQUZkSixHQUdLSSxRQUFRLE1BSGJDLE9BS09DLFFBQ0RQLE9BQUEsV0NLSixRQUFTQSxNQXFDVCxNRHpDQUEsR0FBQ1EsS0FBTSxXQUNMLEdBQUFDLEVDYUEsT0RiQUEsR0FBY04sS0FBS08sS0FBS0MsS0FBQ0MsTUFBTyxlQUNoQ1gsR0FBOEVZLFdBQVdKLElBQXpGUixHQUFHYSxjQUFjTCxFQUFhTSxLQUFLQyxXQUFVQyxhQUFjLFVBQzNEUixHQUVGVCxFQUFDa0IsYUFBYyxXQ2FiLE1EWkFILE1BQUtJLE1BQU1sQixHQUFHbUIsYUFBYVQsS0FBQ0gsUUFBUWEsYUFFdENyQixFQUFDWSxJQUFLLFdBQ0osR0FBQVUsRUNrQkEsT0RsQkFBLEdBQVNuQixLQUFLTyxLQUFLUixXQUFZLGNBQy9CRCxHQUErQlksV0FBV1MsSUFBMUNyQixHQUFHc0IsVUFBVUQsR0FDYkEsR0FFRnRCLEVBQUN3QixRQUFTLFdDa0JSLE1EakJBcEIsS0FBSW9CLFNBRU54QixFQUFDeUIsT0FBUSxTQUFDQyxFQUFLQyxHQUNiLEdBQUFDLEVDcUJBLE9EckJBQSxHQUFXakIsS0FBQ08sZUFDWlUsRUFBU0YsR0FBT0MsRUFDaEIxQixHQUFHYSxjQUFjSCxLQUFDSCxPQUFRTyxLQUFLQyxVQUFVWSxLQ3NCcEM1QiIsImZpbGUiOiJjb25maWcuanMiLCJzb3VyY2VzQ29udGVudCI6WyJob21lUGF0aCA9IHJlcXVpcmUgJ2hvbWUtcGF0aCdcbnBhdGggPSByZXF1aXJlICdwYXRoJ1xucGtnID0gcmVxdWlyZSAnLi4vcGFja2FnZS5qc29uJ1xuZnMgPSByZXF1aXJlICdmcydcblxubW9kdWxlLmV4cG9ydHMgPVxuY2xhc3MgQ29uZmlnXG4gIEBmaWxlOiAtPlxuICAgIGNvbmZpZ19wYXRoID0gcGF0aC5qb2luKEBkaXIoKSwgJ2NvbmZpZy5qc29uJylcbiAgICBmcy53cml0ZUZpbGVTeW5jKGNvbmZpZ19wYXRoLCBKU09OLnN0cmluZ2lmeShhY2Nlc3NfdG9rZW46ICdub25lJykpIHVubGVzcyBmcy5leGlzdHNTeW5jKGNvbmZpZ19wYXRoKVxuICAgIGNvbmZpZ19wYXRoXG5cbiAgQGZpbGVDb250ZW50czogLT5cbiAgICBKU09OLnBhcnNlKGZzLnJlYWRGaWxlU3luYyhAZmlsZSgpKS50b1N0cmluZygpKVxuXG4gIEBkaXI6IC0+XG4gICAgcmVzdWx0ID0gcGF0aC5qb2luKGhvbWVQYXRoKCksICcuY2xvc2VoZWF0JylcbiAgICBmcy5ta2RpclN5bmMocmVzdWx0KSB1bmxlc3MgZnMuZXhpc3RzU3luYyByZXN1bHRcbiAgICByZXN1bHRcblxuICBAdmVyc2lvbjogLT5cbiAgICBwa2cudmVyc2lvblxuXG4gIEB1cGRhdGU6IChrZXksIHZhbCkgLT5cbiAgICBjb250ZW50cyA9IEBmaWxlQ29udGVudHMoKVxuICAgIGNvbnRlbnRzW2tleV0gPSB2YWxcbiAgICBmcy53cml0ZUZpbGVTeW5jKEBmaWxlKCksIEpTT04uc3RyaW5naWZ5KGNvbnRlbnRzKSlcbiIsbnVsbF0sInNvdXJjZVJvb3QiOiIvc291cmNlLyJ9
+var Config, fs, homePath, path, pkg;
+
+homePath = require('home-path');
+
+path = require('path');
+
+pkg = require('../package.json');
+
+fs = require('fs');
+
+module.exports = Config = (function() {
+  function Config() {}
+
+  Config.file = function() {
+    var config_path;
+    config_path = path.join(this.dir(), 'config.json');
+    if (!fs.existsSync(config_path)) {
+      fs.writeFileSync(config_path, JSON.stringify({
+        access_token: 'none'
+      }));
+    }
+    return config_path;
+  };
+
+  Config.fileContents = function() {
+    return JSON.parse(fs.readFileSync(this.file()).toString());
+  };
+
+  Config.dir = function() {
+    var result;
+    result = path.join(homePath(), '.closeheat');
+    if (!fs.existsSync(result)) {
+      fs.mkdirSync(result);
+    }
+    return result;
+  };
+
+  Config.version = function() {
+    return pkg.version;
+  };
+
+  Config.update = function(key, val) {
+    var contents;
+    contents = this.fileContents();
+    contents[key] = val;
+    return fs.writeFileSync(this.file(), JSON.stringify(contents));
+  };
+
+  return Config;
+
+})();

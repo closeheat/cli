@@ -1,4 +1,116 @@
 #!/usr/bin/env node
 
-var Log,Updater,fs,path,pkg,program,_;program=require("commander"),_=require("lodash"),fs=require("fs"),path=require("path"),pkg=require("../../package.json"),Updater=require("../updater"),Log=require("../log"),(new Updater).update().then(function(){var e;return program.version(pkg.version).usage("<keywords>"),program.command("create [app-name]").description("Creates a new app with clean setup and directory structure.").option("-f, --framework [name]","Framework").option("-t, --template [name]","Template").option("--javascript [name]","Javascript precompiler").option("--html [name]","HTML precompiler").option("--css [name]","CSS precompiler").option("--tmp [path]","The path of temporary directory when creating").option("--dist [path]","Path of destination of where to create app dir").option("--no-deploy","Do not create GitHub repo and closeheat app").action(function(e,r){var o,t,n,a;return o=require("../creator"),n=_.pick.apply(_,[r,"framework","template","javascript","html","css","dist","tmp","deploy"]),n.name=e,Log.logo(),a=["framework","template","javascript","html","css"],t=_.any(_.keys(n),function(e){return _.contains(a,e)}),t?(new o).createFromSettings(n):(new o).createFromPrompt(n)}),program.command("server").description("Runs a server which builds and LiveReloads your app.").option("--ip [ip]","IP to run LiveReload on (default - localhost)").option("-p, --port [port]","Port to run server on (default - 4000)").action(function(e){var r;return r=require("../server"),(new r).start(e)}),program.command("deploy").description("Deploys your app to closeheat.com via GitHub.").action(function(){var e;return e=require("../deployer"),Log.logo(),(new e).deploy()}),program.command("log").description("Polls the log of the last deployment. Usable: git push origin master && closeheat log").action(function(){var e;return e=require("../deploy_log"),Log.logo(),(new e).fromCurrentCommit()}),program.command("open").description("Opens your deployed app in the browser.").action(function(){var e;return e=require("../deployer"),(new e).open()}),program.command("apps").description("Shows a list of your deployed apps.").action(function(){var e;return e=require("../apps"),(new e).list()}),program.command("login").option("-t, --token [access-token]","Access token from closeheat.com.").description("Log in to closeheat.com with this computer.").action(function(e){var r;return r=require("../authorizer"),e.token?(new r).saveToken(e.token):(new r).login()}),program.command("clone [app-name]").description("Clones the closeheat app files.").action(function(e){var r,o;return e?(o=require("../cloner"),(new o).clone(e)):(r=require("../apps"),(new r).list())}),program.command("transform [type] [language]").description("Transforms files in current dir to other language (Experimental).").action(function(e,r){var o,t,n,a;return o=require("../dirs"),t=require("../transformer"),Log.logo(),n=new o({name:"transforming",src:process.cwd(),dist:process.cwd()}),a={},a[e]=r,new t(n).transform(a).then(function(){return function(){return console.log("transformed",a)}}(this))}),program.command("help").description("Displays this menu.").action(function(){return Log.logo(0),program.help()}),program.parse(process.argv),program.args.length?void 0:fs.existsSync("index.html")||fs.existsSync("index.jade")?(e=require("../server"),(new e).start()):(Log.logo(0),program.help())});
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImNsb3NlaGVhdC5jb2ZmZWUiLCJjbG9zZWhlYXQuanMiXSwibmFtZXMiOlsiTG9nIiwiVXBkYXRlciIsImZzIiwicGF0aCIsInBrZyIsInByb2dyYW0iLCJfIiwicmVxdWlyZSIsInVwZGF0ZSIsInRoZW4iLCJTZXJ2ZXIiLCJ2ZXJzaW9uIiwidXNhZ2UiLCJjb21tYW5kIiwiZGVzY3JpcHRpb24iLCJvcHRpb24iLCJhY3Rpb24iLCJuYW1lIiwib3B0cyIsIkNyZWF0b3IiLCJpbmNsdWRlc190ZW1wbGF0ZV9zZXR0aW5ncyIsInNldHRpbmdzIiwidGVtcGxhdGVfc2V0dGluZ3MiLCJwaWNrIiwiYXBwbHkiLCJsb2dvIiwiYW55Iiwia2V5cyIsInNldHRpbmciLCJjb250YWlucyIsImNyZWF0ZUZyb21TZXR0aW5ncyIsImNyZWF0ZUZyb21Qcm9tcHQiLCJzdGFydCIsIkRlcGxveWVyIiwiZGVwbG95IiwiRGVwbG95TG9nIiwiZnJvbUN1cnJlbnRDb21taXQiLCJvcGVuIiwiQXBwcyIsImxpc3QiLCJBdXRob3JpemVyIiwidG9rZW4iLCJzYXZlVG9rZW4iLCJsb2dpbiIsImFwcF9uYW1lIiwiQ2xvbmVyIiwiY2xvbmUiLCJ0eXBlIiwibGFuZ3VhZ2UiLCJEaXJzIiwiVHJhbnNmb3JtZXIiLCJkaXJzIiwic3JjIiwicHJvY2VzcyIsImN3ZCIsImRpc3QiLCJ0cmFuc2Zvcm0iLCJjb25zb2xlIiwibG9nIiwidGhpcyIsImhlbHAiLCJwYXJzZSIsImFyZ3YiLCJhcmdzIiwibGVuZ3RoIiwiZXhpc3RzU3luYyJdLCJtYXBwaW5ncyI6IkFBQUEsR0FBQUEsS0FBQUMsUUFBQUMsR0FBQUMsS0FBQUMsSUFBQUMsUUFBQUMsQ0FBQUQsU0FBVUUsUUFBUSxhQUFsQkQsRUFDSUMsUUFBUSxVQURaTCxHQUVLSyxRQUFRLE1BRmJKLEtBR09JLFFBQVEsUUFIZkgsSUFLTUcsUUFBUSxzQkFMZE4sUUFNVU0sUUFBUSxjQU5sQlAsSUFPTU8sUUFBUSxXQVBkLEdBU0lOLFVBQVVP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TUQrQ0FnRCxTQUFRQyxJQUFJLGNBQWVyQyxLQURrQnNDLFNBR25EdEQsUUFDR1EsUUFBUSxRQUNSQyxZQUFZLHVCQUNaRSxPQUFPLFdDOUNSLE1EK0NFaEIsS0FBSXlCLEtBQUssR0FDVHBCLFFBQVF1RCxTQUVadkQsUUFBUXdELE1BQU1SLFFBQVFTLE1BRXRCekQsUUFBZTBELEtBQUtDLE9BQXBCLE9BQ0s5RCxHQUFHK0QsV0FBVyxlQUFpQi9ELEdBQUcrRCxXQUFXLGVBQzlDdkQsRUFBU0gsUUFBUSxjQUNiLEdBQUFHLElBQVNzQixVQUViaEMsSUFBSXlCLEtBQUssR0FDVHBCLFFBQVF1RCIsImZpbGUiOiJjbG9zZWhlYXQuanMiLCJzb3VyY2VzQ29udGVudCI6WyJwcm9ncmFtID0gcmVxdWlyZSAnY29tbWFuZGVyJ1xuXyA9IHJlcXVpcmUgJ2xvZGFzaCdcbmZzID0gcmVxdWlyZSAnZnMnXG5wYXRoID0gcmVxdWlyZSAncGF0aCdcblxucGtnID0gcmVxdWlyZSAnLi4vLi4vcGFja2FnZS5qc29uJ1xuVXBkYXRlciA9IHJlcXVpcmUgJy4uL3VwZGF0ZXInXG5Mb2cgPSByZXF1aXJlICcuLi9sb2cnXG5cbm5ldyBVcGRhdGVyKCkudXBkYXRlKCkudGhlbiAtPlxuICBwcm9ncmFtXG4gICAgLnZlcnNpb24ocGtnLnZlcnNpb24pXG4gICAgLnVzYWdlKCc8a2V5d29yZHM+JylcblxuICBwcm9ncmFtXG4gICAgLmNvbW1hbmQoJ2NyZWF0ZSBbYXBwLW5hbWVdJylcbiAgICAuZGVzY3JpcHRpb24oJ0NyZWF0ZXMgYSBuZXcgYXBwIHdpdGggY2xlYW4gc2V0dXAgYW5kIGRpcmVjdG9yeSBzdHJ1Y3R1cmUuJylcbiAgICAub3B0aW9uKCctZiwgLS1mcmFtZXdvcmsgW25hbWVdJywgJ0ZyYW1ld29yaycpXG4gICAgLm9wdGlvbignLXQsIC0tdGVtcGxhdGUgW25hbWVdJywgJ1RlbXBsYXRlJylcbiAgICAub3B0aW9uKCctLWphdmFzY3JpcHQgW25hbWVdJywgJ0phdmFzY3JpcHQgcHJlY29tcGlsZXInKVxuICAgIC5vcHRpb24oJy0taHRtbCBbbmFtZV0nLCAnSFRNTCBwcmVjb21waWxlcicpXG4gICAgLm9wdGlvbignLS1jc3MgW25hbWVdJywgJ0NTUyBwcmVjb21waWxlcicpXG4gICAgLm9wdGlvbignLS10bXAgW3BhdGhdJywgJ1RoZSBwYXRoIG9mIHRlbXBvcmFyeSBkaXJlY3Rvcnkgd2hlbiBjcmVhdGluZycpXG4gICAgLm9wdGlvbignLS1kaXN0IFtwYXRoXScsICdQYXRoIG9mIGRlc3RpbmF0aW9uIG9mIHdoZXJlIHRvIGNyZWF0ZSBhcHAgZGlyJylcbiAgICAub3B0aW9uKCctLW5vLWRlcGxveScsICdEbyBub3QgY3JlYXRlIEdpdEh1YiByZXBvIGFuZCBjbG9zZWhlYXQgYXBwJylcbiAgICAuYWN0aW9uIChuYW1lLCBvcHRzKSAtPlxuICAgICAgQ3JlYXRvciA9IHJlcXVpcmUgJy4uL2NyZWF0b3InXG5cbiAgICAgIHNldHRpbmdzID0gXy5waWNrKFxuICAgICAgICBbXG4gICAgICAgICAgb3B0c1xuICAgICAgICAgICdmcmFtZXdvcmsnXG4gICAgICAgICAgJ3RlbXBsYXRlJ1xuICAgICAgICAgICdqYXZhc2NyaXB0J1xuICAgICAgICAgICdodG1sJ1xuICAgICAgICAgICdjc3MnXG4gICAgICAgICAgJ2Rpc3QnXG4gICAgICAgICAgJ3RtcCdcbiAgICAgICAgICAnZGVwbG95J1xuICAgICAgICBdLi4uXG4gICAgICApXG5cbiAgICAgIHNldHRpbmdzLm5hbWUgPSBuYW1lXG5cbiAgICAgIExvZy5sb2dvKClcblxuICAgICAgdGVtcGxhdGVfc2V0dGluZ3MgPSBbXG4gICAgICAgICdmcmFtZXdvcmsnXG4gICAgICAgICd0ZW1wbGF0ZSdcbiAgICAgICAgJ2phdmFzY3JpcHQnXG4gICAgICAgICdodG1sJ1xuICAgICAgICAnY3NzJ1xuICAgICAgXVxuXG4gICAgICBpbmNsdWRlc190ZW1wbGF0ZV9zZXR0aW5ncyA9IF8uYW55IF8ua2V5cyhzZXR0aW5ncyksIChzZXR0aW5nKSAtPlxuICAgICAgICBfLmNvbnRhaW5zKHRlbXBsYXRlX3NldHRpbmdzLCBzZXR0aW5nKVxuXG4gICAgICBpZiBpbmNsdWRlc190ZW1wbGF0ZV9zZXR0aW5nc1xuICAgICAgICBuZXcgQ3JlYXRvcigpLmNyZWF0ZUZyb21TZXR0aW5ncyhzZXR0aW5ncylcbiAgICAgIGVsc2VcbiAgICAgICAgbmV3IENyZWF0b3IoKS5jcmVhdGVGcm9tUHJvbXB0KHNldHRpbmdzKVxuXG4gIHByb2dyYW1cbiAgICAuY29tbWFuZCgnc2VydmVyJylcbiAgICAuZGVzY3JpcHRpb24oJ1J1bnMgYSBzZXJ2ZXIgd2hpY2ggYnVpbGRzIGFuZCBMaXZlUmVsb2FkcyB5b3VyIGFwcC4nKVxuICAgIC5vcHRpb24oJy0taXAgW2lwXScsICdJUCB0byBydW4gTGl2ZVJlbG9hZCBvbiAoZGVmYXVsdCAtIGxvY2FsaG9zdCknKVxuICAgIC5vcHRpb24oJy1wLCAtLXBvcnQgW3BvcnRdJywgJ1BvcnQgdG8gcnVuIHNlcnZlciBvbiAoZGVmYXVsdCAtIDQwMDApJylcbiAgICAuYWN0aW9uIChvcHRzKSAtPlxuICAgICAgU2VydmVyID0gcmVxdWlyZSAnLi4vc2VydmVyJ1xuICAgICAgbmV3IFNlcnZlcigpLnN0YXJ0KG9wdHMpXG5cbiAgcHJvZ3JhbVxuICAgIC5jb21tYW5kKCdkZXBsb3knKVxuICAgIC5kZXNjcmlwdGlvbignRGVwbG95cyB5b3VyIGFwcCB0byBjbG9zZWhlYXQuY29tIHZpYSBHaXRIdWIuJylcbiAgICAuYWN0aW9uIC0+XG4gICAgICBEZXBsb3llciA9IHJlcXVpcmUgJy4uL2RlcGxveWVyJ1xuXG4gICAgICBMb2cubG9nbygpXG4gICAgICBuZXcgRGVwbG95ZXIoKS5kZXBsb3koKVxuXG4gIHByb2dyYW1cbiAgICAuY29tbWFuZCgnbG9nJylcbiAgICAuZGVzY3JpcHRpb24oJ1BvbGxzIHRoZSBsb2cgb2YgdGhlIGxhc3QgZGVwbG95bWVudC4gVXNhYmxlOiBnaXQgcHVzaCBvcmlnaW4gbWFzdGVyICYmIGNsb3NlaGVhdCBsb2cnKVxuICAgIC5hY3Rpb24gLT5cbiAgICAgIERlcGxveUxvZyA9IHJlcXVpcmUgJy4uL2RlcGxveV9sb2cnXG5cbiAgICAgIExvZy5sb2dvKClcbiAgICAgIG5ldyBEZXBsb3lMb2coKS5mcm9tQ3VycmVudENvbW1pdCgpXG5cbiAgcHJvZ3JhbVxuICAgIC5jb21tYW5kKCdvcGVuJylcbiAgICAuZGVzY3JpcHRpb24oJ09wZW5zIHlvdXIgZGVwbG95ZWQgYXBwIGluIHRoZSBicm93c2VyLicpXG4gICAgLmFjdGlvbiAtPlxuICAgICAgRGVwbG95ZXIgPSByZXF1aXJlICcuLi9kZXBsb3llcidcblxuICAgICAgbmV3IERlcGxveWVyKCkub3BlbigpXG5cbiAgcHJvZ3JhbVxuICAgIC5jb21tYW5kKCdhcHBzJylcbiAgICAuZGVzY3JpcHRpb24oJ1Nob3dzIGEgbGlzdCBvZiB5b3VyIGRlcGxveWVkIGFwcHMuJylcbiAgICAuYWN0aW9uIC0+XG4gICAgICBBcHBzID0gcmVxdWlyZSAnLi4vYXBwcydcblxuICAgICAgbmV3IEFwcHMoKS5saXN0KClcblxuICBwcm9ncmFtXG4gICAgLmNvbW1hbmQoJ2xvZ2luJylcbiAgICAub3B0aW9uKCctdCwgLS10b2tlbiBbYWNjZXNzLXRva2VuXScsICdBY2Nlc3MgdG9rZW4gZnJvbSBjbG9zZWhlYXQuY29tLicpXG4gICAgLmRlc2NyaXB0aW9uKCdMb2cgaW4gdG8gY2xvc2VoZWF0LmNvbSB3aXRoIHRoaXMgY29tcHV0ZXIuJylcbiAgICAuYWN0aW9uIChvcHRzKSAtPlxuICAgICAgQXV0aG9yaXplciA9IHJlcXVpcmUgJy4uL2F1dGhvcml6ZXInXG5cbiAgICAgIGlmIG9wdHMudG9rZW5cbiAgICAgICAgbmV3IEF1dGhvcml6ZXIoKS5zYXZlVG9rZW4ob3B0cy50b2tlbilcbiAgICAgIGVsc2VcbiAgICAgICAgbmV3IEF1dGhvcml6ZXIoKS5sb2dpbigpXG5cbiAgcHJvZ3JhbVxuICAgIC5jb21tYW5kKCdjbG9uZSBbYXBwLW5hbWVdJylcbiAgICAuZGVzY3JpcHRpb24oJ0Nsb25lcyB0aGUgY2xvc2VoZWF0IGFwcCBmaWxlcy4nKVxuICAgIC5hY3Rpb24gKGFwcF9uYW1lKSAtPlxuICAgICAgaWYgYXBwX25hbWVcbiAgICAgICAgQ2xvbmVyID0gcmVxdWlyZSAnLi4vY2xvbmVyJ1xuICAgICAgICBuZXcgQ2xvbmVyKCkuY2xvbmUoYXBwX25hbWUpXG4gICAgICBlbHNlXG4gICAgICAgIEFwcHMgPSByZXF1aXJlICcuLi9hcHBzJ1xuICAgICAgICBuZXcgQXBwcygpLmxpc3QoKVxuXG4gIHByb2dyYW1cbiAgICAuY29tbWFuZCgndHJhbnNmb3JtIFt0eXBlXSBbbGFuZ3VhZ2VdJylcbiAgICAuZGVzY3JpcHRpb24oJ1RyYW5zZm9ybXMgZmlsZXMgaW4gY3VycmVudCBkaXIgdG8gb3RoZXIgbGFuZ3VhZ2UgKEV4cGVyaW1lbnRhbCkuJylcbiAgICAuYWN0aW9uICh0eXBlLCBsYW5ndWFnZSkgLT5cbiAgICAgIERpcnMgPSByZXF1aXJlICcuLi9kaXJzJ1xuICAgICAgVHJhbnNmb3JtZXIgPSByZXF1aXJlICcuLi90cmFuc2Zvcm1lcidcblxuICAgICAgTG9nLmxvZ28oKVxuICAgICAgZGlycyA9IG5ldyBEaXJzKG5hbWU6ICd0cmFuc2Zvcm1pbmcnLCBzcmM6IHByb2Nlc3MuY3dkKCksIGRpc3Q6IHByb2Nlc3MuY3dkKCkpXG5cbiAgICAgIHNldHRpbmdzID0ge31cbiAgICAgIHNldHRpbmdzW3R5cGVdID0gbGFuZ3VhZ2VcblxuICAgICAgbmV3IFRyYW5zZm9ybWVyKGRpcnMpLnRyYW5zZm9ybShzZXR0aW5ncykudGhlbiA9PlxuICAgICAgICBjb25zb2xlLmxvZygndHJhbnNmb3JtZWQnLCBzZXR0aW5ncylcblxuICBwcm9ncmFtXG4gICAgLmNvbW1hbmQoJ2hlbHAnKVxuICAgIC5kZXNjcmlwdGlvbignRGlzcGxheXMgdGhpcyBtZW51LicpXG4gICAgLmFjdGlvbiAtPlxuICAgICAgTG9nLmxvZ28oMClcbiAgICAgIHByb2dyYW0uaGVscCgpXG5cbiAgcHJvZ3JhbS5wYXJzZShwcm9jZXNzLmFyZ3YpXG5cbiAgdW5sZXNzIHByb2dyYW0uYXJncy5sZW5ndGhcbiAgICBpZiBmcy5leGlzdHNTeW5jKCdpbmRleC5odG1sJykgfHwgZnMuZXhpc3RzU3luYygnaW5kZXguamFkZScpXG4gICAgICBTZXJ2ZXIgPSByZXF1aXJlICcuLi9zZXJ2ZXInXG4gICAgICBuZXcgU2VydmVyKCkuc3RhcnQoKVxuICAgIGVsc2VcbiAgICAgIExvZy5sb2dvKDApXG4gICAgICBwcm9ncmFtLmhlbHAoKVxuIixudWxsXSwic291cmNlUm9vdCI6Ii9zb3VyY2UvIn0=
+var Log, Updater, fs, path, pkg, program, _;
+
+program = require('commander');
+
+_ = require('lodash');
+
+fs = require('fs');
+
+path = require('path');
+
+pkg = require('../../package.json');
+
+Updater = require('../updater');
+
+Log = require('../log');
+
+new Updater().update().then(function() {
+  var Server;
+  program.version(pkg.version).usage('<keywords>');
+  program.command('create [app-name]').description('Creates a new app with clean setup and directory structure.').option('-f, --framework [name]', 'Framework').option('-t, --template [name]', 'Template').option('--javascript [name]', 'Javascript precompiler').option('--html [name]', 'HTML precompiler').option('--css [name]', 'CSS precompiler').option('--tmp [path]', 'The path of temporary directory when creating').option('--dist [path]', 'Path of destination of where to create app dir').option('--no-deploy', 'Do not create GitHub repo and closeheat app').action(function(name, opts) {
+    var Creator, includes_template_settings, settings, template_settings;
+    Creator = require('../creator');
+    settings = _.pick.apply(_, [opts, 'framework', 'template', 'javascript', 'html', 'css', 'dist', 'tmp', 'deploy']);
+    settings.name = name;
+    Log.logo();
+    template_settings = ['framework', 'template', 'javascript', 'html', 'css'];
+    includes_template_settings = _.any(_.keys(settings), function(setting) {
+      return _.contains(template_settings, setting);
+    });
+    if (includes_template_settings) {
+      return new Creator().createFromSettings(settings);
+    } else {
+      return new Creator().createFromPrompt(settings);
+    }
+  });
+  program.command('server').description('Runs a server which builds and LiveReloads your app.').option('--ip [ip]', 'IP to run LiveReload on (default - localhost)').option('-p, --port [port]', 'Port to run server on (default - 4000)').action(function(opts) {
+    var Server;
+    Server = require('../server');
+    return new Server().start(opts);
+  });
+  program.command('deploy').description('Deploys your app to closeheat.com via GitHub.').action(function() {
+    var Deployer;
+    Deployer = require('../deployer');
+    Log.logo();
+    return new Deployer().deploy();
+  });
+  program.command('log').description('Polls the log of the last deployment. Usable: git push origin master && closeheat log').action(function() {
+    var DeployLog;
+    DeployLog = require('../deploy_log');
+    Log.logo();
+    return new DeployLog().fromCurrentCommit();
+  });
+  program.command('open').description('Opens your deployed app in the browser.').action(function() {
+    var Deployer;
+    Deployer = require('../deployer');
+    return new Deployer().open();
+  });
+  program.command('apps').description('Shows a list of your deployed apps.').action(function() {
+    var Apps;
+    Apps = require('../apps');
+    return new Apps().list();
+  });
+  program.command('login').option('-t, --token [access-token]', 'Access token from closeheat.com.').description('Log in to closeheat.com with this computer.').action(function(opts) {
+    var Authorizer;
+    Authorizer = require('../authorizer');
+    if (opts.token) {
+      return new Authorizer().saveToken(opts.token);
+    } else {
+      return new Authorizer().login();
+    }
+  });
+  program.command('clone [app-name]').description('Clones the closeheat app files.').action(function(app_name) {
+    var Apps, Cloner;
+    if (app_name) {
+      Cloner = require('../cloner');
+      return new Cloner().clone(app_name);
+    } else {
+      Apps = require('../apps');
+      return new Apps().list();
+    }
+  });
+  program.command('transform [type] [language]').description('Transforms files in current dir to other language (Experimental).').action(function(type, language) {
+    var Dirs, Transformer, dirs, settings;
+    Dirs = require('../dirs');
+    Transformer = require('../transformer');
+    Log.logo();
+    dirs = new Dirs({
+      name: 'transforming',
+      src: process.cwd(),
+      dist: process.cwd()
+    });
+    settings = {};
+    settings[type] = language;
+    return new Transformer(dirs).transform(settings).then((function(_this) {
+      return function() {
+        return console.log('transformed', settings);
+      };
+    })(this));
+  });
+  program.command('help').description('Displays this menu.').action(function() {
+    Log.logo(0);
+    return program.help();
+  });
+  program.parse(process.argv);
+  if (!program.args.length) {
+    if (fs.existsSync('index.html') || fs.existsSync('index.jade')) {
+      Server = require('../server');
+      return new Server().start();
+    } else {
+      Log.logo(0);
+      return program.help();
+    }
+  }
+});

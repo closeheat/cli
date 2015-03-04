@@ -1,2 +1,114 @@
-var Authorized,BackendLogger,DeployLog,Git,Log,Promise,Urls,_,__bind=function(e,r){return function(){return e.apply(r,arguments)}};Promise=require("bluebird"),_=require("lodash"),Git=require("git-wrapper"),Log=require("./log"),Authorized=require("./authorized"),Urls=require("./urls"),BackendLogger=require("./backend_logger"),module.exports=DeployLog=function(){function e(){this.requestAndLogStatus=__bind(this.requestAndLogStatus,this);var e;e=require("./deployer"),this.deployer=new e,this.backend_logger=new BackendLogger,this.git=new Git}return e.prototype.fromCurrentCommit=function(){return new Promise(function(e){return function(r){return e.deployer.getOriginRepo().then(function(t){return e.pollAndLogUntilDeployed(t).then(function(){return Log.br(),r(e.slug)})})}}(this))},e.prototype.pollAndLogUntilDeployed=function(e){return new Promise(function(r){return function(t){return r.status="none",Log.br(),r.promiseWhile(function(){return!_.contains(["success","failed",null],r.status)},function(){return r.requestAndLogStatus(e)}).then(t)}}(this))},e.prototype.requestAndLogStatus=function(e){return this.getSha().then(function(r){return function(t){return r.deployer.getSlug(e).then(function(e){return r.slug=e,Authorized.request({url:Urls.buildForCLI(e),qs:{commit_sha:t},method:"get",json:!0},function(e,t){var n;return 404===t.statusCode?Log.error(t.body.message):200===t.statusCode?(n=t.body.build,r.backend_logger.log(n),r.status=n.status):Log.error("Unknown backend error. We're fixing this already.")})})}}(this))},e.prototype.getSha=function(){return new Promise(function(e){return function(r,t){return e.git.exec("rev-parse",["HEAD"],function(e,n){return e?t(e):r(n.trim())})}}(this))},e.prototype.promiseWhile=function(e,r){return new Promise(function(t,n){var o;return o=function(){return e()?Promise.cast(r()).then(function(){return _.delay(o,1e3)})["catch"](n):t()},process.nextTick(o)})},e}();
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImRlcGxveV9sb2cuY29mZmVlIiwiZGVwbG95X2xvZy5qcyJdLCJuYW1lcyI6WyJBdXRob3JpemVkIiwiQmFja2VuZExvZ2dlciIsIkRlcGxveUxvZyIsIkdpdCIsIkxvZyIsIlByb21pc2UiLCJVcmxzIiwiXyIsIl9fYmluZCIsImZuIiwibWUiLCJhcHBseSIsImFyZ3VtZW50cyIsInJlcXVpcmUiLCJtb2R1bGUiLCJleHBvcnRzIiwidGhpcyIsInJlcXVlc3RBbmRMb2dTdGF0dXMiLCJEZXBsb3llciIsImRlcGxveWVyIiwiYmFja2VuZF9sb2dnZXIiLCJnaXQiLCJwcm90b3R5cGUiLCJmcm9tQ3VycmVudENvbW1pdCIsIl90aGlzIiwicmVzb2x2ZSIsImdldE9yaWdpblJlcG8iLCJ0aGVuIiwicmVwbyIsInBvbGxBbmRMb2dVbnRpbERlcGxveWVkIiwiYnIiLCJzbHVnIiwic3RhdHVzIiwicHJvbWlzZVdoaWxlIiwiY29udGFpbnMiLCJnZXRTaGEiLCJzaGEiLCJnZXRTbHVnIiwicmVxdWVzdCIsInVybCIsImJ1aWxkRm9yQ0xJIiwicXMiLCJjb21taXRfc2hhIiwibWV0aG9kIiwianNvbiIsImVyciIsInJlc3AiLCJidWlsZCIsInN0YXR1c0NvZGUiLCJlcnJvciIsImJvZHkiLCJtZXNzYWdlIiwibG9nIiwicmVqZWN0IiwiZXhlYyIsInRyaW0iLCJjb25kaXRpb24iLCJhY3Rpb24iLCJyZXBlYXQiLCJjYXN0IiwiZGVsYXkiLCJwcm9jZXNzIiwibmV4dFRpY2siXSwibWFwcGluZ3MiOiJBQUFBLEdBQUFBLFlBQUFDLGNBQUFDLFVBQUFDLElBQUFDLElBQUFDLFFBQUFDLEtBQUFDLEVBQUFDLE9BQUEsU0FBQUMsRUFBQUMsR0FBQSxNQUFBLFlBQUEsTUFBQUQsR0FBQUUsTUFBQUQsRUFBQUUsWUFBQVAsU0FBVVEsUUFBUSxZQUFsQk4sRUFDSU0sUUFBUSxVQURaVixJQUVNVSxRQUFRLGVBRmRULElBSU1TLFFBQVEsU0FKZGIsV0FLYWEsUUFBUSxnQkFMckJQLEtBTU9PLFFBQVEsVUFOZlosY0FPZ0JZLFFBQVEsb0JBUHhCQyxPQVNPQyxRQUNEYixVQUFBLFdBQ1MsUUFBQUEsS0FDWGMsS0FBQUMsb0JBQUFULE9BQUFRLEtBQUFDLG9CQUFBRCxLQUFBLElBQUFFLEVBQUFBLEdBQVdMLFFBQVEsY0FDbkJHLEtBQUNHLFNBQWUsR0FBQUQsR0FDaEJGLEtBQUNJLGVBQXFCLEdBQUFuQixlQUN0QmUsS0FBQ0ssSUFBVSxHQUFBbEIsS0NnR2IsTURwR0FELEdBQUFvQixVQU1BQyxrQkFBbUIsV0NXakIsTURWSSxJQUFBbEIsU0FBUSxTQUFBbUIsR0NXVixNRFhVLFVBQUNDLEdDWVQsTURYRkQsR0FBQ0wsU0FBU08sZ0JBQWdCQyxLQUFLLFNBQUNDLEdDWTVCLE1EWEZKLEdBQUNLLHdCQUF3QkQsR0FBTUQsS0FBSyxXQ2FoQyxNRFpGdkIsS0FBSTBCLEtBQ0pMLEVBQVFELEVBQUNPLFlBSkhmLFFBUGRkLEVBQUFvQixVQWFBTyx3QkFBeUIsU0FBQ0QsR0NpQnhCLE1EaEJJLElBQUF2QixTQUFRLFNBQUFtQixHQ2lCVixNRGpCVSxVQUFDQyxHQ29CVCxNRG5CRkQsR0FBQ1EsT0FBUyxPQUNWNUIsSUFBSTBCLEtBQ0pOLEVBQUNTLGFBQ0MsV0NpQkUsT0RqQkUxQixFQUFHMkIsVUFBVSxVQUFXLFNBQVUsTUFBT1YsRUFBQ1EsU0FDOUMsV0NrQkUsTURsQkVSLEdBQUNQLG9CQUFvQlcsS0FDekJELEtBQUtGLEtBTkdULFFBZGRkLEVBQUFvQixVQXNCQUwsb0JBQXFCLFNBQUNXLEdDc0JwQixNRHJCQVosTUFBQ21CLFNBQVNSLEtBQUssU0FBQUgsR0NzQmIsTUR0QmEsVUFBQ1ksR0N1QlosTUR0QkZaLEdBQUNMLFNBQVNrQixRQUFRVCxHQUFNRCxLQUFLLFNBQUNJLEdDd0IxQixNRHZCRlAsR0FBQ08sS0FBT0EsRUFFUi9CLFdBQVdzQyxTQUFRQyxJQUFLakMsS0FBS2tDLFlBQVlULEdBQU9VLElBQU1DLFdBQVlOLEdBQU9PLE9BQVEsTUFBT0MsTUFBTSxHQUFNLFNBQUNDLEVBQUtDLEdBQ3hHLEdBQUFDLEVBQUEsT0FBc0IsT0FBbkJELEVBQUtFLFdBQ041QyxJQUFJNkMsTUFBTUgsRUFBS0ksS0FBS0MsU0FDSyxNQUFuQkwsRUFBS0UsWUFDWEQsRUFBUUQsRUFBS0ksS0FBS0gsTUFDbEJ2QixFQUFDSixlQUFlZ0MsSUFBSUwsR0FDcEJ2QixFQUFDUSxPQUFTZSxFQUFNZixRQUVoQjVCLElBQUk2QyxNQUFNLDJEQVpIakMsUUF2QmpCZCxFQUFBb0IsVUFxQ0FhLE9BQVEsV0NvQ04sTURuQ0ksSUFBQTlCLFNBQVEsU0FBQW1CLEdDb0NWLE1EcENVLFVBQUNDLEVBQVM0QixHQ3FDbEIsTURwQ0Y3QixHQUFDSCxJQUFJaUMsS0FBSyxhQUFjLFFBQVMsU0FBQ1QsRUFBS0MsR0FDckMsTUFBc0JELEdBQWZRLEVBQU9SLEdBRWRwQixFQUFRcUIsRUFBS1MsWUFKTHZDLFFBdENkZCxFQUFBb0IsVUE0Q0FXLGFBQWMsU0FBQ3VCLEVBQVdDLEdDMEN4QixNRHpDSSxJQUFBcEQsU0FBUSxTQUFDb0IsRUFBUzRCLEdBQ3BCLEdBQUFLLEVDa0RBLE9EbERBQSxHQUFTLFdBQ1AsTUFBR0YsS0FFSG5ELFFBQVFzRCxLQUFLRixLQUFVOUIsS0FBSyxXQzRDMUIsTUQzQ0FwQixHQUFFcUQsTUFBTUYsRUFBUSxPQUFPLFNBQU1MLEdBRnRCNUIsS0FJWG9DLFFBQVFDLFNBQVNKLE1DZ0RkeEQiLCJmaWxlIjoiZGVwbG95X2xvZy5qcyIsInNvdXJjZXNDb250ZW50IjpbIlByb21pc2UgPSByZXF1aXJlICdibHVlYmlyZCdcbl8gPSByZXF1aXJlICdsb2Rhc2gnXG5HaXQgPSByZXF1aXJlICdnaXQtd3JhcHBlcidcblxuTG9nID0gcmVxdWlyZSAnLi9sb2cnXG5BdXRob3JpemVkID0gcmVxdWlyZSAnLi9hdXRob3JpemVkJ1xuVXJscyA9IHJlcXVpcmUgJy4vdXJscydcbkJhY2tlbmRMb2dnZXIgPSByZXF1aXJlICcuL2JhY2tlbmRfbG9nZ2VyJ1xuXG5tb2R1bGUuZXhwb3J0cyA9XG5jbGFzcyBEZXBsb3lMb2dcbiAgY29uc3RydWN0b3I6IC0+XG4gICAgRGVwbG95ZXIgPSByZXF1aXJlICcuL2RlcGxveWVyJ1xuICAgIEBkZXBsb3llciA9IG5ldyBEZXBsb3llcigpXG4gICAgQGJhY2tlbmRfbG9nZ2VyID0gbmV3IEJhY2tlbmRMb2dnZXIoKVxuICAgIEBnaXQgPSBuZXcgR2l0KClcblxuICBmcm9tQ3VycmVudENvbW1pdDogLT5cbiAgICBuZXcgUHJvbWlzZSAocmVzb2x2ZSwgcmVqZWN0KSA9PlxuICAgICAgQGRlcGxveWVyLmdldE9yaWdpblJlcG8oKS50aGVuIChyZXBvKSA9PlxuICAgICAgICBAcG9sbEFuZExvZ1VudGlsRGVwbG95ZWQocmVwbykudGhlbiA9PlxuICAgICAgICAgIExvZy5icigpXG4gICAgICAgICAgcmVzb2x2ZShAc2x1ZylcblxuICBwb2xsQW5kTG9nVW50aWxEZXBsb3llZDogKHJlcG8pIC0+XG4gICAgbmV3IFByb21pc2UgKHJlc29sdmUsIHJlamVjdCkgPT5cbiAgICAgIEBzdGF0dXMgPSAnbm9uZSdcbiAgICAgIExvZy5icigpXG4gICAgICBAcHJvbWlzZVdoaWxlKFxuICAgICAgICAoPT4gIV8uY29udGFpbnMoWydzdWNjZXNzJywgJ2ZhaWxlZCcsIG51bGxdLCBAc3RhdHVzKSksXG4gICAgICAgICg9PiBAcmVxdWVzdEFuZExvZ1N0YXR1cyhyZXBvKSlcbiAgICAgICkudGhlbihyZXNvbHZlKVxuXG4gIHJlcXVlc3RBbmRMb2dTdGF0dXM6IChyZXBvKSA9PlxuICAgIEBnZXRTaGEoKS50aGVuIChzaGEpID0+XG4gICAgICBAZGVwbG95ZXIuZ2V0U2x1ZyhyZXBvKS50aGVuIChzbHVnKSA9PlxuICAgICAgICBAc2x1ZyA9IHNsdWdcblxuICAgICAgICBBdXRob3JpemVkLnJlcXVlc3QgdXJsOiBVcmxzLmJ1aWxkRm9yQ0xJKHNsdWcpLCBxczogeyBjb21taXRfc2hhOiBzaGEgfSwgbWV0aG9kOiAnZ2V0JywganNvbjogdHJ1ZSwgKGVyciwgcmVzcCkgPT5cbiAgICAgICAgICBpZiByZXNwLnN0YXR1c0NvZGUgPT0gNDA0XG4gICAgICAgICAgICBMb2cuZXJyb3IgcmVzcC5ib2R5Lm1lc3NhZ2VcbiAgICAgICAgICBlbHNlIGlmIHJlc3Auc3RhdHVzQ29kZSA9PSAyMDBcbiAgICAgICAgICAgIGJ1aWxkID0gcmVzcC5ib2R5LmJ1aWxkXG4gICAgICAgICAgICBAYmFja2VuZF9sb2dnZXIubG9nKGJ1aWxkKVxuICAgICAgICAgICAgQHN0YXR1cyA9IGJ1aWxkLnN0YXR1c1xuICAgICAgICAgIGVsc2VcbiAgICAgICAgICAgIExvZy5lcnJvciBcIlVua25vd24gYmFja2VuZCBlcnJvci4gV2UncmUgZml4aW5nIHRoaXMgYWxyZWFkeS5cIlxuXG4gIGdldFNoYTogLT5cbiAgICBuZXcgUHJvbWlzZSAocmVzb2x2ZSwgcmVqZWN0KSA9PlxuICAgICAgQGdpdC5leGVjICdyZXYtcGFyc2UnLCBbJ0hFQUQnXSwgKGVyciwgcmVzcCkgLT5cbiAgICAgICAgcmV0dXJuIHJlamVjdChlcnIpIGlmIGVyclxuXG4gICAgICAgIHJlc29sdmUocmVzcC50cmltKCkpXG5cbiAgcHJvbWlzZVdoaWxlOiAoY29uZGl0aW9uLCBhY3Rpb24pIC0+XG4gICAgbmV3IFByb21pc2UgKHJlc29sdmUsIHJlamVjdCkgLT5cbiAgICAgIHJlcGVhdCA9IC0+XG4gICAgICAgIGlmICFjb25kaXRpb24oKVxuICAgICAgICAgIHJldHVybiByZXNvbHZlKClcbiAgICAgICAgUHJvbWlzZS5jYXN0KGFjdGlvbigpKS50aGVuKC0+XG4gICAgICAgICAgXy5kZWxheShyZXBlYXQsIDEwMDApKS5jYXRjaChyZWplY3QpXG5cbiAgICAgIHByb2Nlc3MubmV4dFRpY2sgcmVwZWF0XG4iLG51bGxdLCJzb3VyY2VSb290IjoiL3NvdXJjZS8ifQ==
+var Authorized, BackendLogger, DeployLog, Git, Log, Promise, Urls, _,
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+Promise = require('bluebird');
+
+_ = require('lodash');
+
+Git = require('git-wrapper');
+
+Log = require('./log');
+
+Authorized = require('./authorized');
+
+Urls = require('./urls');
+
+BackendLogger = require('./backend_logger');
+
+module.exports = DeployLog = (function() {
+  function DeployLog() {
+    this.requestAndLogStatus = __bind(this.requestAndLogStatus, this);
+    var Deployer;
+    Deployer = require('./deployer');
+    this.deployer = new Deployer();
+    this.backend_logger = new BackendLogger();
+    this.git = new Git();
+  }
+
+  DeployLog.prototype.fromCurrentCommit = function() {
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        return _this.deployer.getOriginRepo().then(function(repo) {
+          return _this.pollAndLogUntilDeployed(repo).then(function() {
+            Log.br();
+            return resolve(_this.slug);
+          });
+        });
+      };
+    })(this));
+  };
+
+  DeployLog.prototype.pollAndLogUntilDeployed = function(repo) {
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        _this.status = 'none';
+        Log.br();
+        return _this.promiseWhile((function() {
+          return !_.contains(['success', 'failed', null], _this.status);
+        }), (function() {
+          return _this.requestAndLogStatus(repo);
+        })).then(resolve);
+      };
+    })(this));
+  };
+
+  DeployLog.prototype.requestAndLogStatus = function(repo) {
+    return this.getSha().then((function(_this) {
+      return function(sha) {
+        return _this.deployer.getSlug(repo).then(function(slug) {
+          _this.slug = slug;
+          return Authorized.request({
+            url: Urls.buildForCLI(slug),
+            qs: {
+              commit_sha: sha
+            },
+            method: 'get',
+            json: true
+          }, function(err, resp) {
+            var build;
+            if (resp.statusCode === 404) {
+              return Log.error(resp.body.message);
+            } else if (resp.statusCode === 200) {
+              build = resp.body.build;
+              _this.backend_logger.log(build);
+              return _this.status = build.status;
+            } else {
+              return Log.error("Unknown backend error. We're fixing this already.");
+            }
+          });
+        });
+      };
+    })(this));
+  };
+
+  DeployLog.prototype.getSha = function() {
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        return _this.git.exec('rev-parse', ['HEAD'], function(err, resp) {
+          if (err) {
+            return reject(err);
+          }
+          return resolve(resp.trim());
+        });
+      };
+    })(this));
+  };
+
+  DeployLog.prototype.promiseWhile = function(condition, action) {
+    return new Promise(function(resolve, reject) {
+      var repeat;
+      repeat = function() {
+        if (!condition()) {
+          return resolve();
+        }
+        return Promise.cast(action()).then(function() {
+          return _.delay(repeat, 1000);
+        })["catch"](reject);
+      };
+      return process.nextTick(repeat);
+    });
+  };
+
+  return DeployLog;
+
+})();

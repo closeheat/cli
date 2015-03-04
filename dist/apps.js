@@ -1,2 +1,75 @@
-var Apps,Authorized,Color,Log,Urls,request,table,_,__bind=function(e,o){return function(){return e.apply(o,arguments)}};request=require("request"),_=require("lodash"),table=require("text-table"),Authorized=require("./authorized"),Urls=require("./urls"),Log=require("./log"),Color=require("./color"),module.exports=Apps=function(){function e(){this.list=__bind(this.list,this)}return e.prototype.list=function(){return Log.logo(),Log.spin("Getting information about your deployed apps."),Authorized.request({url:Urls.appsIndex(),method:"get"},function(e){return function(o,r){var t,n;if(Log.stop(),o)return Log.error(o);n=null;try{n=JSON.parse(r.body)}catch(u){return t=u,Log.backendError()}return n.apps.length?e.table(n.apps):e.noApps()}}(this))},e.prototype.table=function(e){var o;return Log.inner("You have "+e.length+" apps deployed."),o=[["",Color.redYellow("Name"),Color.redYellow(" Clone command")]],_.each(e,function(e){return o.push(["",Color.violet(e.name),Color.bare("closeheat clone "+e.slug)])}),Log.br(),Log.line(table(o)),Log.br(),Log.line("Edit any of your apps by cloning it with:"),Log.code("closeheat clone your-awesome-app")},e.prototype.noApps=function(){return Log.inner("You have no apps deployed."),Log.br(),Log.line("Create an app by typing:"),Log.code("closeheat create your-awesome-app")},e}();
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImFwcHMuY29mZmVlIiwiYXBwcy5qcyJdLCJuYW1lcyI6WyJBcHBzIiwiQXV0aG9yaXplZCIsIkNvbG9yIiwiTG9nIiwiVXJscyIsInJlcXVlc3QiLCJ0YWJsZSIsIl8iLCJfX2JpbmQiLCJmbiIsIm1lIiwiYXBwbHkiLCJhcmd1bWVudHMiLCJyZXF1aXJlIiwibW9kdWxlIiwiZXhwb3J0cyIsInRoaXMiLCJsaXN0IiwicHJvdG90eXBlIiwibG9nbyIsInNwaW4iLCJ1cmwiLCJhcHBzSW5kZXgiLCJtZXRob2QiLCJfdGhpcyIsImVyciIsInJlc3AiLCJlIiwicGFyc2VkX3Jlc3AiLCJzdG9wIiwiZXJyb3IiLCJKU09OIiwicGFyc2UiLCJib2R5IiwiX2Vycm9yIiwiYmFja2VuZEVycm9yIiwiYXBwcyIsImxlbmd0aCIsIm5vQXBwcyIsImlubmVyIiwicmVkWWVsbG93IiwiZWFjaCIsImFwcCIsInB1c2giLCJ2aW9sZXQiLCJuYW1lIiwiYmFyZSIsInNsdWciLCJiciIsImxpbmUiLCJjb2RlIl0sIm1hcHBpbmdzIjoiQUFBQSxHQUFBQSxNQUFBQyxXQUFBQyxNQUFBQyxJQUFBQyxLQUFBQyxRQUFBQyxNQUFBQyxFQUFBQyxPQUFBLFNBQUFDLEVBQUFDLEdBQUEsTUFBQSxZQUFBLE1BQUFELEdBQUFFLE1BQUFELEVBQUFFLFlBQUFQLFNBQVVRLFFBQVEsV0FBbEJOLEVBQ0lNLFFBQVEsVUFEWlAsTUFFUU8sUUFBUSxjQUZoQlosV0FJYVksUUFBUSxnQkFKckJULEtBS09TLFFBQVEsVUFMZlYsSUFNTVUsUUFBUSxTQU5kWCxNQU9RVyxRQUFRLFdBUGhCQyxPQVNPQyxRQUNEZixLQUFBLFdDUUosUUFBU0EsS0FDUGdCLEtBQUtDLEtBQU9ULE9BQU9RLEtBQUtDLEtBQU1ELE1BcURoQyxNRDdEQWhCLEdBQUFrQixVQUFBRCxLQUFNLFdDY0osTURiQWQsS0FBSWdCLE9BQ0poQixJQUFJaUIsS0FBSyxpREFDVG5CLFdBQVdJLFNBQVFnQixJQUFLakIsS0FBS2tCLFlBQWFDLE9BQVEsT0FBTyxTQUFBQyxHQ2V2RCxNRGZ1RCxVQUFDQyxFQUFLQyxHQUM3RCxHQUFBQyxHQUFBQyxDQUVBLElBRkF6QixJQUFJMEIsT0FFcUJKLEVBQXpCLE1BQU90QixLQUFJMkIsTUFBTUwsRUFFakJHLEdBQWMsSUFDZCxLQUNFQSxFQUFjRyxLQUFLQyxNQUFNTixFQUFLTyxNQURoQyxNQUFBQyxHQUdFLE1BRElQLEdBQUFPLEVBQ0cvQixJQUFJZ0MsZUFFYixNQUFHUCxHQUFZUSxLQUFLQyxPQUNsQmIsRUFBQ2xCLE1BQU1zQixFQUFZUSxNQUVuQlosRUFBQ2MsV0Fkb0R0QixRQUgzRGhCLEVBQUFrQixVQW1CQVosTUFBTyxTQUFDOEIsR0FDTixHQUFBbkIsRUMrQkEsT0QvQkFkLEtBQUlvQyxNQUFPLFlBQVdILEVBQUtDLE9BQU8sbUJBRWxDcEIsSUFBUyxHQUFJZixNQUFNc0MsVUFBVSxRQUFTdEMsTUFBTXNDLFVBQVUsb0JBQ3REakMsRUFBRWtDLEtBQUtMLEVBQU0sU0FBQ00sR0NzQlosTURyQkF6QixHQUFLMEIsTUFBTSxHQUFJekMsTUFBTTBDLE9BQU9GLEVBQUlHLE1BQU8zQyxNQUFNNEMsS0FBTSxtQkFBa0JKLEVBQUlLLFVBRTNFNUMsSUFBSTZDLEtBQ0o3QyxJQUFJOEMsS0FBSzNDLE1BQU1XLElBQ2ZkLElBQUk2QyxLQUNKN0MsSUFBSThDLEtBQUssNkNBQ1Q5QyxJQUFJK0MsS0FBSyxxQ0E5QlhsRCxFQUFBa0IsVUFnQ0FvQixPQUFRLFdDMEJOLE1EekJBbkMsS0FBSW9DLE1BQU0sOEJBQ1ZwQyxJQUFJNkMsS0FDSjdDLElBQUk4QyxLQUFLLDRCQUNUOUMsSUFBSStDLEtBQUssc0NDeUJKbEQiLCJmaWxlIjoiYXBwcy5qcyIsInNvdXJjZXNDb250ZW50IjpbInJlcXVlc3QgPSByZXF1aXJlICdyZXF1ZXN0J1xuXyA9IHJlcXVpcmUgJ2xvZGFzaCdcbnRhYmxlID0gcmVxdWlyZSgndGV4dC10YWJsZScpXG5cbkF1dGhvcml6ZWQgPSByZXF1aXJlICcuL2F1dGhvcml6ZWQnXG5VcmxzID0gcmVxdWlyZSAnLi91cmxzJ1xuTG9nID0gcmVxdWlyZSAnLi9sb2cnXG5Db2xvciA9IHJlcXVpcmUgJy4vY29sb3InXG5cbm1vZHVsZS5leHBvcnRzID1cbmNsYXNzIEFwcHNcbiAgbGlzdDogPT5cbiAgICBMb2cubG9nbygpXG4gICAgTG9nLnNwaW4gJ0dldHRpbmcgaW5mb3JtYXRpb24gYWJvdXQgeW91ciBkZXBsb3llZCBhcHBzLidcbiAgICBBdXRob3JpemVkLnJlcXVlc3QgdXJsOiBVcmxzLmFwcHNJbmRleCgpLCBtZXRob2Q6ICdnZXQnLCAoZXJyLCByZXNwKSA9PlxuICAgICAgTG9nLnN0b3AoKVxuXG4gICAgICByZXR1cm4gTG9nLmVycm9yKGVycikgaWYgZXJyXG5cbiAgICAgIHBhcnNlZF9yZXNwID0gbnVsbFxuICAgICAgdHJ5XG4gICAgICAgIHBhcnNlZF9yZXNwID0gSlNPTi5wYXJzZShyZXNwLmJvZHkpXG4gICAgICBjYXRjaCBlXG4gICAgICAgIHJldHVybiBMb2cuYmFja2VuZEVycm9yKClcblxuICAgICAgaWYgcGFyc2VkX3Jlc3AuYXBwcy5sZW5ndGhcbiAgICAgICAgQHRhYmxlKHBhcnNlZF9yZXNwLmFwcHMpXG4gICAgICBlbHNlXG4gICAgICAgIEBub0FwcHMoKVxuXG4gIHRhYmxlOiAoYXBwcykgLT5cbiAgICBMb2cuaW5uZXIgXCJZb3UgaGF2ZSAje2FwcHMubGVuZ3RofSBhcHBzIGRlcGxveWVkLlwiXG5cbiAgICBsaXN0ID0gW1snJywgQ29sb3IucmVkWWVsbG93KCdOYW1lJyksIENvbG9yLnJlZFllbGxvdygnIENsb25lIGNvbW1hbmQnKV1dXG4gICAgXy5lYWNoIGFwcHMsIChhcHApIC0+XG4gICAgICBsaXN0LnB1c2ggWycnLCBDb2xvci52aW9sZXQoYXBwLm5hbWUpLCBDb2xvci5iYXJlKFwiY2xvc2VoZWF0IGNsb25lICN7YXBwLnNsdWd9XCIpXVxuXG4gICAgTG9nLmJyKClcbiAgICBMb2cubGluZSh0YWJsZShsaXN0KSlcbiAgICBMb2cuYnIoKVxuICAgIExvZy5saW5lIFwiRWRpdCBhbnkgb2YgeW91ciBhcHBzIGJ5IGNsb25pbmcgaXQgd2l0aDpcIlxuICAgIExvZy5jb2RlKFwiY2xvc2VoZWF0IGNsb25lIHlvdXItYXdlc29tZS1hcHBcIilcblxuICBub0FwcHM6IC0+XG4gICAgTG9nLmlubmVyIFwiWW91IGhhdmUgbm8gYXBwcyBkZXBsb3llZC5cIlxuICAgIExvZy5icigpXG4gICAgTG9nLmxpbmUgXCJDcmVhdGUgYW4gYXBwIGJ5IHR5cGluZzpcIlxuICAgIExvZy5jb2RlKFwiY2xvc2VoZWF0IGNyZWF0ZSB5b3VyLWF3ZXNvbWUtYXBwXCIpXG4iLG51bGxdLCJzb3VyY2VSb290IjoiL3NvdXJjZS8ifQ==
+var Apps, Authorized, Color, Log, Urls, request, table, _,
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+request = require('request');
+
+_ = require('lodash');
+
+table = require('text-table');
+
+Authorized = require('./authorized');
+
+Urls = require('./urls');
+
+Log = require('./log');
+
+Color = require('./color');
+
+module.exports = Apps = (function() {
+  function Apps() {
+    this.list = __bind(this.list, this);
+  }
+
+  Apps.prototype.list = function() {
+    Log.logo();
+    Log.spin('Getting information about your deployed apps.');
+    return Authorized.request({
+      url: Urls.appsIndex(),
+      method: 'get'
+    }, (function(_this) {
+      return function(err, resp) {
+        var e, parsed_resp;
+        Log.stop();
+        if (err) {
+          return Log.error(err);
+        }
+        parsed_resp = null;
+        try {
+          parsed_resp = JSON.parse(resp.body);
+        } catch (_error) {
+          e = _error;
+          return Log.backendError();
+        }
+        if (parsed_resp.apps.length) {
+          return _this.table(parsed_resp.apps);
+        } else {
+          return _this.noApps();
+        }
+      };
+    })(this));
+  };
+
+  Apps.prototype.table = function(apps) {
+    var list;
+    Log.inner("You have " + apps.length + " apps deployed.");
+    list = [['', Color.redYellow('Name'), Color.redYellow(' Clone command')]];
+    _.each(apps, function(app) {
+      return list.push(['', Color.violet(app.name), Color.bare("closeheat clone " + app.slug)]);
+    });
+    Log.br();
+    Log.line(table(list));
+    Log.br();
+    Log.line("Edit any of your apps by cloning it with:");
+    return Log.code("closeheat clone your-awesome-app");
+  };
+
+  Apps.prototype.noApps = function() {
+    Log.inner("You have no apps deployed.");
+    Log.br();
+    Log.line("Create an app by typing:");
+    return Log.code("closeheat create your-awesome-app");
+  };
+
+  return Apps;
+
+})();

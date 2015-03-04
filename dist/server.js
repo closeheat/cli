@@ -1,2 +1,60 @@
-var Color,Log,Server,Watcher,charge,homePath,path,tinylr;path=require("path"),charge=require("charge"),homePath=require("home-path"),tinylr=require("tiny-lr"),Watcher=require("./watcher"),Log=require("./log"),Color=require("./color"),module.exports=Server=function(){function e(){this.src=process.cwd(),this.dist=""+homePath()+"/.closeheat/tmp/apps/current/"}return e.prototype.start=function(e){var r,t;return null==e&&(e={}),Log.logo(),e.log=!1,r=e.ip||"localhost",e.write={content:"<!-- closeheat development config --> <script src='http://"+r+":35729/livereload.js'></script>"},e.cache_control={"**":"max-age=0, no-cache, no-store"},t=new Watcher(this.src,this.dist),t.build().then(function(o){return function(){var i,n,a;return i=charge(o.dist,e),a=e.port||9e3,o.server=i.start(a),n=35729,tinylr().listen(n,function(){return Log.doneLine("Server started at "+Color.violet("http://localhost:"+a)+"."),Log.inner("localhost"===r?"LiveReload up via port "+n+".":"LiveReload up via http://"+r+":"+n+"."),t.run()})}}(this))},e}();
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNlcnZlci5jb2ZmZWUiLCJzZXJ2ZXIuanMiXSwibmFtZXMiOlsiQ29sb3IiLCJMb2ciLCJTZXJ2ZXIiLCJXYXRjaGVyIiwiY2hhcmdlIiwiaG9tZVBhdGgiLCJwYXRoIiwidGlueWxyIiwicmVxdWlyZSIsIm1vZHVsZSIsImV4cG9ydHMiLCJ0aGlzIiwic3JjIiwicHJvY2VzcyIsImN3ZCIsImRpc3QiLCJwcm90b3R5cGUiLCJzdGFydCIsIm9wdHMiLCJsaXZlX3JlbG9hZF9ob3N0Iiwid2F0Y2hlciIsImxvZ28iLCJsb2ciLCJpcCIsIndyaXRlIiwiY29udGVudCIsImNhY2hlX2NvbnRyb2wiLCIqKiIsImJ1aWxkIiwidGhlbiIsIl90aGlzIiwiYXBwIiwibHJfcG9ydCIsInBvcnQiLCJzZXJ2ZXIiLCJsaXN0ZW4iLCJkb25lTGluZSIsInZpb2xldCIsImlubmVyIiwicnVuIl0sIm1hcHBpbmdzIjoiQUFBQSxHQUFBQSxPQUFBQyxJQUFBQyxPQUFBQyxRQUFBQyxPQUFBQyxTQUFBQyxLQUFBQyxNQUFBRCxNQUFPRSxRQUFRLFFBQWZKLE9BQ1NJLFFBQVEsVUFEakJILFNBRVdHLFFBQVEsYUFGbkJELE9BR1NDLFFBQVEsV0FIakJMLFFBS1VLLFFBQVEsYUFMbEJQLElBTU1PLFFBQVEsU0FOZFIsTUFPUVEsUUFBUSxXQVBoQkMsT0FTT0MsUUFDRFIsT0FBQSxXQUNTLFFBQUFBLEtBQ1hTLEtBQUNDLElBQU1DLFFBQVFDLE1BQ2ZILEtBQUNJLEtBQU8sR0FBR1YsV0FBVyxnQ0M0Q3hCLE1EOUNBSCxHQUFBYyxVQUlBQyxNQUFPLFNBQUNDLEdBQ04sR0FBQUMsR0FBQUMsQ0NxQkEsT0FiWSxPQUFSRixJRFRFQSxNQUNOakIsSUFBSW9CLE9BRUpILEVBQUtJLEtBQU0sRUFDWEgsRUFBbUJELEVBQUtLLElBQU0sWUFFOUJMLEVBQUtNLE9BQVFDLFFBRWpCLDZEQUNzQk4sRUFBaUIsbUNBRW5DRCxFQUFLUSxlQUFpQkMsS0FBTSxpQ0FFNUJQLEVBQWMsR0FBQWpCLFNBQVFRLEtBQUNDLElBQUtELEtBQUNJLE1BRTdCSyxFQUFRUSxRQUFRQyxLQUFLLFNBQUFDLEdDUW5CLE1EUm1CLFlBQ25CLEdBQUFDLEdBQUFDLEVBQUFDLENDYUUsT0RiRkYsR0FBTTNCLE9BQU8wQixFQUFDZixLQUFNRyxHQUVwQmUsRUFBT2YsRUFBS2UsTUFBUSxJQUNwQkgsRUFBQ0ksT0FBU0gsRUFBSWQsTUFBTWdCLEdBRXBCRCxFQUFVLE1BQ1Z6QixTQUFTNEIsT0FBT0gsRUFBUyxXQ2NyQixNRGJGL0IsS0FBSW1DLFNBQVMscUJBQXVCcEMsTUFBTXFDLE9BQVEsb0JBQW1CSixHQUFVLEtBRzdFaEMsSUFBSXFDLE1BRGlCLGNBQXBCbkIsRUFDVSwwQkFBeUJhLEVBQVEsSUFFakMsNEJBQTJCYixFQUFpQixJQUFHYSxFQUFRLEtBRXBFWixFQUFRbUIsVUFmUzVCLFFDMkJoQlQiLCJmaWxlIjoic2VydmVyLmpzIiwic291cmNlc0NvbnRlbnQiOlsicGF0aCA9IHJlcXVpcmUgJ3BhdGgnXG5jaGFyZ2UgPSByZXF1aXJlICdjaGFyZ2UnXG5ob21lUGF0aCA9IHJlcXVpcmUoJ2hvbWUtcGF0aCcpXG50aW55bHIgPSByZXF1aXJlICd0aW55LWxyJ1xuXG5XYXRjaGVyID0gcmVxdWlyZSAnLi93YXRjaGVyJ1xuTG9nID0gcmVxdWlyZSAnLi9sb2cnXG5Db2xvciA9IHJlcXVpcmUgJy4vY29sb3InXG5cbm1vZHVsZS5leHBvcnRzID1cbmNsYXNzIFNlcnZlclxuICBjb25zdHJ1Y3RvcjogLT5cbiAgICBAc3JjID0gcHJvY2Vzcy5jd2QoKVxuICAgIEBkaXN0ID0gXCIje2hvbWVQYXRoKCl9Ly5jbG9zZWhlYXQvdG1wL2FwcHMvY3VycmVudC9cIlxuXG4gIHN0YXJ0OiAob3B0cyA9IHt9KSAtPlxuICAgIExvZy5sb2dvKClcblxuICAgIG9wdHMubG9nID0gZmFsc2VcbiAgICBsaXZlX3JlbG9hZF9ob3N0ID0gb3B0cy5pcCB8fCAnbG9jYWxob3N0J1xuXG4gICAgb3B0cy53cml0ZSA9IGNvbnRlbnQ6XG4gICAgICBcIlxuICAgICAgPCEtLSBjbG9zZWhlYXQgZGV2ZWxvcG1lbnQgY29uZmlnIC0tPlxuICAgICAgPHNjcmlwdCBzcmM9J2h0dHA6Ly8je2xpdmVfcmVsb2FkX2hvc3R9OjM1NzI5L2xpdmVyZWxvYWQuanMnPjwvc2NyaXB0PlxuICAgICAgXCJcbiAgICBvcHRzLmNhY2hlX2NvbnRyb2wgPSB7JyoqJzogJ21heC1hZ2U9MCwgbm8tY2FjaGUsIG5vLXN0b3JlJ31cblxuICAgIHdhdGNoZXIgPSBuZXcgV2F0Y2hlcihAc3JjLCBAZGlzdClcblxuICAgIHdhdGNoZXIuYnVpbGQoKS50aGVuID0+XG4gICAgICBhcHAgPSBjaGFyZ2UoQGRpc3QsIG9wdHMpXG5cbiAgICAgIHBvcnQgPSBvcHRzLnBvcnQgfHwgOTAwMFxuICAgICAgQHNlcnZlciA9IGFwcC5zdGFydChwb3J0KVxuXG4gICAgICBscl9wb3J0ID0gMzU3MjlcbiAgICAgIHRpbnlscigpLmxpc3RlbiBscl9wb3J0LCAtPlxuICAgICAgICBMb2cuZG9uZUxpbmUoJ1NlcnZlciBzdGFydGVkIGF0ICcgKyBDb2xvci52aW9sZXQoXCJodHRwOi8vbG9jYWxob3N0OiN7cG9ydH1cIikgKyAnLicpXG5cbiAgICAgICAgaWYgbGl2ZV9yZWxvYWRfaG9zdCA9PSAnbG9jYWxob3N0J1xuICAgICAgICAgIExvZy5pbm5lciBcIkxpdmVSZWxvYWQgdXAgdmlhIHBvcnQgI3tscl9wb3J0fS5cIlxuICAgICAgICBlbHNlXG4gICAgICAgICAgTG9nLmlubmVyIFwiTGl2ZVJlbG9hZCB1cCB2aWEgaHR0cDovLyN7bGl2ZV9yZWxvYWRfaG9zdH06I3tscl9wb3J0fS5cIlxuXG4gICAgICAgIHdhdGNoZXIucnVuKClcbiIsbnVsbF0sInNvdXJjZVJvb3QiOiIvc291cmNlLyJ9
+var Color, Log, Server, Watcher, charge, homePath, path, tinylr;
+
+path = require('path');
+
+charge = require('charge');
+
+homePath = require('home-path');
+
+tinylr = require('tiny-lr');
+
+Watcher = require('./watcher');
+
+Log = require('./log');
+
+Color = require('./color');
+
+module.exports = Server = (function() {
+  function Server() {
+    this.src = process.cwd();
+    this.dist = "" + (homePath()) + "/.closeheat/tmp/apps/current/";
+  }
+
+  Server.prototype.start = function(opts) {
+    var live_reload_host, watcher;
+    if (opts == null) {
+      opts = {};
+    }
+    Log.logo();
+    opts.log = false;
+    live_reload_host = opts.ip || 'localhost';
+    opts.write = {
+      content: "<!-- closeheat development config --> <script src='http://" + live_reload_host + ":35729/livereload.js'></script>"
+    };
+    opts.cache_control = {
+      '**': 'max-age=0, no-cache, no-store'
+    };
+    watcher = new Watcher(this.src, this.dist);
+    return watcher.build().then((function(_this) {
+      return function() {
+        var app, lr_port, port;
+        app = charge(_this.dist, opts);
+        port = opts.port || 9000;
+        _this.server = app.start(port);
+        lr_port = 35729;
+        return tinylr().listen(lr_port, function() {
+          Log.doneLine('Server started at ' + Color.violet("http://localhost:" + port) + '.');
+          if (live_reload_host === 'localhost') {
+            Log.inner("LiveReload up via port " + lr_port + ".");
+          } else {
+            Log.inner("LiveReload up via http://" + live_reload_host + ":" + lr_port + ".");
+          }
+          return watcher.run();
+        });
+      };
+    })(this));
+  };
+
+  return Server;
+
+})();

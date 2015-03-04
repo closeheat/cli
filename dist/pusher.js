@@ -1,2 +1,152 @@
-var Authorized,Color,Deployer,Git,Log,Promise,Pusher,Urls,shell,_,__bind=function(e,t){return function(){return e.apply(t,arguments)}};_=require("lodash"),Promise=require("bluebird"),shell=require("shelljs"),Git=require("git-wrapper"),Urls=require("./urls"),Deployer=require("./deployer"),Log=require("./log"),Color=require("./color"),Authorized=require("./authorized"),module.exports=Pusher=function(){function e(e,t){this.name=e,this.target=t,this.initGit=__bind(this.initGit,this),this.addRemote=__bind(this.addRemote,this),this.pushFiles=__bind(this.pushFiles,this),this.createAppInBackend=__bind(this.createAppInBackend,this),this.git=new Git}return e.prototype.push=function(){return this.getGithubUsername().then(function(e){return function(t){return Log.inner("Using GitHub username: "+Color.orange(t)),Log.spin("Creating closeheat app and GitHub repository."),e.createAppInBackend().then(function(){return Log.stop(),Log.inner("Created both with name '"+e.name+"'."),e.pushFiles(t).then(function(){return Log.br(),Log.p("The app "+Color.violet(e.name)+" has been created."),Log.br()})})}}(this))["catch"](function(e){return Log.error(e)})},e.prototype.githubNotAuthorized=function(){return Log.error("GitHub not authorized",!1),Log.innerError("We cannot set you up for deployment because you did not authorize GitHub."),Log.br(),Log.innerError("Visit "+Urls.authorizeGithub()+" and rerun the command.")},e.prototype.createAppInBackend=function(){return new Promise(function(e){return function(t,r){return Authorized.request({url:Urls.createApp(),qs:{repo_name:e.name},method:"post",json:!0},function(e,n){return e?r(e):"error"===n.body.status?r(n.body.msg):t(n)})}}(this))},e.prototype.getGithubUsername=function(){return new Promise(function(e){return function(t,r){return Authorized.request({url:Urls.currentUserInfo(),method:"get"},function(n,i){var o,u;if(n)return r(n);try{u=JSON.parse(i.body).user}catch(s){return o=s,Log.error("Backend responded with an error.")}return u.github_token?t(u.github_username):e.githubNotAuthorized()})}}(this))},e.prototype.pushFiles=function(e){return shell.cd(this.target),this.initGit().then(function(t){return function(){return t.addRemote(e).then(function(){}),(new Deployer).deploy().then(function(){return shell.cd("..")})}}(this))},e.prototype.addRemote=function(e){return new Promise(function(t){return function(r,n){var i;return i="git@github.com:"+e+"/"+t.name+".git",t.git.exec("remote",["add","origin",i],function(e){return e?n(e):r()})}}(this))},e.prototype.initGit=function(){return new Promise(function(e){return function(t,r){return e.git.exec("init",[e.target],function(e){return e?r(e):t()})}}(this))},e}();
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInB1c2hlci5jb2ZmZWUiLCJwdXNoZXIuanMiXSwibmFtZXMiOlsiQXV0aG9yaXplZCIsIkNvbG9yIiwiRGVwbG95ZXIiLCJHaXQiLCJMb2ciLCJQcm9taXNlIiwiUHVzaGVyIiwiVXJscyIsInNoZWxsIiwiXyIsIl9fYmluZCIsImZuIiwibWUiLCJhcHBseSIsImFyZ3VtZW50cyIsInJlcXVpcmUiLCJtb2R1bGUiLCJleHBvcnRzIiwibmFtZSIsInRhcmdldCIsInRoaXMiLCJpbml0R2l0IiwiYWRkUmVtb3RlIiwicHVzaEZpbGVzIiwiY3JlYXRlQXBwSW5CYWNrZW5kIiwiZ2l0IiwicHJvdG90eXBlIiwicHVzaCIsImdldEdpdGh1YlVzZXJuYW1lIiwidGhlbiIsIl90aGlzIiwidXNlcm5hbWUiLCJpbm5lciIsIm9yYW5nZSIsInNwaW4iLCJzdG9wIiwiYnIiLCJwIiwidmlvbGV0IiwiZXJyIiwiZXJyb3IiLCJnaXRodWJOb3RBdXRob3JpemVkIiwiaW5uZXJFcnJvciIsImF1dGhvcml6ZUdpdGh1YiIsInJlc29sdmUiLCJyZWplY3QiLCJyZXF1ZXN0IiwidXJsIiwiY3JlYXRlQXBwIiwicXMiLCJyZXBvX25hbWUiLCJtZXRob2QiLCJqc29uIiwicmVzcCIsImJvZHkiLCJzdGF0dXMiLCJtc2ciLCJjdXJyZW50VXNlckluZm8iLCJlIiwidXNlcl9pbmZvIiwiSlNPTiIsInBhcnNlIiwidXNlciIsIl9lcnJvciIsImNkIiwiZGVwbG95IiwiZ2l0X3VybCIsImV4ZWMiXSwibWFwcGluZ3MiOiJBQUFBLEdBQUFBLFlBQUFDLE1BQUFDLFNBQUFDLElBQUFDLElBQUFDLFFBQUFDLE9BQUFDLEtBQUFDLE1BQUFDLEVBQUFDLE9BQUEsU0FBQUMsRUFBQUMsR0FBQSxNQUFBLFlBQUEsTUFBQUQsR0FBQUUsTUFBQUQsRUFBQUUsWUFBQUwsR0FBSU0sUUFBUSxVQUFaVixRQUNVVSxRQUFRLFlBRGxCUCxNQUVRTyxRQUFRLFdBRmhCWixJQUdNWSxRQUFRLGVBSGRSLEtB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Q2MsRUFBU0MsR0FDcEIsR0FBQXFCLEVDK0NFLE9EL0NGQSxHQUFXLGtCQUFpQm5DLEVBQVMsSUFBR0QsRUFBQ1osS0FBSyxPQUU5Q1ksRUFBQ0wsSUFBSTBDLEtBQUssVUFBVyxNQUFPLFNBQVVELEdBQVUsU0FBQzNCLEdBQy9DLE1BQXNCQSxHQUFmTSxFQUFPTixHQUVkSyxRQU5ReEIsUUEvRGRkLEVBQUFvQixVQXVFQUwsUUFBUyxXQ21EUCxNRGxESSxJQUFBaEIsU0FBUSxTQUFBeUIsR0NtRFYsTURuRFUsVUFBQ2MsRUFBU0MsR0NvRGxCLE1EbkRGZixHQUFDTCxJQUFJMEMsS0FBSyxRQUFTckMsRUFBQ1gsUUFBUyxTQUFDb0IsR0FDNUIsTUFBc0JBLEdBQWZNLEVBQU9OLEdBRWRLLFFBSlF4QixRQzhEUGQiLCJmaWxlIjoicHVzaGVyLmpzIiwic291cmNlc0NvbnRlbnQiOlsiXyA9IHJlcXVpcmUgJ2xvZGFzaCdcblByb21pc2UgPSByZXF1aXJlICdibHVlYmlyZCdcbnNoZWxsID0gcmVxdWlyZSAnc2hlbGxqcydcbkdpdCA9IHJlcXVpcmUgJ2dpdC13cmFwcGVyJ1xuXG5VcmxzID0gcmVxdWlyZSAnLi91cmxzJ1xuRGVwbG95ZXIgPSByZXF1aXJlICcuL2RlcGxveWVyJ1xuXG5Mb2cgPSByZXF1aXJlICcuL2xvZydcbkNvbG9yID0gcmVxdWlyZSAnLi9jb2xvcidcblxuQXV0aG9yaXplZCA9IHJlcXVpcmUgJy4vYXV0aG9yaXplZCdcblxubW9kdWxlLmV4cG9ydHMgPVxuY2xhc3MgUHVzaGVyXG4gIGNvbnN0cnVjdG9yOiAoQG5hbWUsIEB0YXJnZXQpIC0+XG4gICAgQGdpdCA9IG5ldyBHaXQoKVxuXG4gICAgIyBjaGVjayBpZiBjbG9zZWhlYXQgaXMgZ2l0aHViIGF1dGhvcml6ZWRcbiAgICAjIC0gaWYgbm90LCBmb3JjZSBhdXRoIHZpYSBsaW5rIGh0dHA6Ly9jbG9zZWhlYXQuY29tL2F1dGhvcml6ZS1naXRodWJcbiAgICAjIGNyZWF0ZSBhbiBhcHAgd2l0aCByZXBvLCBob29rc1xuICAgICMgYWRkLCBjb21taXQgZmlsZXMgYW5kIHB1c2ggdG8gcmVwbyBhcyBtYXN0ZXIgKGRvIGF1dG8gZGVwbG95KVxuXG4gIHB1c2g6IC0+XG4gICAgQGdldEdpdGh1YlVzZXJuYW1lKCkudGhlbigodXNlcm5hbWUpID0+XG4gICAgICBMb2cuaW5uZXIoXCJVc2luZyBHaXRIdWIgdXNlcm5hbWU6ICN7Q29sb3Iub3JhbmdlKHVzZXJuYW1lKX1cIilcbiAgICAgIExvZy5zcGluKCdDcmVhdGluZyBjbG9zZWhlYXQgYXBwIGFuZCBHaXRIdWIgcmVwb3NpdG9yeS4nKVxuICAgICAgQGNyZWF0ZUFwcEluQmFja2VuZCgpLnRoZW4gPT5cbiAgICAgICAgTG9nLnN0b3AoKVxuICAgICAgICBMb2cuaW5uZXIoXCJDcmVhdGVkIGJvdGggd2l0aCBuYW1lICcje0BuYW1lfScuXCIpXG5cbiAgICAgICAgQHB1c2hGaWxlcyh1c2VybmFtZSkudGhlbiA9PlxuICAgICAgICAgIExvZy5icigpXG4gICAgICAgICAgTG9nLnAgXCJUaGUgYXBwICN7Q29sb3IudmlvbGV0KEBuYW1lKX0gaGFzIGJlZW4gY3JlYXRlZC5cIlxuICAgICAgICAgIExvZy5icigpXG5cbiAgICApLmNhdGNoIChlcnIpIC0+XG4gICAgICBMb2cuZXJyb3IoZXJyKVxuXG4gIGdpdGh1Yk5vdEF1dGhvcml6ZWQ6IC0+XG4gICAgTG9nLmVycm9yKCdHaXRIdWIgbm90IGF1dGhvcml6ZWQnLCBmYWxzZSlcbiAgICBMb2cuaW5uZXJFcnJvciBcIldlIGNhbm5vdCBzZXQgeW91IHVwIGZvciBkZXBsb3ltZW50IGJlY2F1c2UgeW91IGRpZCBub3QgYXV0aG9yaXplIEdpdEh1Yi5cIlxuICAgIExvZy5icigpXG4gICAgTG9nLmlubmVyRXJyb3IgXCJWaXNpdCAje1VybHMuYXV0aG9yaXplR2l0aHViKCl9IGFuZCByZXJ1biB0aGUgY29tbWFuZC5cIlxuXG4gIGNyZWF0ZUFwcEluQmFja2VuZDogPT5cbiAgICBuZXcgUHJvbWlzZSAocmVzb2x2ZSwgcmVqZWN0KSA9PlxuICAgICAgQXV0aG9yaXplZC5yZXF1ZXN0IHsgdXJsOiBVcmxzLmNyZWF0ZUFwcCgpLCBxczogeyByZXBvX25hbWU6IEBuYW1lIH0sIG1ldGhvZDogJ3Bvc3QnLCBqc29uOiB0cnVlIH0sIChlcnIsIHJlc3ApID0+XG4gICAgICAgIHJldHVybiByZWplY3QoZXJyKSBpZiBlcnJcbiAgICAgICAgcmV0dXJuIHJlamVjdChyZXNwLmJvZHkubXNnKSBpZiByZXNwLmJvZHkuc3RhdHVzID09ICdlcnJvcidcblxuICAgICAgICByZXNvbHZlKHJlc3ApXG5cbiAgZ2V0R2l0aHViVXNlcm5hbWU6IC0+XG4gICAgbmV3IFByb21pc2UgKHJlc29sdmUsIHJlamVjdCkgPT5cbiAgICAgIEF1dGhvcml6ZWQucmVxdWVzdCB1cmw6IFVybHMuY3VycmVudFVzZXJJbmZvKCksIG1ldGhvZDogJ2dldCcsIChlcnIsIHJlc3ApID0+XG4gICAgICAgIHJldHVybiByZWplY3QoZXJyKSBpZiBlcnJcblxuICAgICAgICB0cnlcbiAgICAgICAgICB1c2VyX2luZm8gPSBKU09OLnBhcnNlKHJlc3AuYm9keSkudXNlclxuICAgICAgICBjYXRjaCBlXG4gICAgICAgICAgcmV0dXJuIExvZy5lcnJvcignQmFja2VuZCByZXNwb25kZWQgd2l0aCBhbiBlcnJvci4nKVxuXG4gICAgICAgIGlmIHVzZXJfaW5mb1snZ2l0aHViX3Rva2VuJ11cbiAgICAgICAgICByZXNvbHZlKHVzZXJfaW5mb1snZ2l0aHViX3VzZXJuYW1lJ10pXG4gICAgICAgIGVsc2VcbiAgICAgICAgICBAZ2l0aHViTm90QXV0aG9yaXplZCgpXG5cbiAgcHVzaEZpbGVzOiAodXNlcm5hbWUpID0+XG4gICAgc2hlbGwuY2QoQHRhcmdldClcblxuICAgIEBpbml0R2l0KCkudGhlbiA9PlxuICAgICAgQGFkZFJlbW90ZSh1c2VybmFtZSkudGhlbiAtPlxuXG4gICAgICBuZXcgRGVwbG95ZXIoKS5kZXBsb3koKS50aGVuIC0+XG4gICAgICAgIHNoZWxsLmNkKCcuLicpXG5cbiAgYWRkUmVtb3RlOiAodXNlcm5hbWUpID0+XG4gICAgbmV3IFByb21pc2UgKHJlc29sdmUsIHJlamVjdCkgPT5cbiAgICAgIGdpdF91cmwgPSBcImdpdEBnaXRodWIuY29tOiN7dXNlcm5hbWV9LyN7QG5hbWV9LmdpdFwiXG5cbiAgICAgIEBnaXQuZXhlYyAncmVtb3RlJywgWydhZGQnLCAnb3JpZ2luJywgZ2l0X3VybF0sIChlcnIsIHJlc3ApIC0+XG4gICAgICAgIHJldHVybiByZWplY3QoZXJyKSBpZiBlcnJcblxuICAgICAgICByZXNvbHZlKClcblxuICBpbml0R2l0OiA9PlxuICAgIG5ldyBQcm9taXNlIChyZXNvbHZlLCByZWplY3QpID0+XG4gICAgICBAZ2l0LmV4ZWMgJ2luaXQnLCBbQHRhcmdldF0sIChlcnIsIHJlc3ApIC0+XG4gICAgICAgIHJldHVybiByZWplY3QoZXJyKSBpZiBlcnJcblxuICAgICAgICByZXNvbHZlKClcbiIsbnVsbF0sInNvdXJjZVJvb3QiOiIvc291cmNlLyJ9
+var Authorized, Color, Deployer, Git, Log, Promise, Pusher, Urls, shell, _,
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+_ = require('lodash');
+
+Promise = require('bluebird');
+
+shell = require('shelljs');
+
+Git = require('git-wrapper');
+
+Urls = require('./urls');
+
+Deployer = require('./deployer');
+
+Log = require('./log');
+
+Color = require('./color');
+
+Authorized = require('./authorized');
+
+module.exports = Pusher = (function() {
+  function Pusher(name, target) {
+    this.name = name;
+    this.target = target;
+    this.initGit = __bind(this.initGit, this);
+    this.addRemote = __bind(this.addRemote, this);
+    this.pushFiles = __bind(this.pushFiles, this);
+    this.createAppInBackend = __bind(this.createAppInBackend, this);
+    this.git = new Git();
+  }
+
+  Pusher.prototype.push = function() {
+    return this.getGithubUsername().then((function(_this) {
+      return function(username) {
+        Log.inner("Using GitHub username: " + (Color.orange(username)));
+        Log.spin('Creating closeheat app and GitHub repository.');
+        return _this.createAppInBackend().then(function() {
+          Log.stop();
+          Log.inner("Created both with name '" + _this.name + "'.");
+          return _this.pushFiles(username).then(function() {
+            Log.br();
+            Log.p("The app " + (Color.violet(_this.name)) + " has been created.");
+            return Log.br();
+          });
+        });
+      };
+    })(this))["catch"](function(err) {
+      return Log.error(err);
+    });
+  };
+
+  Pusher.prototype.githubNotAuthorized = function() {
+    Log.error('GitHub not authorized', false);
+    Log.innerError("We cannot set you up for deployment because you did not authorize GitHub.");
+    Log.br();
+    return Log.innerError("Visit " + (Urls.authorizeGithub()) + " and rerun the command.");
+  };
+
+  Pusher.prototype.createAppInBackend = function() {
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        return Authorized.request({
+          url: Urls.createApp(),
+          qs: {
+            repo_name: _this.name
+          },
+          method: 'post',
+          json: true
+        }, function(err, resp) {
+          if (err) {
+            return reject(err);
+          }
+          if (resp.body.status === 'error') {
+            return reject(resp.body.msg);
+          }
+          return resolve(resp);
+        });
+      };
+    })(this));
+  };
+
+  Pusher.prototype.getGithubUsername = function() {
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        return Authorized.request({
+          url: Urls.currentUserInfo(),
+          method: 'get'
+        }, function(err, resp) {
+          var e, user_info;
+          if (err) {
+            return reject(err);
+          }
+          try {
+            user_info = JSON.parse(resp.body).user;
+          } catch (_error) {
+            e = _error;
+            return Log.error('Backend responded with an error.');
+          }
+          if (user_info['github_token']) {
+            return resolve(user_info['github_username']);
+          } else {
+            return _this.githubNotAuthorized();
+          }
+        });
+      };
+    })(this));
+  };
+
+  Pusher.prototype.pushFiles = function(username) {
+    shell.cd(this.target);
+    return this.initGit().then((function(_this) {
+      return function() {
+        _this.addRemote(username).then(function() {});
+        return new Deployer().deploy().then(function() {
+          return shell.cd('..');
+        });
+      };
+    })(this));
+  };
+
+  Pusher.prototype.addRemote = function(username) {
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        var git_url;
+        git_url = "git@github.com:" + username + "/" + _this.name + ".git";
+        return _this.git.exec('remote', ['add', 'origin', git_url], function(err, resp) {
+          if (err) {
+            return reject(err);
+          }
+          return resolve();
+        });
+      };
+    })(this));
+  };
+
+  Pusher.prototype.initGit = function() {
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        return _this.git.exec('init', [_this.target], function(err, resp) {
+          if (err) {
+            return reject(err);
+          }
+          return resolve();
+        });
+      };
+    })(this));
+  };
+
+  return Pusher;
+
+})();

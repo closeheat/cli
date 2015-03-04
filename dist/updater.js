@@ -1,2 +1,79 @@
-var Color,Config,Log,Promise,Updater,checkUpdate;checkUpdate=require("check-update"),Promise=require("bluebird"),Config=require("./config"),Log=require("./log"),Color=require("./color"),module.exports=Updater=function(){function e(){}return e.prototype.update=function(){return this.exec().then(function(e){return function(){return e.saveLastCheckTime()}}(this))},e.prototype.exec=function(){return new Promise(function(e){return function(t){return e.longTimeNoUpdate()?e.checkForUpdate().then(function(o){return o.exists&&e.askForUpdate(o.version),t()}):t()}}(this))},e.prototype.longTimeNoUpdate=function(){var e;return e=Config.fileContents().last_update_check||Date.now(),Date.now()-e>86400},e.prototype.saveLastCheckTime=function(){return Config.update("last_update_check",Date.now())},e.prototype.askForUpdate=function(e){return Log.p("A new version ("+e+") of closeheat is available. Run "+Color.violet("npm update closeheat -g")+" to update."),Log.br()},e.prototype.checkForUpdate=function(){return new Promise(function(){return function(e,t){return checkUpdate({packageName:"closeheat",packageVersion:Config.version(),isCLI:!1},function(o,n){return o?t():e({exists:Config.version()<n,version:n})})}}(this))},e}();
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInVwZGF0ZXIuY29mZmVlIiwidXBkYXRlci5qcyJdLCJuYW1lcyI6WyJDb2xvciIsIkNvbmZpZyIsIkxvZyIsIlByb21pc2UiLCJVcGRhdGVyIiwiY2hlY2tVcGRhdGUiLCJyZXF1aXJlIiwibW9kdWxlIiwiZXhwb3J0cyIsInByb3RvdHlwZSIsInVwZGF0ZSIsInRoaXMiLCJleGVjIiwidGhlbiIsIl90aGlzIiwic2F2ZUxhc3RDaGVja1RpbWUiLCJyZXNvbHZlIiwibG9uZ1RpbWVOb1VwZGF0ZSIsImNoZWNrRm9yVXBkYXRlIiwidXBkYXRlX2RhdGEiLCJleGlzdHMiLCJhc2tGb3JVcGRhdGUiLCJ2ZXJzaW9uIiwibGFzdF91cGRhdGVfY2hlY2siLCJmaWxlQ29udGVudHMiLCJEYXRlIiwibm93IiwicCIsInZpb2xldCIsImJyIiwicmVqZWN0IiwicGFja2FnZU5hbWUiLCJwYWNrYWdlVmVyc2lvbiIsImlzQ0xJIiwiZXJyIiwibGF0ZXN0Il0sIm1hcHBpbmdzIjoiQUFBQSxHQUFBQSxPQUFBQyxPQUFBQyxJQUFBQyxRQUFBQyxRQUFBQyxXQUFBQSxhQUFjQyxRQUFRLGdCQUF0QkgsUUFDVUcsUUFBUSxZQURsQkwsT0FHU0ssUUFBUSxZQUhqQkosSUFJTUksUUFBUSxTQUpkTixNQUtRTSxRQUFRLFdBTGhCQyxPQU9PQyxRQUNESixRQUFBLFdDS0osUUFBU0EsTUErRFQsTURuRUFBLEdBQUFLLFVBQUFDLE9BQVEsV0NPTixNRE5BQyxNQUFDQyxPQUFPQyxLQUFLLFNBQUFDLEdDT1gsTURQVyxZQ1FULE1EUEZBLEdBQUNDLHNCQURVSixRQURmUCxFQUFBSyxVQUlBRyxLQUFNLFdDV0osTURWSSxJQUFBVCxTQUFRLFNBQUFXLEdDV1YsTURYVSxVQUFDRSxHQUNYLE1BQUdGLEdBQUNHLG1CQUNGSCxFQUFDSSxpQkFBaUJMLEtBQUssU0FBQ00sR0NlcEIsTURkb0NBLEdBQVlDLFFBQWxETixFQUFDTyxhQUFhRixFQUFZRyxTQUMxQk4sTUFFRkEsTUFOUUwsUUFMZFAsRUFBQUssVUFhQVEsaUJBQWtCLFdBQ2hCLEdBQUFNLEVDb0JBLE9EcEJBQSxHQUFvQnRCLE9BQU91QixlQUFlRCxtQkFBcUJFLEtBQUtDLE1BRXBFRCxLQUFLQyxNQUFRSCxFQUFvQixPQWhCbkNuQixFQUFBSyxVQWtCQU0sa0JBQW1CLFdDb0JqQixNRG5CQWQsUUFBT1MsT0FBTyxvQkFBcUJlLEtBQUtDLFFBbkIxQ3RCLEVBQUFLLFVBcUJBWSxhQUFjLFNBQUNDLEdDc0JiLE1EckJBcEIsS0FBSXlCLEVBQUcsa0JBQWlCTCxFQUFRLG9DQUFtQ3RCLE1BQU00QixPQUFPLDJCQUEyQixlQUMzRzFCLElBQUkyQixNQXZCTnpCLEVBQUFLLFVBeUJBUyxlQUFnQixXQ3NCZCxNRHJCSSxJQUFBZixTQUFRLFdDc0JWLE1EdEJVLFVBQUNhLEVBQVNjLEdDdUJsQixNRHRCRnpCLGNBQ0UwQixZQUFhLFlBQ2JDLGVBQWdCL0IsT0FBT3FCLFVBQ3ZCVyxPQUFPLEdBQ1AsU0FBQ0MsRUFBS0MsR0FDSixNQUFHRCxHQUNESixJQUVBZCxHQUFRSSxPQUFRbkIsT0FBT3FCLFVBQVlhLEVBQVFiLFFBQVNhLFFBVGhEeEIsUUN5Q1BQIiwiZmlsZSI6InVwZGF0ZXIuanMiLCJzb3VyY2VzQ29udGVudCI6WyJjaGVja1VwZGF0ZSA9IHJlcXVpcmUgJ2NoZWNrLXVwZGF0ZSdcblByb21pc2UgPSByZXF1aXJlICdibHVlYmlyZCdcblxuQ29uZmlnID0gcmVxdWlyZSAnLi9jb25maWcnXG5Mb2cgPSByZXF1aXJlICcuL2xvZydcbkNvbG9yID0gcmVxdWlyZSAnLi9jb2xvcidcblxubW9kdWxlLmV4cG9ydHMgPVxuY2xhc3MgVXBkYXRlclxuICB1cGRhdGU6IC0+XG4gICAgQGV4ZWMoKS50aGVuID0+XG4gICAgICBAc2F2ZUxhc3RDaGVja1RpbWUoKVxuXG4gIGV4ZWM6IC0+XG4gICAgbmV3IFByb21pc2UgKHJlc29sdmUsIHJlamVjdCkgPT5cbiAgICAgIGlmIEBsb25nVGltZU5vVXBkYXRlKClcbiAgICAgICAgQGNoZWNrRm9yVXBkYXRlKCkudGhlbiAodXBkYXRlX2RhdGEpID0+XG4gICAgICAgICAgQGFza0ZvclVwZGF0ZSh1cGRhdGVfZGF0YS52ZXJzaW9uKSBpZiB1cGRhdGVfZGF0YS5leGlzdHNcbiAgICAgICAgICByZXNvbHZlKClcbiAgICAgIGVsc2VcbiAgICAgICAgcmVzb2x2ZSgpXG5cbiAgbG9uZ1RpbWVOb1VwZGF0ZTogLT5cbiAgICBsYXN0X3VwZGF0ZV9jaGVjayA9IENvbmZpZy5maWxlQ29udGVudHMoKS5sYXN0X3VwZGF0ZV9jaGVjayB8fCBEYXRlLm5vdygpXG5cbiAgICBEYXRlLm5vdygpIC0gbGFzdF91cGRhdGVfY2hlY2sgPiAxICogMjQgKiA2MCAqIDYwXG5cbiAgc2F2ZUxhc3RDaGVja1RpbWU6IC0+XG4gICAgQ29uZmlnLnVwZGF0ZSgnbGFzdF91cGRhdGVfY2hlY2snLCBEYXRlLm5vdygpKVxuXG4gIGFza0ZvclVwZGF0ZTogKHZlcnNpb24pIC0+XG4gICAgTG9nLnAgXCJBIG5ldyB2ZXJzaW9uICgje3ZlcnNpb259KSBvZiBjbG9zZWhlYXQgaXMgYXZhaWxhYmxlLiBSdW4gI3tDb2xvci52aW9sZXQoJ25wbSB1cGRhdGUgY2xvc2VoZWF0IC1nJyl9IHRvIHVwZGF0ZS5cIlxuICAgIExvZy5icigpXG5cbiAgY2hlY2tGb3JVcGRhdGU6IC0+XG4gICAgbmV3IFByb21pc2UgKHJlc29sdmUsIHJlamVjdCkgPT5cbiAgICAgIGNoZWNrVXBkYXRlXG4gICAgICAgIHBhY2thZ2VOYW1lOiAnY2xvc2VoZWF0JyxcbiAgICAgICAgcGFja2FnZVZlcnNpb246IENvbmZpZy52ZXJzaW9uKCksXG4gICAgICAgIGlzQ0xJOiBmYWxzZSxcbiAgICAgICAgKGVyciwgbGF0ZXN0LCBkZWZhdWx0X21lc3NhZ2UpIC0+XG4gICAgICAgICAgaWYgZXJyXG4gICAgICAgICAgICByZWplY3QoKVxuICAgICAgICAgIGVsc2VcbiAgICAgICAgICAgIHJlc29sdmUoZXhpc3RzOiBDb25maWcudmVyc2lvbigpIDwgbGF0ZXN0LCB2ZXJzaW9uOiBsYXRlc3QpXG4iLG51bGxdLCJzb3VyY2VSb290IjoiL3NvdXJjZS8ifQ==
+var Color, Config, Log, Promise, Updater, checkUpdate;
+
+checkUpdate = require('check-update');
+
+Promise = require('bluebird');
+
+Config = require('./config');
+
+Log = require('./log');
+
+Color = require('./color');
+
+module.exports = Updater = (function() {
+  function Updater() {}
+
+  Updater.prototype.update = function() {
+    return this.exec().then((function(_this) {
+      return function() {
+        return _this.saveLastCheckTime();
+      };
+    })(this));
+  };
+
+  Updater.prototype.exec = function() {
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        if (_this.longTimeNoUpdate()) {
+          return _this.checkForUpdate().then(function(update_data) {
+            if (update_data.exists) {
+              _this.askForUpdate(update_data.version);
+            }
+            return resolve();
+          });
+        } else {
+          return resolve();
+        }
+      };
+    })(this));
+  };
+
+  Updater.prototype.longTimeNoUpdate = function() {
+    var last_update_check;
+    last_update_check = Config.fileContents().last_update_check || Date.now();
+    return Date.now() - last_update_check > 1 * 24 * 60 * 60;
+  };
+
+  Updater.prototype.saveLastCheckTime = function() {
+    return Config.update('last_update_check', Date.now());
+  };
+
+  Updater.prototype.askForUpdate = function(version) {
+    Log.p("A new version (" + version + ") of closeheat is available. Run " + (Color.violet('npm update closeheat -g')) + " to update.");
+    return Log.br();
+  };
+
+  Updater.prototype.checkForUpdate = function() {
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        return checkUpdate({
+          packageName: 'closeheat',
+          packageVersion: Config.version(),
+          isCLI: false
+        }, function(err, latest, default_message) {
+          if (err) {
+            return reject();
+          } else {
+            return resolve({
+              exists: Config.version() < latest,
+              version: latest
+            });
+          }
+        });
+      };
+    })(this));
+  };
+
+  return Updater;
+
+})();

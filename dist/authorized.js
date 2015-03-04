@@ -1,2 +1,50 @@
-var Authorized,Authorizer,Log,request,_,__slice=[].slice;request=require("request"),_=require("lodash"),Authorizer=require("./authorizer"),Log=require("./log"),module.exports=Authorized=function(){function e(){}return e.request=function(){var e,r,t;return t=1<=arguments.length?__slice.call(arguments,0):[],r=t[0],e=t[1],r.qs=_.merge(r.qs||{},this.tokenParams()),request(r,this.loginOnUnauthorized(r,e))},e.tokenParams=function(){var e;return e=new Authorizer,{api_token:e.accessToken()}},e.loginOnUnauthorized=function(r,t){return function(n,u){var o;return n&&Log.error(n),o=new Authorizer,o.unauthorized(u)?o.forceLogin(function(){return e.request(r,t)}):t(n,u)}},e}();
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImF1dGhvcml6ZWQuY29mZmVlIiwiYXV0aG9yaXplZC5qcyJdLCJuYW1lcyI6WyJBdXRob3JpemVkIiwiQXV0aG9yaXplciIsIkxvZyIsInJlcXVlc3QiLCJfIiwiX19zbGljZSIsInNsaWNlIiwicmVxdWlyZSIsIm1vZHVsZSIsImV4cG9ydHMiLCJjYiIsIm9wdHMiLCJwYXJhbXMiLCJhcmd1bWVudHMiLCJsZW5ndGgiLCJjYWxsIiwicXMiLCJtZXJnZSIsInRoaXMiLCJ0b2tlblBhcmFtcyIsImxvZ2luT25VbmF1dGhvcml6ZWQiLCJhdXRob3JpemVyIiwiYXBpX3Rva2VuIiwiYWNjZXNzVG9rZW4iLCJlcnIiLCJyZXNwIiwiZXJyb3IiLCJ1bmF1dGhvcml6ZWQiLCJmb3JjZUxvZ2luIl0sIm1hcHBpbmdzIjoiQUFBQSxHQUFBQSxZQUFBQyxXQUFBQyxJQUFBQyxRQUFBQyxFQUFBQyxXQUFBQyxLQUFBSCxTQUFVSSxRQUFRLFdBQWxCSCxFQUNJRyxRQUFRLFVBRFpOLFdBR2FNLFFBQVEsZ0JBSHJCTCxJQUlNSyxRQUFRLFNBSmRDLE9BTU9DLFFBQ0RULFdBQUEsV0NLSixRQUFTQSxNQW1DVCxNRHZDQUEsR0FBQ0csUUFBUyxXQUNSLEdBQUFPLEdBQUFDLEVBQUFDLENDVUEsT0RYU0EsR0FBQSxHQUFBQyxVQUFBQyxPQUFBVCxRQUFBVSxLQUFBRixVQUFBLE1BQ1JGLEVBQUFDLEVBQUEsR0FBTUYsRUFBQUUsRUFBQSxHQUNQRCxFQUFLSyxHQUFLWixFQUFFYSxNQUFNTixFQUFLSyxPQUFVRSxLQUFDQyxlQUNsQ2hCLFFBQVFRLEVBQU1PLEtBQUNFLG9CQUFvQlQsRUFBTUQsS0FFM0NWLEVBQUNtQixZQUFhLFdBQ1osR0FBQUUsRUNXQSxPRFhBQSxHQUFhLEdBQUFwQixhQUNicUIsVUFBV0QsRUFBV0UsZ0JBRXhCdkIsRUFBQ29CLG9CQUFxQixTQUFDVCxFQUFNRCxHQ2MzQixNRGJBLFVBQUNjLEVBQUtDLEdBQ0osR0FBQUosRUFHQSxPQUhrQkcsSUFBbEJ0QixJQUFJd0IsTUFBTUYsR0FDVkgsRUFBaUIsR0FBQXBCLFlBRWRvQixFQUFXTSxhQUFhRixHQUN6QkosRUFBV08sV0FBVyxXQ2dCcEIsTURoQnVCNUIsR0FBQ0csUUFBUVEsRUFBTUQsS0FFeENBLEVBQUdjLEVBQUtDLEtDc0JQekIiLCJmaWxlIjoiYXV0aG9yaXplZC5qcyIsInNvdXJjZXNDb250ZW50IjpbInJlcXVlc3QgPSByZXF1aXJlICdyZXF1ZXN0J1xuXyA9IHJlcXVpcmUgJ2xvZGFzaCdcblxuQXV0aG9yaXplciA9IHJlcXVpcmUgJy4vYXV0aG9yaXplcidcbkxvZyA9IHJlcXVpcmUgJy4vbG9nJ1xuXG5tb2R1bGUuZXhwb3J0cyA9XG5jbGFzcyBBdXRob3JpemVkXG4gIEByZXF1ZXN0OiAocGFyYW1zLi4uKSAtPlxuICAgIFtvcHRzLCBjYl0gPSBwYXJhbXNcbiAgICBvcHRzLnFzID0gXy5tZXJnZShvcHRzLnFzIHx8IHt9LCBAdG9rZW5QYXJhbXMoKSlcbiAgICByZXF1ZXN0IG9wdHMsIEBsb2dpbk9uVW5hdXRob3JpemVkKG9wdHMsIGNiKVxuXG4gIEB0b2tlblBhcmFtczogLT5cbiAgICBhdXRob3JpemVyID0gbmV3IEF1dGhvcml6ZXJcbiAgICBhcGlfdG9rZW46IGF1dGhvcml6ZXIuYWNjZXNzVG9rZW4oKVxuXG4gIEBsb2dpbk9uVW5hdXRob3JpemVkOiAob3B0cywgY2IpID0+XG4gICAgKGVyciwgcmVzcCkgPT5cbiAgICAgIExvZy5lcnJvcihlcnIpIGlmIGVyclxuICAgICAgYXV0aG9yaXplciA9IG5ldyBBdXRob3JpemVyKClcblxuICAgICAgaWYgYXV0aG9yaXplci51bmF1dGhvcml6ZWQocmVzcClcbiAgICAgICAgYXV0aG9yaXplci5mb3JjZUxvZ2luKD0+IEByZXF1ZXN0KG9wdHMsIGNiKSlcbiAgICAgIGVsc2VcbiAgICAgICAgY2IoZXJyLCByZXNwKVxuIixudWxsXSwic291cmNlUm9vdCI6Ii9zb3VyY2UvIn0=
+var Authorized, Authorizer, Log, request, _,
+  __slice = [].slice;
+
+request = require('request');
+
+_ = require('lodash');
+
+Authorizer = require('./authorizer');
+
+Log = require('./log');
+
+module.exports = Authorized = (function() {
+  function Authorized() {}
+
+  Authorized.request = function() {
+    var cb, opts, params;
+    params = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+    opts = params[0], cb = params[1];
+    opts.qs = _.merge(opts.qs || {}, this.tokenParams());
+    return request(opts, this.loginOnUnauthorized(opts, cb));
+  };
+
+  Authorized.tokenParams = function() {
+    var authorizer;
+    authorizer = new Authorizer;
+    return {
+      api_token: authorizer.accessToken()
+    };
+  };
+
+  Authorized.loginOnUnauthorized = function(opts, cb) {
+    return function(err, resp) {
+      var authorizer;
+      if (err) {
+        Log.error(err);
+      }
+      authorizer = new Authorizer();
+      if (authorizer.unauthorized(resp)) {
+        return authorizer.forceLogin(function() {
+          return Authorized.request(opts, cb);
+        });
+      } else {
+        return cb(err, resp);
+      }
+    };
+  };
+
+  return Authorized;
+
+})();
