@@ -1,4 +1,4 @@
-var Analytics, Authorizer, Color, Creator, Dirs, Log, Promise, Prompt, Pusher, TemplateDownloader, Transformer, analytics, dirmr, fs, inquirer, _;
+var Authorizer, Color, Creator, Dirs, Log, Promise, Prompt, Pusher, TemplateDownloader, Transformer, dirmr, fs, inquirer, _;
 
 inquirer = require('inquirer');
 
@@ -9,12 +9,6 @@ dirmr = require('dirmr');
 Promise = require('bluebird');
 
 _ = require('lodash');
-
-Analytics = require('analytics-node');
-
-analytics = new Analytics('pVSvIAsACZTmgRBXLJAoiz9c1zNbIOhU', {
-  flushAt: 1
-});
 
 Prompt = require('./prompt');
 
@@ -68,13 +62,6 @@ module.exports = Creator = (function() {
   };
 
   Creator.prototype.createWithSettings = function(answers) {
-    analytics.track({
-      userId: new Authorizer().accessToken(),
-      event: 'Created with settings',
-      properties: {
-        answers: answers
-      }
-    });
     Log.br();
     Log.spin('Downloading templates and creating app structure.');
     this.dirs.clean();

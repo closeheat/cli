@@ -25,6 +25,7 @@ module.exports = Authorizer = (function() {
       access_token: access_token
     };
     Config.update('access_token', access_token);
+    Log = require('./log');
     return Log.doneLine('Access token saved.');
   };
 

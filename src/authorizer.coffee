@@ -13,6 +13,7 @@ class Authorizer
   saveToken: (access_token) ->
     config = { access_token: access_token }
     Config.update('access_token', access_token)
+    Log = require './log'
     Log.doneLine('Access token saved.')
 
   accessToken: ->

@@ -16,7 +16,6 @@
     "url": "git://github.com/closeheat/cli.git"
   },
   "dependencies": {
-    "analytics-node": "^1.2.0",
     "bluebird": "^2.9.8",
     "chalk": "^0.5.1",
     "charge": "0.0.3",
