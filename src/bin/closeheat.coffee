@@ -4,16 +4,8 @@ fs = require 'fs'
 path = require 'path'
 
 pkg = require '../../package.json'
-Creator = require '../creator'
-Server = require '../server'
-Deployer = require '../deployer'
-Apps = require '../apps'
-Authorizer = require '../authorizer'
-Cloner = require '../cloner'
-Log = require '../log'
 Updater = require '../updater'
-DeployLog = require '../deploy_log'
-Config = require '../config'
+Log = require '../log'
 
 new Updater().update().then ->
   program
@@ -32,6 +24,8 @@ new Updater().update().then ->
     .option('--dist [path]', 'Path of destination of where to create app dir')
     .option('--no-deploy', 'Do not create GitHub repo and closeheat app')
     .action (name, opts) ->
+      Creator = require '../creator'
+
       settings = _.pick(
         [
           opts
@@ -72,29 +66,32 @@ new Updater().update().then ->
     .option('--ip [ip]', 'IP to run LiveReload on (default - localhost)')
     .option('-p, --port [port]', 'Port to run server on (default - 4000)')
     .action (opts) ->
+      Server = require '../server'
       new Server().start(opts)
 
   program
     .command('deploy')
     .description('Deploys your app to closeheat.com via GitHub.')
     .action ->
-      Log.logo()
+      Deployer = require '../deployer'
 
+      Log.logo()
       new Deployer().deploy()
 
   program
     .command('log')
     .description('Polls the log of the last deployment. Usable: git push origin master && closeheat log')
     .action ->
-      Log.logo()
+      DeployLog = require '../deploy_log'
 
+      Log.logo()
       new DeployLog().fromCurrentCommit()
 
   program
     .command('open')
     .description('Opens your deployed app in the browser.')
     .action ->
-      Log.logo()
+      Deployer = require '../deployer'
 
       new Deployer().open()
 
@@ -102,6 +99,8 @@ new Updater().update().then ->
     .command('apps')
     .description('Shows a list of your deployed apps.')
     .action ->
+      Apps = require '../apps'
+
       new Apps().list()
 
   program
@@ -109,6 +108,8 @@ new Updater().update().then ->
     .option('-t, --token [access-token]', 'Access token from closeheat.com.')
     .description('Log in to closeheat.com with this computer.')
     .action (opts) ->
+      Authorizer = require '../authorizer'
+
       if opts.token
         new Authorizer().saveToken(opts.token)
       else
@@ -119,18 +120,20 @@ new Updater().update().then ->
     .description('Clones the closeheat app files.')
     .action (app_name) ->
       if app_name
+        Cloner = require '../cloner'
         new Cloner().clone(app_name)
       else
+        Apps = require '../apps'
         new Apps().list()
 
   program
     .command('transform [type] [language]')
     .description('Transforms files in current dir to other language (Experimental).')
     .action (type, language) ->
-      Log.logo()
-
       Dirs = require '../dirs'
       Transformer = require '../transformer'
+
+      Log.logo()
       dirs = new Dirs(name: 'transforming', src: process.cwd(), dist: process.cwd())
 
       settings = {}
@@ -150,13 +153,8 @@ new Updater().update().then ->
 
   unless program.args.length
     if fs.existsSync('index.html') || fs.existsSync('index.jade')
+      Server = require '../server'
       new Server().start()
     else
       Log.logo(0)
       program.help()
-
-    return
-    tube = pictureTube(cols: 5)
-    tube.pipe(process.stdout)
-    logo_path = path.resolve(__dirname, './img/full.png')
-    fs.createReadStream(logo_path).pipe(tube)
