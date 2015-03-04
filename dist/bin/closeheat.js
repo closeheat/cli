@@ -103,6 +103,20 @@ new Updater().update().then(function() {
     Log.logo(0);
     return program.help();
   });
+  program.command('postinstall').description('This is run after the install for easy instructions.').action(function() {
+    var Apps, Color;
+    Color = require('../color');
+    Log.br();
+    Log.p('Installation successful.');
+    Log.p('------------------------');
+    Log.p("Running " + (Color.violet('closeheat apps')) + " command.");
+    Log.br();
+    Apps = require('../apps');
+    return new Apps().list().then(function() {
+      Log.br();
+      return Log.p("Type " + (Color.violet('closeheat help')) + " for more awesomeness.");
+    });
+  });
   program.parse(process.argv);
   if (!program.args.length) {
     if (fs.existsSync('index.html') || fs.existsSync('index.jade')) {

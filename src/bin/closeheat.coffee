@@ -149,6 +149,22 @@ new Updater().update().then ->
       Log.logo(0)
       program.help()
 
+  program
+    .command('postinstall')
+    .description('This is run after the install for easy instructions.')
+    .action ->
+      Color = require '../color'
+      Log.br()
+      Log.p('Installation successful.')
+      Log.p('------------------------')
+      Log.p("Running #{Color.violet('closeheat apps')} command.")
+      Log.br()
+
+      Apps = require '../apps'
+      new Apps().list().then ->
+        Log.br()
+        Log.p("Type #{Color.violet('closeheat help')} for more awesomeness.")
+
   program.parse(process.argv)
 
   unless program.args.length

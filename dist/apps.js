@@ -1,5 +1,7 @@
-var Apps, Authorized, Color, Log, Urls, request, table, _,
+var Apps, Authorized, Color, Log, Promise, Urls, request, table, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+Promise = require('bluebird');
 
 request = require('request');
 
@@ -23,28 +25,31 @@ module.exports = Apps = (function() {
   Apps.prototype.list = function() {
     Log.logo();
     Log.spin('Getting information about your deployed apps.');
-    return Authorized.request({
-      url: Urls.appsIndex(),
-      method: 'get'
-    }, (function(_this) {
-      return function(err, resp) {
-        var e, parsed_resp;
-        Log.stop();
-        if (err) {
-          return Log.error(err);
-        }
-        parsed_resp = null;
-        try {
-          parsed_resp = JSON.parse(resp.body);
-        } catch (_error) {
-          e = _error;
-          return Log.backendError();
-        }
-        if (parsed_resp.apps.length) {
-          return _this.table(parsed_resp.apps);
-        } else {
-          return _this.noApps();
-        }
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        return Authorized.request({
+          url: Urls.appsIndex(),
+          method: 'get'
+        }, function(err, resp) {
+          var e, parsed_resp;
+          Log.stop();
+          if (err) {
+            return Log.error(err);
+          }
+          parsed_resp = null;
+          try {
+            parsed_resp = JSON.parse(resp.body);
+          } catch (_error) {
+            e = _error;
+            return Log.backendError();
+          }
+          if (parsed_resp.apps.length) {
+            _this.table(parsed_resp.apps);
+          } else {
+            _this.noApps();
+          }
+          return resolve();
+        });
       };
     })(this));
   };

@@ -15,6 +15,9 @@
     "type": "git",
     "url": "git://github.com/closeheat/cli.git"
   },
+  "scripts": {
+    "postinstall": "closeheat postinstall"
+  },
   "dependencies": {
     "bluebird": "^2.9.8",
     "chalk": "^0.5.1",

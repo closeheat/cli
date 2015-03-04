@@ -1,3 +1,4 @@
+Promise = require 'bluebird'
 request = require 'request'
 _ = require 'lodash'
 table = require('text-table')
@@ -12,21 +13,25 @@ class Apps
   list: =>
     Log.logo()
     Log.spin 'Getting information about your deployed apps.'
-    Authorized.request url: Urls.appsIndex(), method: 'get', (err, resp) =>
-      Log.stop()
 
-      return Log.error(err) if err
+    new Promise (resolve, reject) =>
+      Authorized.request url: Urls.appsIndex(), method: 'get', (err, resp) =>
+        Log.stop()
 
-      parsed_resp = null
-      try
-        parsed_resp = JSON.parse(resp.body)
-      catch e
-        return Log.backendError()
+        return Log.error(err) if err
 
-      if parsed_resp.apps.length
-        @table(parsed_resp.apps)
-      else
-        @noApps()
+        parsed_resp = null
+        try
+          parsed_resp = JSON.parse(resp.body)
+        catch e
+          return Log.backendError()
+
+        if parsed_resp.apps.length
+          @table(parsed_resp.apps)
+        else
+          @noApps()
+
+        resolve()
 
   table: (apps) ->
     Log.inner "You have #{apps.length} apps deployed."
