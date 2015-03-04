@@ -9,6 +9,7 @@ replace = require 'gulp-replace'
 rename = require 'gulp-rename'
 uglify = require 'gulp-uglify'
 insert = require 'gulp-insert'
+sourcemaps = require 'gulp-sourcemaps'
 acorn = require 'acorn'
 
 gulp.task 'default', ['coffee', 'img']
@@ -24,14 +25,20 @@ gulp.task 'img', ->
 gulp.task 'coffee', ->
   gulp
     .src('./src/*.coffee')
+    .pipe(sourcemaps.init())
     .pipe(coffee(bare: true)
-    .on('error', gutil.log))
-    .pipe gulp.dest('./dist/')
+      .on('error', gutil.log))
+    .pipe(uglify())
+    .pipe(sourcemaps.write())
+    .pipe gulp.dest('./dist')
 
   gulp
     .src('./src/bin/closeheat.coffee')
+    .pipe(sourcemaps.init())
     .pipe(coffee(bare: true)
-    .on('error', gutil.log))
+      .on('error', gutil.log))
+    .pipe(uglify())
+    .pipe(sourcemaps.write())
     .pipe(insert.prepend('#!/usr/bin/env node\n\n'))
     .pipe gulp.dest('./dist/bin')
 
