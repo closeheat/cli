@@ -23,8 +23,8 @@ class Pusher
 
   push: ->
     @getGithubUsername().then((username) =>
-      Log.inner("Using Github username: #{Color.orange(username)}")
-      Log.spin('Creating closeheat app and Github repository.')
+      Log.inner("Using GitHub username: #{Color.orange(username)}")
+      Log.spin('Creating closeheat app and GitHub repository.')
       @createAppInBackend().then =>
         Log.stop()
         Log.inner("Created both with name '#{@name}'.")
@@ -38,8 +38,8 @@ class Pusher
       Log.error(err)
 
   githubNotAuthorized: ->
-    Log.error('Github not authorized', false)
-    Log.innerError "We cannot set you up for deployment because you did not authorize Github."
+    Log.error('GitHub not authorized', false)
+    Log.innerError "We cannot set you up for deployment because you did not authorize GitHub."
     Log.br()
     Log.innerError "Visit #{Urls.authorizeGithub()} and rerun the command."
 

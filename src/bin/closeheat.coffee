@@ -30,7 +30,7 @@ new Updater().update().then ->
     .option('--css [name]', 'CSS precompiler')
     .option('--tmp [path]', 'The path of temporary directory when creating')
     .option('--dist [path]', 'Path of destination of where to create app dir')
-    .option('--no-deploy', 'Do not create Github repo and closeheat app')
+    .option('--no-deploy', 'Do not create GitHub repo and closeheat app')
     .action (name, opts) ->
       settings = _.pick(
         [
@@ -76,7 +76,7 @@ new Updater().update().then ->
 
   program
     .command('deploy')
-    .description('Deploys your app to closeheat.com via Github.')
+    .description('Deploys your app to closeheat.com via GitHub.')
     .action ->
       Log.logo()
 
@@ -116,9 +116,12 @@ new Updater().update().then ->
 
   program
     .command('clone [app-name]')
-    .description('Clones the Github repository of an app.')
+    .description('Clones the closeheat app files.')
     .action (app_name) ->
-      new Cloner().clone(app_name)
+      if app_name
+        new Cloner().clone(app_name)
+      else
+        new Apps().list()
 
   program
     .command('transform [type] [language]')

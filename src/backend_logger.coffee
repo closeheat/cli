@@ -27,7 +27,7 @@ class BackendLogger
 
   @fromBackendStatus: (status, msg) ->
     if status == 'download_github_repo'
-      @backend('Downloading the Github repo.')
+      @backend('Downloading the GitHub repo.')
     else if status == 'build'
       @backend('Building app.')
     else if status == 'deployed'

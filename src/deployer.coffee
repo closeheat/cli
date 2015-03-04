@@ -19,16 +19,16 @@ class Deployer
     @git = new Git()
 
   deploy: ->
-    Log.spin('Deploying the app to closeheat.com via Github.')
+    Log.spin('Deploying the app to closeheat.com via GitHub.')
     @initGit().then(=>
       @addEverything().then =>
         Log.stop()
         Log.inner('All files added.')
         @commit('Deploy via CLI').then =>
           Log.inner('Files commited.')
-          Log.inner('Pushing to Github.')
+          Log.inner('Pushing to GitHub.')
           @pushToMainBranch().then (branch) ->
-            Log.inner("Pushed to #{branch} branch on Github.")
+            Log.inner("Pushed to #{branch} branch on GitHub.")
             new DeployLog().fromCurrentCommit().then (deployed_name) ->
               url = "http://#{deployed_name}.closeheatapp.com"
               Log.p("App deployed to #{Color.violet(url)}.")
@@ -78,14 +78,14 @@ class Deployer
   askToCreateApp: ->
     new Promise (resolve, reject) =>
       inquirer.prompt({
-        message: 'This app is not deployed yet. Would you like create a new closeheat app and deploy via Github?'
+        message: 'This app is not deployed yet. Would you like create a new closeheat app and deploy via GitHub?'
         type: 'confirm'
         name: 'create'
       }, (answer) ->
         if answer.create
           new Initializer().init().then(resolve)
         else
-          Log.error 'You cannot deploy this app without the closeheat backend and Github setup'
+          Log.error 'You cannot deploy this app without the closeheat backend and GitHub setup'
       )
 
   repoExist: ->

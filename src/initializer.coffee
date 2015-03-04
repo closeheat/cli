@@ -13,7 +13,7 @@ class Initializer
 
     new Promise (resolve, reject) ->
       inquirer.prompt {
-        message: 'How should we name your Github repo?'
+        message: 'How should we name your GitHub repo?'
         name: 'name'
         default: default_app_name
       }, (answer) ->

@@ -14,7 +14,7 @@ class Cloner
     @getAppData(app_name).then((app) =>
       Log.stop()
       Log.br()
-      Log.spin "Cloning Github repository at #{app.github_repo}."
+      Log.spin "Cloning GitHub repository from #{app.github_repo}."
 
       @execCloning(app.github_repo, app.default_branch, app_name).then =>
         Log.stop()
@@ -28,7 +28,7 @@ class Cloner
         ]
 
         Log.br()
-        Log.p 'The quickest way to deploy changes to closeheat.com and Github is with:'
+        Log.p 'The quickest way to deploy changes to closeheat.com and GitHub is with:'
         Log.secondaryCode 'closeheat deploy'
 
         Log.br()
