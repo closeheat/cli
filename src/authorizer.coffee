@@ -39,6 +39,8 @@ class Authorizer
         cb()
       ).catch (resp) =>
         if resp.code == 401
+          Log = require './log'
+
           if resp.status == 'locked'
             Log.error('Too many invalid logins. Account locked for 1 hour.', false)
             Log.innerError("Check your email for unlock instructions or contact the support at #{Color.violet('closeheat.com/support')}.")
