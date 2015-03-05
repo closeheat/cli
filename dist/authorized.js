@@ -13,18 +13,31 @@ module.exports = Authorized = (function() {
   function Authorized() {}
 
   Authorized.request = function() {
-    var cb, opts, params;
+    var cb, opts, params, token_params;
     params = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+    console.log('dew');
     opts = params[0], cb = params[1];
-    opts.qs = _.merge(opts.qs || {}, this.tokenParams());
-    return request(opts, this.loginOnUnauthorized(opts, cb));
+    token_params = this.tokenParams(opts, cb);
+    if (token_params) {
+      opts.qs = _.merge(opts.qs || {}, token_params);
+      return request(opts, this.loginOnUnauthorized(opts, cb));
+    }
   };
 
-  Authorized.tokenParams = function() {
-    var authorizer;
+  Authorized.tokenParams = function(opts, cb) {
+    var api_token, authorizer;
     authorizer = new Authorizer;
+    api_token = authorizer.accessToken();
+    if (api_token === 'none' || !api_token) {
+      authorizer.forceLogin((function(_this) {
+        return function() {
+          return _this.request(opts, cb);
+        };
+      })(this));
+      return false;
+    }
     return {
-      api_token: authorizer.accessToken()
+      api_token: api_token
     };
   };
 

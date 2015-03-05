@@ -123,18 +123,12 @@ program.command('help').description('Displays this menu.').action(function() {
 });
 
 program.command('postinstall').description('This is run after the install for easy instructions.').action(function() {
-  var Apps, Color;
+  var Color;
   Color = require('../color');
   Log.br();
   Log.p('Installation successful.');
   Log.p('------------------------');
-  Log.p("Running " + (Color.violet('closeheat apps')) + " command.");
-  Log.br();
-  Apps = require('../apps');
-  return new Apps().list().then(function() {
-    Log.br();
-    return Log.p("Type " + (Color.violet('closeheat help')) + " for more awesomeness.");
-  });
+  return Log.p("Run " + (Color.violet('closeheat apps')) + " command for the list of your apps.");
 });
 
 program.parse(process.argv);

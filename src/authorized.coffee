@@ -7,13 +7,23 @@ Log = require './log'
 module.exports =
 class Authorized
   @request: (params...) ->
+    console.log 'dew'
     [opts, cb] = params
-    opts.qs = _.merge(opts.qs || {}, @tokenParams())
-    request opts, @loginOnUnauthorized(opts, cb)
+    token_params = @tokenParams(opts, cb)
 
-  @tokenParams: ->
+    if token_params
+      opts.qs = _.merge(opts.qs || {}, token_params)
+      request opts, @loginOnUnauthorized(opts, cb)
+
+  @tokenParams: (opts, cb) ->
     authorizer = new Authorizer
-    api_token: authorizer.accessToken()
+    api_token = authorizer.accessToken()
+
+    if api_token == 'none' || !api_token
+      authorizer.forceLogin(=> @request(opts, cb))
+      return false
+
+    api_token: api_token
 
   @loginOnUnauthorized: (opts, cb) =>
     (err, resp) =>

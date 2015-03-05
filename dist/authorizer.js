@@ -99,6 +99,7 @@ module.exports = Authorizer = (function() {
   };
 
   Authorizer.prototype.forceLogin = function(cb) {
+    Log = require('./log');
     Log.stop();
     Log.br();
     Log.p(Color.redYellow('Please login to closeheat.com to check out your app list.'));

@@ -161,13 +161,7 @@ program
     Log.br()
     Log.p('Installation successful.')
     Log.p('------------------------')
-    Log.p("Running #{Color.violet('closeheat apps')} command.")
-    Log.br()
-
-    Apps = require '../apps'
-    new Apps().list().then ->
-      Log.br()
-      Log.p("Type #{Color.violet('closeheat help')} for more awesomeness.")
+    Log.p("Run #{Color.violet('closeheat apps')} command for the list of your apps.")
 
 program.parse(process.argv)
 
