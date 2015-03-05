@@ -7,7 +7,6 @@ Log = require './log'
 module.exports =
 class Authorized
   @request: (params...) ->
-    console.log 'dew'
     [opts, cb] = params
     token_params = @tokenParams(opts, cb)
 
