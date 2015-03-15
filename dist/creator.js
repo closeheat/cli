@@ -1,10 +1,14 @@
-var Authorizer, Color, Creator, Dirs, Log, Promise, Prompt, Pusher, TemplateDownloader, Transformer, dirmr, fs, inquirer, _;
+var Authorizer, Color, Creator, Dirs, Log, Promise, Prompt, Pusher, TemplateDownloader, Transformer, dirmr, fs, gulp, inquirer, path, _;
 
 inquirer = require('inquirer');
 
 fs = require('fs.extra');
 
 dirmr = require('dirmr');
+
+gulp = require('gulp');
+
+path = require('path');
 
 Promise = require('bluebird');
 
@@ -73,17 +77,19 @@ module.exports = Creator = (function() {
           return downloader.merge().then(function() {
             return new Transformer(_this.dirs).transform(answers).then(function() {
               return _this.moveToTarget().then(function() {
-                _this.dirs.clean();
-                Log.stop();
-                Log.inner("App folder created at " + _this.dirs.target + ".");
-                if (!answers.deploy) {
-                  return;
-                }
-                Log.br();
-                Log.doneLine('Setting up deployment.');
-                return new Pusher(answers.name, _this.dirs.target).push().then(function() {
-                  Log.p("Run app server with:");
-                  return Log.code(["cd " + answers.name, "closeheat"]);
+                return _this.moveOther(answers).then(function() {
+                  _this.dirs.clean();
+                  Log.stop();
+                  Log.inner("App folder created at " + _this.dirs.target + ".");
+                  if (!answers.deploy) {
+                    return;
+                  }
+                  Log.br();
+                  Log.doneLine('Setting up deployment.');
+                  return new Pusher(answers.name, _this.dirs.target).push().then(function() {
+                    Log.p("Run app server with:");
+                    return Log.code(["cd " + answers.name, "closeheat"]);
+                  });
                 });
               });
             });
@@ -104,6 +110,14 @@ module.exports = Creator = (function() {
           }
           return resolve();
         });
+      };
+    })(this));
+  };
+
+  Creator.prototype.moveOther = function(answers) {
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        return gulp.src(path.join(_this.dirs.whole, "**/*.jade")).pipe(gulp.dest(_this.dirs.target).on('error', reject)).on('error', reject).on('end', resolve);
       };
     })(this));
   };

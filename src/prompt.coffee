@@ -10,6 +10,10 @@ module.exports =
           value: 'landing'
         }
         {
+          name: 'Blog'
+          value: 'blog'
+        }
+        {
           name: 'Angular.js'
           value: 'angular'
         }

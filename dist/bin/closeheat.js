@@ -120,7 +120,7 @@ program.command('transform [type] [language]').description('Transforms files in 
       Log.spin("Removing old " + source_type + " files.");
       return transformer.remove(source_type).then(function(paths) {
         Log.stop();
-        Log.inner(paths);
+        _.each(paths, Log.inner);
         return Log.inner("" + source_type + " files removed.");
       })["catch"](function(e) {
         return Log.error(e);

@@ -9,6 +9,9 @@ module.exports = {
           name: 'Landing page',
           value: 'landing'
         }, {
+          name: 'Blog',
+          value: 'blog'
+        }, {
           name: 'Angular.js',
           value: 'angular'
         }, {

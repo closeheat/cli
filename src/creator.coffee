@@ -1,6 +1,8 @@
 inquirer = require 'inquirer'
 fs = require 'fs.extra'
 dirmr = require 'dirmr'
+gulp = require 'gulp'
+path = require 'path'
 Promise = require 'bluebird'
 _ = require 'lodash'
 
@@ -54,21 +56,22 @@ class Creator
         downloader.merge().then =>
           new Transformer(@dirs).transform(answers).then =>
             @moveToTarget().then =>
-              @dirs.clean()
+              @moveOther(answers).then =>
+                @dirs.clean()
 
-              Log.stop()
-              Log.inner("App folder created at #{@dirs.target}.")
+                Log.stop()
+                Log.inner("App folder created at #{@dirs.target}.")
 
-              return unless answers.deploy
+                return unless answers.deploy
 
-              Log.br()
-              Log.doneLine 'Setting up deployment.'
-              new Pusher(answers.name, @dirs.target).push().then =>
-                Log.p "Run app server with:"
-                Log.code [
-                  "cd #{answers.name}"
-                  "closeheat"
-                ]
+                Log.br()
+                Log.doneLine 'Setting up deployment.'
+                new Pusher(answers.name, @dirs.target).push().then =>
+                  Log.p "Run app server with:"
+                  Log.code [
+                    "cd #{answers.name}"
+                    "closeheat"
+                  ]
     ).catch (e) ->
       Log.error(e)
 
@@ -78,3 +81,11 @@ class Creator
         return reject(err) if err
 
         resolve()
+
+  moveOther: (answers) ->
+    new Promise (resolve, reject) =>
+      gulp
+        .src(path.join(@dirs.whole, "**/*.jade"))
+        .pipe(gulp.dest(@dirs.target).on('error', reject))
+        .on('error', reject)
+        .on('end', resolve)

@@ -158,7 +158,7 @@ program
       Log.spin("Removing old #{source_type} files.")
       transformer.remove(source_type).then( (paths) ->
         Log.stop()
-        Log.inner(paths)
+        _.each paths, Log.inner
         Log.inner("#{source_type} files removed.")
       ).catch (e) ->
         Log.error(e)
