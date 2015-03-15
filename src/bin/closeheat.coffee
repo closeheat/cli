@@ -132,17 +132,36 @@ program
   .command('transform [type] [language]')
   .description('Transforms files in current dir to other language (Experimental).')
   .action (type, language) ->
+    _ = require 'lodash'
+
     Dirs = require '../dirs'
     Transformer = require '../transformer'
 
     Log.logo()
+    settings = {}
+    settings[type] = language
+    source_type = _.first(_.keys(settings))
+    dist_type = _.first(_.values(settings))
+
+    Log.spin("Transforming #{source_type} to #{dist_type}.")
     dirs = new Dirs(name: 'transforming', src: process.cwd(), dist: process.cwd())
 
     settings = {}
     settings[type] = language
 
-    new Transformer(dirs).transform(settings).then =>
-      console.log('transformed', settings)
+    transformer = new Transformer(dirs)
+
+    transformer.transform(settings).then =>
+      Log.stop()
+      Log.inner('Files transformed.')
+
+      Log.spin("Removing old #{source_type} files.")
+      transformer.remove(source_type).then( (paths) ->
+        Log.stop()
+        Log.inner(paths)
+        Log.inner("#{source_type} files removed.")
+      ).catch (e) ->
+        Log.error(e)
 
 program
   .command('help')

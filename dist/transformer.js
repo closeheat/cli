@@ -1,8 +1,10 @@
-var Preprocessor, Promise, Transformer, _;
+var Preprocessor, Promise, Transformer, del, _;
 
 Promise = require('bluebird');
 
 _ = require('lodash');
+
+del = require('del');
 
 Preprocessor = require('./preprocessor');
 
@@ -16,8 +18,17 @@ module.exports = Transformer = (function() {
     return Promise.all(this.jobs(answers));
   };
 
-  Transformer.prototype.remove = function() {
-    return this.preprocessor.remove();
+  Transformer.prototype.remove = function(source_type) {
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        return del(["" + _this.dirs.dist + "/**/*." + source_type], function(err, paths) {
+          if (err) {
+            reject(err);
+          }
+          return resolve(paths);
+        });
+      };
+    })(this));
   };
 
   Transformer.prototype.jobs = function(answers) {

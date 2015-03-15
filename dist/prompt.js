@@ -6,6 +6,9 @@ module.exports = {
       type: 'list',
       choices: [
         {
+          name: 'Landing page',
+          value: 'landing'
+        }, {
           name: 'Angular.js',
           value: 'angular'
         }, {

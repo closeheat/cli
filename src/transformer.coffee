@@ -1,5 +1,7 @@
 Promise = require 'bluebird'
 _ = require 'lodash'
+del = require 'del'
+
 Preprocessor = require './preprocessor'
 
 module.exports =
@@ -10,8 +12,11 @@ class Transformer
   transform: (answers) ->
     Promise.all(@jobs(answers))
 
-  remove: ->
-    @preprocessor.remove()
+  remove: (source_type) ->
+    new Promise (resolve, reject) =>
+      del ["#{@dirs.dist}/**/*.#{source_type}"], (err, paths) ->
+        reject(err) if err
+        resolve(paths)
 
   jobs: (answers) ->
     result = []

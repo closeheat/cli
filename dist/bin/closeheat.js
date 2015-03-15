@@ -95,10 +95,16 @@ program.command('clone [app-name]').description('Clones the closeheat app files.
 });
 
 program.command('transform [type] [language]').description('Transforms files in current dir to other language (Experimental).').action(function(type, language) {
-  var Dirs, Transformer, dirs, settings;
+  var Dirs, Transformer, dirs, dist_type, settings, source_type, transformer;
+  _ = require('lodash');
   Dirs = require('../dirs');
   Transformer = require('../transformer');
   Log.logo();
+  settings = {};
+  settings[type] = language;
+  source_type = _.first(_.keys(settings));
+  dist_type = _.first(_.values(settings));
+  Log.spin("Transforming " + source_type + " to " + dist_type + ".");
   dirs = new Dirs({
     name: 'transforming',
     src: process.cwd(),
@@ -106,9 +112,19 @@ program.command('transform [type] [language]').description('Transforms files in 
   });
   settings = {};
   settings[type] = language;
-  return new Transformer(dirs).transform(settings).then((function(_this) {
+  transformer = new Transformer(dirs);
+  return transformer.transform(settings).then((function(_this) {
     return function() {
-      return console.log('transformed', settings);
+      Log.stop();
+      Log.inner('Files transformed.');
+      Log.spin("Removing old " + source_type + " files.");
+      return transformer.remove(source_type).then(function(paths) {
+        Log.stop();
+        Log.inner(paths);
+        return Log.inner("" + source_type + " files removed.");
+      })["catch"](function(e) {
+        return Log.error(e);
+      });
     };
   })(this));
 });
