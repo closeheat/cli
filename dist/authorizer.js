@@ -1,10 +1,12 @@
-var Authorizer, Color, Config, Log, Promise, Urls, fs, inquirer, request;
+var Authorizer, Color, Config, Log, Promise, Urls, fs, inquirer, pkg, request;
 
 fs = require('fs');
 
 inquirer = require('inquirer');
 
 request = require('request');
+
+pkg = require('../package.json');
 
 Promise = require('bluebird');
 
@@ -75,12 +77,17 @@ module.exports = Authorizer = (function() {
   Authorizer.prototype.getToken = function(answers) {
     return new Promise((function(_this) {
       return function(resolve, reject) {
-        return request({
+        var params;
+        params = {
           url: Urls.getToken(),
+          headers: {
+            'X-CLI-Version': pkg.version
+          },
           qs: answers,
           method: 'post',
           json: true
-        }, function(err, resp) {
+        };
+        return request(params, function(err, resp) {
           if (err) {
             Log.error(err);
           }

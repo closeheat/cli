@@ -1,5 +1,6 @@
 request = require 'request'
 _ = require 'lodash'
+pkg = require '../package.json'
 
 Authorizer = require './authorizer'
 Log = require './log'
@@ -12,6 +13,7 @@ class Authorized
 
     if token_params
       opts.qs = _.merge(opts.qs || {}, token_params)
+      opts.headers = { 'X-CLI-Version': pkg.version }
       request opts, @loginOnUnauthorized(opts, cb)
 
   @tokenParams: (opts, cb) ->

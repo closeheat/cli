@@ -1,6 +1,7 @@
 fs = require 'fs'
 inquirer = require 'inquirer'
 request = require 'request'
+pkg = require '../package.json'
 Promise = require 'bluebird'
 
 Log = require './log'
@@ -53,7 +54,14 @@ class Authorizer
 
   getToken: (answers) ->
     new Promise (resolve, reject) =>
-      request url: Urls.getToken(), qs: answers, method: 'post', json: true, (err, resp) =>
+      params =
+        url: Urls.getToken()
+        headers: { 'X-CLI-Version': pkg.version }
+        qs: answers
+        method: 'post'
+        json: true
+
+      request params, (err, resp) =>
         Log.error(err) if err
 
         if resp.statusCode == 200

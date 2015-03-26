@@ -1,9 +1,11 @@
-var Authorized, Authorizer, Log, request, _,
+var Authorized, Authorizer, Log, pkg, request, _,
   __slice = [].slice;
 
 request = require('request');
 
 _ = require('lodash');
+
+pkg = require('../package.json');
 
 Authorizer = require('./authorizer');
 
@@ -19,6 +21,9 @@ module.exports = Authorized = (function() {
     token_params = this.tokenParams(opts, cb);
     if (token_params) {
       opts.qs = _.merge(opts.qs || {}, token_params);
+      opts.headers = {
+        'X-CLI-Version': pkg.version
+      };
       return request(opts, this.loginOnUnauthorized(opts, cb));
     }
   };
