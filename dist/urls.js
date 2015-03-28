@@ -47,6 +47,10 @@ module.exports = Urls = (function() {
     return "" + (this.base()) + "/authorize-github";
   };
 
+  Urls.notifier = function() {
+    return "" + (this.api()) + "/cli_notifier";
+  };
+
   return Urls;
 
 })();

@@ -36,3 +36,6 @@ class Urls
 
   @authorizeGithub: ->
     "#{@base()}/authorize-github"
+
+  @notifier: ->
+    "#{@api()}/cli_notifier"

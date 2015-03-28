@@ -12,6 +12,7 @@ DeployLog = require './deploy_log'
 
 Log = require './log'
 Color = require './color'
+Notifier = require './notifier'
 
 module.exports =
 class Deployer
@@ -30,6 +31,7 @@ class Deployer
           @pushToMainBranch().then (branch) ->
             Log.inner("Pushed to #{branch} branch on GitHub.")
             new DeployLog().fromCurrentCommit().then (deployed_name) ->
+              Notifier.notify('app_deploy', deployed_name)
               url = "http://#{deployed_name}.closeheatapp.com"
               Log.p("App deployed to #{Color.violet(url)}.")
               Log.p('Open it quicker with:')
@@ -38,7 +40,7 @@ class Deployer
     ).catch((err) ->
       Log.error(err)
     ).finally ->
-      process.exit(0)
+      # process.exit(0)
 
   initGit: ->
     new Promise (resolve, reject) =>

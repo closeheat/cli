@@ -1,4 +1,4 @@
-var Color, Log, Server, Watcher, charge, homePath, path, tinylr;
+var Color, Log, Notifier, Server, Watcher, charge, homePath, path, tinylr;
 
 path = require('path');
 
@@ -14,6 +14,8 @@ Log = require('./log');
 
 Color = require('./color');
 
+Notifier = require('./notifier');
+
 module.exports = Server = (function() {
   function Server() {
     this.src = process.cwd();
@@ -25,6 +27,7 @@ module.exports = Server = (function() {
     if (opts == null) {
       opts = {};
     }
+    Notifier.notify('server_start');
     Log.logo();
     opts.log = false;
     live_reload_host = opts.ip || 'localhost';

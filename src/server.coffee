@@ -6,6 +6,7 @@ tinylr = require 'tiny-lr'
 Watcher = require './watcher'
 Log = require './log'
 Color = require './color'
+Notifier = require './notifier'
 
 module.exports =
 class Server
@@ -14,6 +15,7 @@ class Server
     @dist = "#{homePath()}/.closeheat/tmp/apps/current/"
 
   start: (opts = {}) ->
+    Notifier.notify('server_start')
     Log.logo()
 
     opts.log = false

@@ -1,4 +1,4 @@
-var Authorized, Cloner, Git, Log, Promise, Urls;
+var Authorized, Cloner, Git, Log, Notifier, Promise, Urls;
 
 Promise = require('bluebird');
 
@@ -9,6 +9,8 @@ Authorized = require('./authorized');
 Urls = require('./urls');
 
 Log = require('./log');
+
+Notifier = require('./notifier');
 
 module.exports = Cloner = (function() {
   function Cloner() {}
@@ -22,6 +24,7 @@ module.exports = Cloner = (function() {
         Log.br();
         Log.spin("Cloning GitHub repository from " + app.github_repo + ".");
         return _this.execCloning(app.github_repo, app.default_branch, app_name).then(function() {
+          Notifier.notify('app_clone', app.slug);
           Log.stop();
           Log.inner("Cloned the app code to directory '" + app_name + "'.");
           Log.br();

@@ -4,6 +4,7 @@ Git = require 'git-wrapper'
 Authorized = require './authorized'
 Urls = require './urls'
 Log = require './log'
+Notifier = require './notifier'
 
 module.exports =
 class Cloner
@@ -17,6 +18,8 @@ class Cloner
       Log.spin "Cloning GitHub repository from #{app.github_repo}."
 
       @execCloning(app.github_repo, app.default_branch, app_name).then =>
+        Notifier.notify('app_clone', app.slug)
+
         Log.stop()
         Log.inner "Cloned the app code to directory '#{app_name}'."
 

@@ -1,4 +1,4 @@
-var Authorized, Color, DeployLog, Deployer, Git, Initializer, Log, Promise, Urls, fs, inquirer, open, _;
+var Authorized, Color, DeployLog, Deployer, Git, Initializer, Log, Notifier, Promise, Urls, fs, inquirer, open, _;
 
 Promise = require('bluebird');
 
@@ -24,6 +24,8 @@ Log = require('./log');
 
 Color = require('./color');
 
+Notifier = require('./notifier');
+
 module.exports = Deployer = (function() {
   var GITHUB_REPO_REGEX;
 
@@ -45,6 +47,7 @@ module.exports = Deployer = (function() {
               Log.inner("Pushed to " + branch + " branch on GitHub.");
               return new DeployLog().fromCurrentCommit().then(function(deployed_name) {
                 var url;
+                Notifier.notify('app_deploy', deployed_name);
                 url = "http://" + deployed_name + ".closeheatapp.com";
                 Log.p("App deployed to " + (Color.violet(url)) + ".");
                 Log.p('Open it quicker with:');
@@ -57,9 +60,7 @@ module.exports = Deployer = (function() {
       };
     })(this))["catch"](function(err) {
       return Log.error(err);
-    })["finally"](function() {
-      return process.exit(0);
-    });
+    })["finally"](function() {});
   };
 
   Deployer.prototype.initGit = function() {
