@@ -72,14 +72,16 @@ class Log
     @br()
 
     printStackTrace = require('stacktrace-js')
-    trace = if err
-      printStackTrace(e: msg)
-    else
-      printStackTrace()
+
+    trace = [err.toString()]
 
     if err
-      _.each printStackTrace(e: err), (trace_line) =>
-        @innerError(trace_line, false)
+      trace = trace.concat printStackTrace(e: err)
+    else
+      trace = trace.concat printStackTrace()
+
+    _.each trace, (trace_line) =>
+      @innerError(trace_line, false)
 
     @sendErrorLog(msg, trace).then ->
       process.exit() if exit
@@ -93,6 +95,7 @@ class Log
         extra:
           closeheat_version: Config.version()
           token: new Authorizer().accessToken()
+          trace: trace
 
   @backendError: ->
     @error('Backend responded with an error.')
