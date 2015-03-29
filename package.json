@@ -55,6 +55,7 @@
     "request": "^2.53.0",
     "rimraf": "^2.2.8",
     "shelljs": "^0.3.0",
+    "stacktrace-js": "^0.6.4",
     "text-table": "^0.2.0",
     "through2": "^0.6.3",
     "tiny-lr": "^0.1.5"

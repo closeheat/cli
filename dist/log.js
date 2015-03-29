@@ -102,21 +102,36 @@ module.exports = Log = (function() {
     }
   };
 
-  Log.error = function(msg, exit) {
+  Log.error = function(msg, exit, err) {
+    var printStackTrace, trace;
     if (exit == null) {
       exit = true;
     }
     this.stop();
     this.br();
     this.line("" + (Color.red('ERROR')) + " | " + msg);
-    return this.sendErrorLog(msg).then(function() {
+    this.br();
+    printStackTrace = require('stacktrace-js');
+    trace = err ? printStackTrace({
+      e: msg
+    }) : printStackTrace();
+    if (err) {
+      _.each(printStackTrace({
+        e: err
+      }), (function(_this) {
+        return function(trace_line) {
+          return _this.innerError(trace_line, false);
+        };
+      })(this));
+    }
+    return this.sendErrorLog(msg, trace).then(function() {
       if (exit) {
         return process.exit();
       }
     });
   };
 
-  Log.sendErrorLog = function(msg) {
+  Log.sendErrorLog = function(msg, trace) {
     return new Promise(function(resolve, reject) {
       opbeat.on('logged', resolve);
       opbeat.on('error', resolve);

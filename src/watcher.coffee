@@ -50,8 +50,7 @@ class Watcher
       Log.stop()
       Log.inner("#{Color.violet(moment().format('hh:mm:ss'))} | App built.")
     ).catch((err) ->
-      Log.error('Could not compile', false)
-      Log.innerError(err, false)
+      Log.error('Could not compile', false, err)
       Log.br()
     )
 

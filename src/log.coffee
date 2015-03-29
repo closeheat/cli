@@ -65,15 +65,26 @@ class Log
       Spinner.stop()
       @spinning = false
 
-  @error: (msg, exit = true) ->
+  @error: (msg, exit = true, err) ->
     @stop()
     @br()
     @line("#{Color.red('ERROR')} | #{msg}")
+    @br()
 
-    @sendErrorLog(msg).then ->
+    printStackTrace = require('stacktrace-js')
+    trace = if err
+      printStackTrace(e: msg)
+    else
+      printStackTrace()
+
+    if err
+      _.each printStackTrace(e: err), (trace_line) =>
+        @innerError(trace_line, false)
+
+    @sendErrorLog(msg, trace).then ->
       process.exit() if exit
 
-  @sendErrorLog: (msg) ->
+  @sendErrorLog: (msg, trace) ->
     new Promise (resolve, reject) ->
       opbeat.on 'logged', resolve
       opbeat.on 'error', resolve
