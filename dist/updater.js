@@ -57,10 +57,8 @@ module.exports = Updater = (function() {
     return new Promise((function(_this) {
       return function(resolve, reject) {
         return checkUpdate({
-          packageName: 'closeheat',
-          packageVersion: Config.version(),
-          isCLI: false
-        }, function(err, latest, default_message) {
+          packageName: 'closeheat'
+        }, function(err, latest) {
           if (err) {
             return reject();
           } else {

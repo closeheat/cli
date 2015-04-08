@@ -36,9 +36,7 @@ class Updater
     new Promise (resolve, reject) =>
       checkUpdate
         packageName: 'closeheat',
-        packageVersion: Config.version(),
-        isCLI: false,
-        (err, latest, default_message) ->
+        (err, latest) ->
           if err
             reject()
           else
