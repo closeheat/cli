@@ -23,7 +23,7 @@
     "chalk": "^0.5.1",
     "charge": "0.0.3",
     "check-update": "0.0.8",
-    "closeheat-builder": "0.5.1",
+    "closeheat-builder": "0.6.0",
     "commander": "^2.6.0",
     "couleurs": "^3.0.0",
     "del": "^1.1.1",
