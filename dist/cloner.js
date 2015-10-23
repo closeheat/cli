@@ -49,14 +49,14 @@ module.exports = Cloner = (function() {
         url: Urls.appData(app_name),
         method: 'get'
       }, function(err, resp) {
-        var app, e;
+        var app, e, error;
         if (err) {
           return reject(err);
         }
         try {
           app = JSON.parse(resp.body).app;
-        } catch (_error) {
-          e = _error;
+        } catch (error) {
+          e = error;
           return reject("App named '" + app_name + "' does not exist or the server is down.");
         }
         return resolve(app);

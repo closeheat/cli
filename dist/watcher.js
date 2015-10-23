@@ -1,5 +1,5 @@
-var Builder, Color, Dirs, Log, Promise, Watcher, gulp, moment, path, rimraf, tinylr, util, _,
-  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+var Builder, Color, Dirs, Log, Promise, Watcher, _, gulp, moment, path, rimraf, tinylr, util,
+  bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 util = require('util');
 
@@ -29,7 +29,7 @@ module.exports = Watcher = (function() {
   function Watcher(src, dist) {
     this.src = src;
     this.dist = dist;
-    this.build = __bind(this.build, this);
+    this.build = bind(this.build, this);
     this.watcher = gulp.watch(path.join(this.src, '**/*.*'));
   }
 
@@ -61,12 +61,12 @@ module.exports = Watcher = (function() {
       return Log.spin("New require detected. Installing " + (Color.orange(module)) + ".");
     }).on('module-installed', function(module) {
       Log.stop();
-      return Log.inner("" + (Color.orange(module)) + " installed.");
+      return Log.inner((Color.orange(module)) + " installed.");
     }).build().then(function() {
       tinylr.changed('/');
       resolve();
       Log.stop();
-      return Log.inner("" + (Color.violet(moment().format('hh:mm:ss'))) + " | App built.");
+      return Log.inner((Color.violet(moment().format('hh:mm:ss'))) + " | App built.");
     })["catch"](function(err) {
       Log.error('Could not compile', false, err);
       return Log.br();
@@ -78,7 +78,7 @@ module.exports = Watcher = (function() {
     relative = path.relative(this.src, file);
     Log.stop();
     Log.br();
-    return Log.doneLine("" + relative + " changed.");
+    return Log.doneLine(relative + " changed.");
   };
 
   return Watcher;

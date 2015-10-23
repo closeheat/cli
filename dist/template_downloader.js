@@ -1,5 +1,5 @@
-var Promise, TemplateDownloader, dirmr, fs, ghdownload, gulp, gutil, inject, path, _,
-  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+var Promise, TemplateDownloader, _, dirmr, fs, ghdownload, gulp, gutil, inject, path,
+  bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 _ = require('lodash');
 
@@ -20,11 +20,11 @@ inject = require('gulp-inject');
 gutil = require('gulp-util');
 
 module.exports = TemplateDownloader = (function() {
-  function TemplateDownloader(dirs, template, framework) {
+  function TemplateDownloader(dirs, template1, framework) {
     this.dirs = dirs;
-    this.template = template;
+    this.template = template1;
     this.framework = framework;
-    this.injectAssets = __bind(this.injectAssets, this);
+    this.injectAssets = bind(this.injectAssets, this);
   }
 
   TemplateDownloader.prototype.download = function() {

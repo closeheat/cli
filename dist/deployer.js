@@ -1,4 +1,4 @@
-var Authorized, Color, DeployLog, Deployer, Git, Initializer, Log, Notifier, Promise, Urls, fs, inquirer, open, _;
+var Authorized, Color, DeployLog, Deployer, Git, Initializer, Log, Notifier, Promise, Urls, _, fs, inquirer, open;
 
 Promise = require('bluebird');
 

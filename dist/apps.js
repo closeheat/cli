@@ -1,5 +1,5 @@
-var Apps, Authorized, Color, Log, Promise, Urls, request, table, _,
-  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+var Apps, Authorized, Color, Log, Promise, Urls, _, request, table,
+  bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 Promise = require('bluebird');
 
@@ -19,7 +19,7 @@ Color = require('./color');
 
 module.exports = Apps = (function() {
   function Apps() {
-    this.list = __bind(this.list, this);
+    this.list = bind(this.list, this);
   }
 
   Apps.prototype.list = function() {
@@ -31,7 +31,7 @@ module.exports = Apps = (function() {
           url: Urls.appsIndex(),
           method: 'get'
         }, function(err, resp) {
-          var e, parsed_resp;
+          var e, error, parsed_resp;
           Log.stop();
           if (err) {
             return Log.error(err);
@@ -39,8 +39,8 @@ module.exports = Apps = (function() {
           parsed_resp = null;
           try {
             parsed_resp = JSON.parse(resp.body);
-          } catch (_error) {
-            e = _error;
+          } catch (error) {
+            e = error;
             return Log.backendError();
           }
           if (parsed_resp.apps.length) {

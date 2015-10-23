@@ -37,7 +37,7 @@ gulp.task 'coffee', ->
 gulp.task 'requires', ->
   fs.readFile './dist/creator.js', 'utf-8', (err, data) ->
     ast = acorn.parse(data)
-    walk = require('acorn/util/walk')
+    walk = require('acorn/dist/walk')
     walkall = require('walkall')
 
     walk.simple(ast, walkall.makeVisitors((node) ->

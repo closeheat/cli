@@ -19,7 +19,7 @@ Notifier = require('./notifier');
 module.exports = Server = (function() {
   function Server() {
     this.src = process.cwd();
-    this.dist = "" + (homePath()) + "/.closeheat/tmp/apps/current/";
+    this.dist = (homePath()) + "/.closeheat/tmp/apps/current/";
   }
 
   Server.prototype.start = function(opts) {

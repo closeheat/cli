@@ -1,4 +1,4 @@
-var Authorizer, Color, Creator, Dirs, Log, Promise, Prompt, Pusher, TemplateDownloader, Transformer, dirmr, fs, gulp, inquirer, path, _;
+var Authorizer, Color, Creator, Dirs, Log, Promise, Prompt, Pusher, TemplateDownloader, Transformer, _, dirmr, fs, gulp, inquirer, path;
 
 inquirer = require('inquirer');
 

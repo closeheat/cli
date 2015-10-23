@@ -1,5 +1,5 @@
-var Authorized, Color, Deployer, Git, Log, Promise, Pusher, Urls, shell, _,
-  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+var Authorized, Color, Deployer, Git, Log, Promise, Pusher, Urls, _, shell,
+  bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 _ = require('lodash');
 
@@ -23,10 +23,10 @@ module.exports = Pusher = (function() {
   function Pusher(name, target) {
     this.name = name;
     this.target = target;
-    this.initGit = __bind(this.initGit, this);
-    this.addRemote = __bind(this.addRemote, this);
-    this.pushFiles = __bind(this.pushFiles, this);
-    this.createAppInBackend = __bind(this.createAppInBackend, this);
+    this.initGit = bind(this.initGit, this);
+    this.addRemote = bind(this.addRemote, this);
+    this.pushFiles = bind(this.pushFiles, this);
+    this.createAppInBackend = bind(this.createAppInBackend, this);
     this.git = new Git();
   }
 
@@ -87,14 +87,14 @@ module.exports = Pusher = (function() {
           url: Urls.currentUserInfo(),
           method: 'get'
         }, function(err, resp) {
-          var e, user_info;
+          var e, error, user_info;
           if (err) {
             return reject(err);
           }
           try {
             user_info = JSON.parse(resp.body).user;
-          } catch (_error) {
-            e = _error;
+          } catch (error) {
+            e = error;
             return Log.error('Backend responded with an error.');
           }
           if (user_info['github_token']) {

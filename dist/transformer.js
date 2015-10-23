@@ -1,4 +1,4 @@
-var Preprocessor, Promise, Transformer, del, _;
+var Preprocessor, Promise, Transformer, _, del;
 
 Promise = require('bluebird');
 
@@ -21,7 +21,7 @@ module.exports = Transformer = (function() {
   Transformer.prototype.remove = function(source_type) {
     return new Promise((function(_this) {
       return function(resolve, reject) {
-        return del(["" + _this.dirs.dist + "/**/*." + source_type], function(err, paths) {
+        return del([_this.dirs.dist + "/**/*." + source_type], function(err, paths) {
           if (err) {
             reject(err);
           }

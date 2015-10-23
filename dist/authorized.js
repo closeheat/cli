@@ -1,5 +1,5 @@
-var Authorized, Authorizer, Log, pkg, request, _,
-  __slice = [].slice;
+var Authorized, Authorizer, Log, _, pkg, request,
+  slice = [].slice;
 
 request = require('request');
 
@@ -16,7 +16,7 @@ module.exports = Authorized = (function() {
 
   Authorized.request = function() {
     var cb, opts, params, token_params;
-    params = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+    params = 1 <= arguments.length ? slice.call(arguments, 0) : [];
     opts = params[0], cb = params[1];
     token_params = this.tokenParams(opts, cb);
     if (token_params) {

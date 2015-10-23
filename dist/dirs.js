@@ -20,7 +20,7 @@ module.exports = Dirs = (function() {
       settings = {};
     }
     this.target = path.join(settings.dist || process.cwd(), settings.name);
-    this.tmp = settings.tmp || ("" + (homePath()) + "/.closeheat/tmp/creations/" + tmp_token + "/");
+    this.tmp = settings.tmp || ((homePath()) + "/.closeheat/tmp/creations/" + tmp_token + "/");
     this.parts = path.join(this.tmp, 'parts');
     this.whole = path.join(this.tmp, 'whole');
     this.transformed = path.join(this.tmp, 'transformed');
@@ -58,7 +58,7 @@ module.exports = Dirs = (function() {
   };
 
   Dirs.buildTmp = function() {
-    return "" + (homePath()) + "/.closeheat/tmp/builds/" + tmp_token + "/";
+    return (homePath()) + "/.closeheat/tmp/builds/" + tmp_token + "/";
   };
 
   return Dirs;

@@ -16,7 +16,7 @@ module.exports = Spinner = (function() {
     }
     single_spin_ms = 150;
     index = 0;
-    process.stdout.write("" + sequence[index] + " " + msg);
+    process.stdout.write(sequence[index] + " " + msg);
     return timer = setInterval((function() {
       process.stdout.write(sequence[index].replace(/./g, "\r"));
       index = index < sequence.length - 1 ? index + 1 : 0;

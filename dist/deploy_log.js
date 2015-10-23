@@ -1,5 +1,5 @@
 var Authorized, BackendLogger, DeployLog, Git, Log, Promise, Urls, _,
-  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+  bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 Promise = require('bluebird');
 
@@ -17,7 +17,7 @@ BackendLogger = require('./backend_logger');
 
 module.exports = DeployLog = (function() {
   function DeployLog() {
-    this.requestAndLogStatus = __bind(this.requestAndLogStatus, this);
+    this.requestAndLogStatus = bind(this.requestAndLogStatus, this);
     var Deployer;
     Deployer = require('./deployer');
     this.deployer = new Deployer();

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var Log, Server, fs, path, pkg, program, _;
+var Log, Server, _, fs, path, pkg, program;
 
 program = require('commander');
 
@@ -121,7 +121,7 @@ program.command('transform [type] [language]').description('Transforms files in 
       return transformer.remove(source_type).then(function(paths) {
         Log.stop();
         _.each(paths, Log.inner);
-        return Log.inner("" + source_type + " files removed.");
+        return Log.inner(source_type + " files removed.");
       })["catch"](function(e) {
         return Log.error(e);
       });

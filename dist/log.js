@@ -1,4 +1,4 @@
-var Authorizer, Color, Config, Couleurs, Log, Promise, Spinner, chalk, opbeat, _;
+var Authorizer, Color, Config, Couleurs, Log, Promise, Spinner, _, chalk, opbeat;
 
 _ = require('lodash');
 
@@ -109,7 +109,7 @@ module.exports = Log = (function() {
     }
     this.stop();
     this.br();
-    this.line("" + (Color.red('ERROR')) + " | " + msg);
+    this.line((Color.red('ERROR')) + " | " + msg);
     this.br();
     printStackTrace = require('stacktrace-js');
     trace = [err.toString()];
@@ -177,14 +177,14 @@ module.exports = Log = (function() {
   };
 
   Log.doneLine = function(msg) {
-    return this.p("" + (chalk.blue('-')) + " " + msg);
+    return this.p((chalk.blue('-')) + " " + msg);
   };
 
   Log.backend = function(data) {
     if (data.type === 'error') {
-      return Log.inner("" + (Color.orange('closeheat')) + " | " + (Color.red(data.message)));
+      return Log.inner((Color.orange('closeheat')) + " | " + (Color.red(data.message)));
     } else {
-      return Log.inner("" + (Color.orange('closeheat')) + " | " + data.message);
+      return Log.inner((Color.orange('closeheat')) + " | " + data.message);
     }
   };
 
