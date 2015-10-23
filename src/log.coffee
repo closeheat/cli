@@ -65,11 +65,13 @@ class Log
       Spinner.stop()
       @spinning = false
 
-  @error: (msg, exit = true, err) ->
+  @error: (msg, exit = true, err = '', type) ->
     @stop()
     @br()
     @line("#{Color.red('ERROR')} | #{msg}")
     @br()
+
+    return if type == 'login'
 
     printStackTrace = require('stacktrace-js')
 

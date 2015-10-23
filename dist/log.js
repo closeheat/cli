@@ -102,15 +102,21 @@ module.exports = Log = (function() {
     }
   };
 
-  Log.error = function(msg, exit, err) {
+  Log.error = function(msg, exit, err, type) {
     var printStackTrace, trace;
     if (exit == null) {
       exit = true;
+    }
+    if (err == null) {
+      err = '';
     }
     this.stop();
     this.br();
     this.line((Color.red('ERROR')) + " | " + msg);
     this.br();
+    if (type === 'login') {
+      return;
+    }
     printStackTrace = require('stacktrace-js');
     trace = [err.toString()];
     if (err) {

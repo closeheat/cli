@@ -63,7 +63,7 @@ module.exports = Authorizer = (function() {
               Log.error('Too many invalid logins. Account locked for 1 hour.', false);
               return Log.innerError("Check your email for unlock instructions or contact the support at " + (Color.violet('closeheat.com/support')) + ".");
             } else {
-              Log.error("Wrong password or email. Please try again", false);
+              Log.error("Wrong password or email. Please try again", false, '', 'login');
               return _this.login(cb);
             }
           } else {
