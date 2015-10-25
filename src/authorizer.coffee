@@ -12,10 +12,17 @@ Config = require './config'
 module.exports =
 class Authorizer
   saveToken: (access_token) ->
+    overriden = Config.fileContents().access_token != 'none'
+
     config = { access_token: access_token }
     Config.update('access_token', access_token)
+
     Log = require './log'
-    Log.doneLine('Login successful. Access token saved.')
+
+    if overriden
+      Log.doneLine('Login successful. New access token saved.')
+    else
+      Log.doneLine('Login successful. Access token saved.')
 
   accessToken: ->
     Config.fileContents().access_token
@@ -27,8 +34,6 @@ class Authorizer
       @youreLoggedIn()
     else
       @openLogin()
-
-
 
   # login: (cb = ->) ->
   #   login_questions =  [

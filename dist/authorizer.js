@@ -22,13 +22,18 @@ module.exports = Authorizer = (function() {
   function Authorizer() {}
 
   Authorizer.prototype.saveToken = function(access_token) {
-    var config;
+    var config, overriden;
+    overriden = Config.fileContents().access_token !== 'none';
     config = {
       access_token: access_token
     };
     Config.update('access_token', access_token);
     Log = require('./log');
-    return Log.doneLine('Login successful. Access token saved.');
+    if (overriden) {
+      return Log.doneLine('Login successful. New access token saved.');
+    } else {
+      return Log.doneLine('Login successful. Access token saved.');
+    }
   };
 
   Authorizer.prototype.accessToken = function() {
