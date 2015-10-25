@@ -43,6 +43,7 @@ describe 'clone', ->
 
       command('clone example-slug').then (stdout) ->
         expect(stdout).to.match(/Getting application data for example-slug./)
+        expect(stdout).to.match(/TEST: Executing 'git clone git@github.com:example\/repo.git example-slug'/)
         expect(stdout).to.match(/Cloning GitHub repository from example\/repo./)
         expect(stdout).to.match(/Cloned the app code to directory 'example-slug'/)
         done()

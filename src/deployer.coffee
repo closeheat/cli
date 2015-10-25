@@ -4,11 +4,7 @@ _ = require 'lodash'
 open = require 'open'
 fs = require 'fs.extra'
 
-if process.env.CLOSEHEAT_TEST
-  Git = require '../test-dist/helpers/test_git'
-else
-  Git = require 'git-wrapper'
-
+Git = require './git'
 Initializer = require './initializer'
 Authorized = require './authorized'
 Urls = require './urls'

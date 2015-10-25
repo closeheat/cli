@@ -2,7 +2,7 @@ var Authorized, Cloner, Git, Log, Notifier, Promise, Urls;
 
 Promise = require('bluebird');
 
-Git = require('git-wrapper');
+Git = require('./git');
 
 Authorized = require('./authorized');
 
@@ -64,9 +64,6 @@ module.exports = Cloner = (function() {
   Cloner.prototype.execCloning = function(github_repo, branch, app_name) {
     this.git = new Git();
     return new Promise(function(resolve, reject) {
-      if (!global.git) {
-        return resolve();
-      }
       return new Git().exec('clone', ["git@github.com:" + github_repo + ".git", app_name], function(err, resp) {
         if (err) {
           return reject(err);

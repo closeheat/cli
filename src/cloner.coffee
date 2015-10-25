@@ -1,5 +1,5 @@
 Promise = require 'bluebird'
-Git = require 'git-wrapper'
+Git = require './git'
 
 Authorized = require './authorized'
 Urls = require './urls'
@@ -49,8 +49,6 @@ class Cloner
     @git = new Git()
 
     new Promise (resolve, reject) ->
-      return resolve() unless global.git
-
       new Git().exec 'clone', ["git@github.com:#{github_repo}.git", app_name], (err, resp) ->
         return reject(err) if err
 

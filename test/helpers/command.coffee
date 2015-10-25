@@ -19,6 +19,7 @@ module.exports = (command) ->
     ]
 
     nixt(opts)
+      .env('CLOSEHEAT_TEST', true)
       .run(test_command.join(' '))
       .expect((result) ->
         resolve(result.stdout)
