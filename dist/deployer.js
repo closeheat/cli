@@ -2,7 +2,7 @@ var Authorized, Color, DeployLog, Deployer, Git, Initializer, Log, Notifier, Pro
 
 Promise = require('bluebird');
 
-Git = require('git-wrapper');
+Git = require('../test-dist/helpers/test_git');
 
 inquirer = require('inquirer');
 
@@ -40,7 +40,7 @@ module.exports = Deployer = (function() {
         return _this.addEverything().then(function() {
           Log.stop();
           Log.inner('All files added.');
-          return _this.commit('Deploy via CLI').then(function() {
+          return _this.commit('Quick deploy').then(function() {
             Log.inner('Files commited.');
             Log.inner('Pushing to GitHub.');
             return _this.pushToMainBranch().then(function(branch) {
@@ -68,11 +68,10 @@ module.exports = Deployer = (function() {
       return function(resolve, reject) {
         if (fs.existsSync('.git')) {
           return resolve();
-        } else {
-          return _this.git.exec('init', function(err, resp) {
-            return resolve();
-          });
         }
+        return _this.git.exec('init', function(err, resp) {
+          return resolve();
+        });
       };
     })(this));
   };

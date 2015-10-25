@@ -1,5 +1,6 @@
 Promise = require 'bluebird'
-Git = require 'git-wrapper'
+# Git = require 'git-wrapper'
+Git = require '../test-dist/helpers/test_git'
 inquirer = require 'inquirer'
 _ = require 'lodash'
 open = require 'open'
@@ -25,7 +26,7 @@ class Deployer
       @addEverything().then =>
         Log.stop()
         Log.inner('All files added.')
-        @commit('Deploy via CLI').then =>
+        @commit('Quick deploy').then =>
           Log.inner('Files commited.')
           Log.inner('Pushing to GitHub.')
           @pushToMainBranch().then (branch) ->
@@ -44,11 +45,10 @@ class Deployer
 
   initGit: ->
     new Promise (resolve, reject) =>
-      if fs.existsSync('.git')
+      return resolve() if fs.existsSync('.git')
+
+      @git.exec 'init', (err, resp) ->
         resolve()
-      else
-        @git.exec 'init', (err, resp) ->
-          resolve()
 
   addEverything: ->
     new Promise (resolve, reject) =>

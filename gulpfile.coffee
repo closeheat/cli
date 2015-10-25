@@ -14,6 +14,7 @@ gulp.task 'default', ['coffee', 'img']
 
 gulp.task 'watch', ->
   gulp.watch('./src/**/*.coffee', ['default'])
+  gulp.watch('./test/helpers/*.coffee', ['default'])
 
 gulp.task 'img', ->
   gulp
@@ -33,6 +34,12 @@ gulp.task 'coffee', ->
       .on('error', gutil.log))
     .pipe(insert.prepend('#!/usr/bin/env node\n\n'))
     .pipe gulp.dest('./dist/bin')
+
+  gulp
+    .src('./test/helpers/test_git.coffee')
+    .pipe(coffee(bare: true)
+      .on('error', gutil.log))
+    .pipe gulp.dest('./test-dist/helpers/')
 
 gulp.task 'test', ->
   gulp

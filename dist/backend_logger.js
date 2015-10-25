@@ -36,24 +36,6 @@ module.exports = BackendLogger = (function() {
     })(this));
   };
 
-  BackendLogger.fromBackendStatus = function(status, msg) {
-    if (status === 'download_github_repo') {
-      return this.backend('Downloading the GitHub repo.');
-    } else if (status === 'build') {
-      return this.backend('Building app.');
-    } else if (status === 'deployed') {
-      return this.backend('App is live.');
-    } else if (status === 'error') {
-      if (msg) {
-        return this.error(msg);
-      } else {
-        return this.backendError();
-      }
-    } else {
-      return this.backend('Unknown status.');
-    }
-  };
-
   return BackendLogger;
 
 })();
