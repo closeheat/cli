@@ -12,7 +12,7 @@ module.exports =
 class List
   show: =>
     Log.logo()
-    Log.spin 'Getting information about your deployed apps.'
+    Log.spin 'Getting information about your websites.'
 
     new Promise (resolve, reject) =>
       Authorized.request url: Urls.appsIndex(), method: 'get', (err, resp) =>
@@ -34,7 +34,7 @@ class List
         resolve()
 
   table: (apps) ->
-    Log.inner "You have #{apps.length} apps deployed."
+    Log.inner "You have #{apps.length} websites."
 
     list = [['', Color.redYellow('Name'), Color.redYellow(' Clone command')]]
     _.each apps, (app) ->
@@ -43,11 +43,11 @@ class List
     Log.br()
     Log.line(table(list))
     Log.br()
-    Log.line 'Edit any of your apps by cloning it with:'
-    Log.code('closeheat clone your-awesome-app')
+    Log.line 'Edit any of your websites by cloning it with:'
+    Log.code('closeheat clone awesome-website')
 
   noApps: ->
-    Log.inner 'You have no apps deployed.'
+    Log.inner 'You have no websites.'
     Log.br()
-    Log.line 'Deploy this app by typing:'
-    Log.code('closeheat deploy your-app-name')
+    Log.line 'Publish this folder as a website by typing:'
+    Log.code('closeheat deploy your-website-name')

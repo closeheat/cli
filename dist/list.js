@@ -24,7 +24,7 @@ module.exports = List = (function() {
 
   List.prototype.show = function() {
     Log.logo();
-    Log.spin('Getting information about your deployed apps.');
+    Log.spin('Getting information about your websites.');
     return new Promise((function(_this) {
       return function(resolve, reject) {
         return Authorized.request({
@@ -56,7 +56,7 @@ module.exports = List = (function() {
 
   List.prototype.table = function(apps) {
     var list;
-    Log.inner("You have " + apps.length + " apps deployed.");
+    Log.inner("You have " + apps.length + " websites.");
     list = [['', Color.redYellow('Name'), Color.redYellow(' Clone command')]];
     _.each(apps, function(app) {
       return list.push(['', Color.violet(app.name), Color.bare("closeheat clone " + app.slug)]);
@@ -64,15 +64,15 @@ module.exports = List = (function() {
     Log.br();
     Log.line(table(list));
     Log.br();
-    Log.line('Edit any of your apps by cloning it with:');
-    return Log.code('closeheat clone your-awesome-app');
+    Log.line('Edit any of your websites by cloning it with:');
+    return Log.code('closeheat clone awesome-website');
   };
 
   List.prototype.noApps = function() {
-    Log.inner('You have no apps deployed.');
+    Log.inner('You have no websites.');
     Log.br();
-    Log.line('Deploy this app by typing:');
-    return Log.code('closeheat deploy your-app-name');
+    Log.line('Publish this folder as a website by typing:');
+    return Log.code('closeheat deploy your-website-name');
   };
 
   return List;

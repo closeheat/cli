@@ -23,14 +23,14 @@ describe 'clone', ->
         ]
 
       command('clone').then (stdout) ->
-        expect(stdout).to.match(/Getting information about your deployed apps./)
-        expect(stdout).to.match(/You have 1 apps deployed./)
+        expect(stdout).to.match(/Getting information about your websites./)
+        expect(stdout).to.match(/You have 1 websites./)
         expect(stdout).to.match(/Name/)
         expect(stdout).to.match(/Clone command/)
         expect(stdout).to.match(/Example app/)
         expect(stdout).to.match(/closeheat clone example-slug/)
-        expect(stdout).to.match(/Edit any of your apps by cloning it with:/)
-        expect(stdout).to.match(/closeheat clone your-awesome-app/)
+        expect(stdout).to.match(/Edit any of your websites by cloning it with:/)
+        expect(stdout).to.match(/closeheat clone awesome-website/)
         done()
 
     it 'with app name', (done) ->

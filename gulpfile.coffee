@@ -39,7 +39,7 @@ gulp.task 'coffee', ->
     .src('./test/helpers/test_git.coffee')
     .pipe(coffee(bare: true)
       .on('error', gutil.log))
-    .pipe gulp.dest('./test-dist/helpers/')
+    .pipe gulp.dest('./test/helpers/dist')
 
 gulp.task 'test', ->
   gulp
