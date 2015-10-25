@@ -1,4 +1,4 @@
-var Authorizer, Color, Config, Log, Promise, Urls, fs, inquirer, pkg, request;
+var Authorizer, Color, Config, Promise, Urls, fs, inquirer, open, pkg, request;
 
 fs = require('fs');
 
@@ -10,7 +10,7 @@ pkg = require('../package.json');
 
 Promise = require('bluebird');
 
-Log = require('./log');
+open = require('open');
 
 Urls = require('./urls');
 
@@ -22,7 +22,7 @@ module.exports = Authorizer = (function() {
   function Authorizer() {}
 
   Authorizer.prototype.saveToken = function(access_token) {
-    var config, overriden;
+    var Log, config, overriden;
     overriden = Config.fileContents().access_token !== 'none';
     config = {
       access_token: access_token
@@ -44,11 +44,25 @@ module.exports = Authorizer = (function() {
     if (token) {
       return this.saveToken(token);
     }
-    if (this.accessToken()) {
+    if (this.accessToken() !== 'none') {
       return this.youreLoggedIn();
     } else {
       return this.openLogin();
     }
+  };
+
+  Authorizer.prototype.youreLoggedIn = function() {
+    var Log;
+    Log = require('./log');
+    Log.doneLine('You are already logged in.');
+    return Log.inner("Log in with another account here: " + (Urls.loginInstructions()));
+  };
+
+  Authorizer.prototype.openLogin = function() {
+    var Log;
+    Log = require('./log');
+    Log.doneLine("Log in at " + (Urls.loginInstructions()) + " in your browser.");
+    return open(Urls.loginInstructions());
   };
 
   Authorizer.prototype.getToken = function(answers) {
@@ -83,6 +97,7 @@ module.exports = Authorizer = (function() {
   };
 
   Authorizer.prototype.forceLogin = function(cb) {
+    var Log;
     Log = require('./log');
     Log.stop();
     Log.br();

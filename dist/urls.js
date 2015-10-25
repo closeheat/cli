@@ -51,6 +51,10 @@ module.exports = Urls = (function() {
     return (this.api()) + "/cli_notifier";
   };
 
+  Urls.loginInstructions = function() {
+    return (this.base()) + "/api/login";
+  };
+
   return Urls;
 
 })();

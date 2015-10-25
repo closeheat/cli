@@ -2,6 +2,7 @@ nixt = require 'nixt'
 fs = require 'fs'
 path = require 'path'
 expect = require('chai').expect
+Urls = require '../src/urls'
 # assert = require 'assert'
 
 closeheat = './dist/bin/closeheat.js'
@@ -47,3 +48,27 @@ describe 'login', ->
         .end ->
           assertConfig(access_token: 'example-token')
           done()
+
+  describe 'no token', ->
+    before ->
+      cleanConfig()
+
+    it 'not logged in', (done) ->
+      nixt()
+        .run("#{closeheat} login")
+        .expect((result) ->
+          expect(result.stdout).to.match(/Login successful. Access token saved./)
+        )
+        .end(-> done())
+
+    it 'logged in already', (done) ->
+      writeConfig(access_token: 'existing-token')
+
+      nixt()
+        .env('HOME', home_path)
+        .run("#{closeheat} login")
+        .expect((result) ->
+          expect(result.stdout).to.match(/You are already logged in./)
+          expect(result.stdout).to.match(/Login with another account here:/)
+        )
+        .end(-> done())

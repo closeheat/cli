@@ -39,3 +39,6 @@ class Urls
 
   @notifier: ->
     "#{@api()}/cli_notifier"
+
+  @loginInstructions: ->
+    "#{@base()}/api/login"
