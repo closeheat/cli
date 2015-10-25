@@ -23,7 +23,7 @@ module.exports = Authorizer = (function() {
 
   Authorizer.prototype.saveToken = function(access_token) {
     var Log, config, overriden;
-    overriden = Config.fileContents().access_token !== 'none';
+    overriden = this.accessTokenExists();
     config = {
       access_token: access_token
     };
@@ -40,11 +40,15 @@ module.exports = Authorizer = (function() {
     return Config.fileContents().access_token;
   };
 
+  Authorizer.prototype.accessTokenExists = function() {
+    return Config.fileContents().access_token && Config.fileContents().access_token !== 'none';
+  };
+
   Authorizer.prototype.login = function(token) {
     if (token) {
       return this.saveToken(token);
     }
-    if (this.accessToken() !== 'none') {
+    if (this.accessTokenExists()) {
       return this.youreLoggedIn();
     } else {
       return this.openLogin();
@@ -62,7 +66,9 @@ module.exports = Authorizer = (function() {
     var Log;
     Log = require('./log');
     Log.doneLine("Log in at " + (Urls.loginInstructions()) + " in your browser.");
-    return open(Urls.loginInstructions());
+    if (global.BROWSER) {
+      return open(Urls.loginInstructions());
+    }
   };
 
   Authorizer.prototype.forceLogin = function(cb) {

@@ -14,7 +14,7 @@ class Config
     JSON.parse(fs.readFileSync(@file()).toString())
 
   @dir: ->
-    result = path.join(homePath(), '.closeheat')
+    result = global.CONFIG_DIR
     fs.mkdirSync(result) unless fs.existsSync result
     result
 

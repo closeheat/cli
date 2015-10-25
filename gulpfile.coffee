@@ -34,23 +34,7 @@ gulp.task 'coffee', ->
     .pipe(insert.prepend('#!/usr/bin/env node\n\n'))
     .pipe gulp.dest('./dist/bin')
 
-gulp.task 'requires', ->
-  fs.readFile './dist/creator.js', 'utf-8', (err, data) ->
-    ast = acorn.parse(data)
-    walk = require('acorn/dist/walk')
-    walkall = require('walkall')
-
-    walk.simple(ast, walkall.makeVisitors((node) ->
-      return unless node.type == 'CallExpression'
-      return unless node.callee.name == 'require'
-
-      module_name = node.arguments[0].value
-      return unless module_name.match(/^[a-zA-Z]/)
-
-      console.log module_name
-    ), walkall.traversers)
-
 gulp.task 'test', ->
   gulp
-    .src('test/list.coffee', read: false)
+    .src('test/login.coffee', read: false)
     .pipe(mocha())

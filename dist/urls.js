@@ -12,7 +12,7 @@ module.exports = Urls = (function() {
   };
 
   Urls.api = function() {
-    return 'http://api.closeheat.com';
+    return global.API_URL;
   };
 
   Urls.appsIndex = function() {

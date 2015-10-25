@@ -28,7 +28,7 @@ module.exports = Config = (function() {
 
   Config.dir = function() {
     var result;
-    result = path.join(homePath(), '.closeheat');
+    result = global.CONFIG_DIR;
     if (!fs.existsSync(result)) {
       fs.mkdirSync(result);
     }

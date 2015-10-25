@@ -12,7 +12,7 @@ Config = require './config'
 module.exports =
 class Authorizer
   saveToken: (access_token) ->
-    overriden = Config.fileContents().access_token != 'none'
+    overriden = @accessTokenExists()
 
     config = { access_token: access_token }
     Config.update('access_token', access_token)
@@ -27,10 +27,13 @@ class Authorizer
   accessToken: ->
     Config.fileContents().access_token
 
+  accessTokenExists: ->
+    Config.fileContents().access_token && Config.fileContents().access_token != 'none'
+
   login: (token) ->
     return @saveToken(token) if token
 
-    if @accessToken() != 'none'
+    if @accessTokenExists()
       @youreLoggedIn()
     else
       @openLogin()
@@ -45,7 +48,7 @@ class Authorizer
     Log = require './log'
 
     Log.doneLine("Log in at #{Urls.loginInstructions()} in your browser.")
-    open(Urls.loginInstructions())
+    open(Urls.loginInstructions()) if global.BROWSER
 
   forceLogin: (cb) ->
     Log = require './log'
