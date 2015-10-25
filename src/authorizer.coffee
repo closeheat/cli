@@ -48,7 +48,7 @@ class Authorizer
     Log = require './log'
 
     Log.doneLine("Log in at #{Urls.loginInstructions()} in your browser.")
-    open(Urls.loginInstructions()) if global.BROWSER
+    open(Urls.loginInstructions()) unless process.env.CLOSEHEAT_TEST
 
   forceLogin: (cb) ->
     Log = require './log'

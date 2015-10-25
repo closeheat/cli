@@ -16,8 +16,6 @@ module.exports = (command) ->
       command
       '--api http://localhost:1234'
       "--config-dir #{TestConfig.dir()}"
-      '--no-browser'
-      '--no-git'
     ]
 
     nixt(opts)

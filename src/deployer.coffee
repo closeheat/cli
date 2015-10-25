@@ -1,10 +1,13 @@
 Promise = require 'bluebird'
-# Git = require 'git-wrapper'
-Git = require '../test-dist/helpers/test_git'
 inquirer = require 'inquirer'
 _ = require 'lodash'
 open = require 'open'
 fs = require 'fs.extra'
+
+if process.env.CLOSEHEAT_TEST
+  Git = require '../test-dist/helpers/test_git'
+else
+  Git = require 'git-wrapper'
 
 Initializer = require './initializer'
 Authorized = require './authorized'
@@ -125,7 +128,7 @@ class Deployer
       @getSlug(repo).then (slug) ->
         url = "http://#{slug}.closeheatapp.com"
         Log.p "Opening your app at #{url}."
-        open(url)
+        open(url) unless process.env.CLOSEHEAT_TEST
 
   getSlug: (repo) ->
     new Promise (resolve, reject) ->

@@ -8,16 +8,12 @@ Log = require '../log'
 setGlobals = (program) ->
   global.API_URL = program.api || 'http://api.closeheat.com'
   global.CONFIG_DIR = program.configDir || path.join(homePath(), '.closeheat')
-  global.BROWSER = program.browser
-  global.GIT = program.git
 
 program
   .version(pkg.version)
   .usage('<keywords>')
   .option('--api [url]', 'API endpoint. Default: http://api.closeheat.com')
   .option('--config-dir [path]', 'Configuration directory. Default: ~/.closeheat')
-  .option('--no-browser', 'Never launch browser for anything.')
-  .option('--no-git', 'Never use git.')
 
 program
   .command('deploy')

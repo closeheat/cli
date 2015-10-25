@@ -66,7 +66,7 @@ module.exports = Authorizer = (function() {
     var Log;
     Log = require('./log');
     Log.doneLine("Log in at " + (Urls.loginInstructions()) + " in your browser.");
-    if (global.BROWSER) {
+    if (!process.env.CLOSEHEAT_TEST) {
       return open(Urls.loginInstructions());
     }
   };

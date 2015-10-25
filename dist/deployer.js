@@ -2,8 +2,6 @@ var Authorized, Color, DeployLog, Deployer, Git, Initializer, Log, Notifier, Pro
 
 Promise = require('bluebird');
 
-Git = require('../test-dist/helpers/test_git');
-
 inquirer = require('inquirer');
 
 _ = require('lodash');
@@ -11,6 +9,12 @@ _ = require('lodash');
 open = require('open');
 
 fs = require('fs.extra');
+
+if (process.env.CLOSEHEAT_TEST) {
+  Git = require('../test-dist/helpers/test_git');
+} else {
+  Git = require('git-wrapper');
+}
 
 Initializer = require('./initializer');
 
@@ -210,7 +214,9 @@ module.exports = Deployer = (function() {
           var url;
           url = "http://" + slug + ".closeheatapp.com";
           Log.p("Opening your app at " + url + ".");
-          return open(url);
+          if (!process.env.CLOSEHEAT_TEST) {
+            return open(url);
+          }
         });
       };
     })(this));
