@@ -48,7 +48,7 @@ class Cloner
         try
           app = JSON.parse(resp.body).app
         catch e
-          return reject("App named '#{app_name}' does not exist or the server is down.")
+          return reject("App named '#{app_name}' does not exist.")
 
         resolve(app)
 

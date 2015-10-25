@@ -15,42 +15,52 @@ class Authorizer
     config = { access_token: access_token }
     Config.update('access_token', access_token)
     Log = require './log'
-    Log.doneLine('Access token saved.')
+    Log.doneLine('Login successful. Access token saved.')
 
   accessToken: ->
     Config.fileContents().access_token
 
-  login: (cb = ->) ->
-    login_questions =  [
-      {
-        message: 'Your email address'
-        name: 'email'
-        type: 'input'
-      }
-      {
-        message: 'Your password'
-        name: 'password'
-        type: 'password'
-      }
-    ]
+  login: (token) ->
+    return @saveToken(token) if token
 
-    inquirer.prompt login_questions, (answers) =>
-      @getToken(answers).then(->
-        Log.br()
-        cb()
-      ).catch (resp) =>
-        if resp.code == 401
-          Log = require './log'
+    if @accessToken()
+      @youreLoggedIn()
+    else
+      @openLogin()
 
-          if resp.status == 'locked'
-            Log.error('Too many invalid logins. Account locked for 1 hour.', false)
-            Log.innerError("Check your email for unlock instructions or contact the support at #{Color.violet('closeheat.com/support')}.")
-          else
-            Log.error("Wrong password or email. Please try again", false, '', 'login')
-            @login(cb)
 
-        else
-          Log.backendError()
+
+  # login: (cb = ->) ->
+  #   login_questions =  [
+  #     {
+  #       message: 'Your email address'
+  #       name: 'email'
+  #       type: 'input'
+  #     }
+  #     {
+  #       message: 'Your password'
+  #       name: 'password'
+  #       type: 'password'
+  #     }
+  #   ]
+  #
+  #   inquirer.prompt login_questions, (answers) =>
+  #     @getToken(answers).then(->
+  #       Log.br()
+  #       cb()
+  #     ).catch (resp) =>
+  #       if resp.code == 401
+  #         Log = require './log'
+  #
+  #         if resp.status == 'locked'
+  #           Log.error('Too many invalid logins. Account locked for 1 hour.', false)
+  #           Log.innerError("Check your email for unlock instructions or contact the support at #{Color.violet('closeheat.com/support')}.")
+  #         else
+  #           Log.error("Wrong password or email. Please try again", false, '', 'login')
+  #           @login(cb)
+  #
+  #       else
+  #         Log.backendError()
 
   getToken: (answers) ->
     new Promise (resolve, reject) =>

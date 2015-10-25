@@ -57,7 +57,7 @@ module.exports = Cloner = (function() {
           app = JSON.parse(resp.body).app;
         } catch (error) {
           e = error;
-          return reject("App named '" + app_name + "' does not exist or the server is down.");
+          return reject("App named '" + app_name + "' does not exist.");
         }
         return resolve(app);
       });

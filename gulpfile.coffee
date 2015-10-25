@@ -49,3 +49,8 @@ gulp.task 'requires', ->
 
       console.log module_name
     ), walkall.traversers)
+
+gulp.task 'test', ->
+  gulp
+    .src('test/login.coffee', read: false)
+    .pipe(mocha())

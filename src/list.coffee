@@ -9,8 +9,8 @@ Log = require './log'
 Color = require './color'
 
 module.exports =
-class Apps
-  list: =>
+class List
+  show: =>
     Log.logo()
     Log.spin 'Getting information about your deployed apps.'
 
@@ -43,11 +43,11 @@ class Apps
     Log.br()
     Log.line(table(list))
     Log.br()
-    Log.line "Edit any of your apps by cloning it with:"
-    Log.code("closeheat clone your-awesome-app")
+    Log.line 'Edit any of your apps by cloning it with:'
+    Log.code('closeheat clone your-awesome-app')
 
   noApps: ->
-    Log.inner "You have no apps deployed."
+    Log.inner 'You have no apps deployed.'
     Log.br()
-    Log.line "Create an app by typing:"
-    Log.code("closeheat create your-awesome-app")
+    Log.line 'Deploy this app by typing:'
+    Log.code('closeheat deploy your-app-name')

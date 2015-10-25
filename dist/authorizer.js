@@ -28,50 +28,22 @@ module.exports = Authorizer = (function() {
     };
     Config.update('access_token', access_token);
     Log = require('./log');
-    return Log.doneLine('Access token saved.');
+    return Log.doneLine('Login successful. Access token saved.');
   };
 
   Authorizer.prototype.accessToken = function() {
     return Config.fileContents().access_token;
   };
 
-  Authorizer.prototype.login = function(cb) {
-    var login_questions;
-    if (cb == null) {
-      cb = function() {};
+  Authorizer.prototype.login = function(token) {
+    if (token) {
+      return this.saveToken(token);
     }
-    login_questions = [
-      {
-        message: 'Your email address',
-        name: 'email',
-        type: 'input'
-      }, {
-        message: 'Your password',
-        name: 'password',
-        type: 'password'
-      }
-    ];
-    return inquirer.prompt(login_questions, (function(_this) {
-      return function(answers) {
-        return _this.getToken(answers).then(function() {
-          Log.br();
-          return cb();
-        })["catch"](function(resp) {
-          if (resp.code === 401) {
-            Log = require('./log');
-            if (resp.status === 'locked') {
-              Log.error('Too many invalid logins. Account locked for 1 hour.', false);
-              return Log.innerError("Check your email for unlock instructions or contact the support at " + (Color.violet('closeheat.com/support')) + ".");
-            } else {
-              Log.error("Wrong password or email. Please try again", false, '', 'login');
-              return _this.login(cb);
-            }
-          } else {
-            return Log.backendError();
-          }
-        });
-      };
-    })(this));
+    if (this.accessToken()) {
+      return this.youreLoggedIn();
+    } else {
+      return this.openLogin();
+    }
   };
 
   Authorizer.prototype.getToken = function(answers) {
