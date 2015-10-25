@@ -6,11 +6,13 @@ Log = require '../log'
 program
   .version(pkg.version)
   .usage('<keywords>')
+  .option('--api [url]', 'API endpoint. Default: http://api.closeheat.com')
 
 program
   .command('deploy')
   .description('Deploys your app to closeheat.com via GitHub.')
   .action ->
+    console.log arguments
     Deployer = require '../deployer'
 
     new Deployer().deploy()

@@ -19,11 +19,14 @@ module.exports = Authorized = (function() {
     params = 1 <= arguments.length ? slice.call(arguments, 0) : [];
     opts = params[0], cb = params[1];
     token_params = this.tokenParams(opts, cb);
+    console.log('hello');
+    console.log(token_params);
     if (token_params) {
       opts.qs = _.merge(opts.qs || {}, token_params);
       opts.headers = {
         'X-CLI-Version': pkg.version
       };
+      console.log('why');
       return request(opts, this.loginOnUnauthorized(opts, cb));
     }
   };

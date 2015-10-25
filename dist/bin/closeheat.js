@@ -8,10 +8,11 @@ pkg = require('../../package.json');
 
 Log = require('../log');
 
-program.version(pkg.version).usage('<keywords>');
+program.version(pkg.version).usage('<keywords>').option('--api [url]', 'API endpoint. Default: http://api.closeheat.com');
 
 program.command('deploy').description('Deploys your app to closeheat.com via GitHub.').action(function() {
   var Deployer;
+  console.log(arguments);
   Deployer = require('../deployer');
   return new Deployer().deploy();
 });
