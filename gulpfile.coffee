@@ -52,5 +52,5 @@ gulp.task 'requires', ->
 
 gulp.task 'test', ->
   gulp
-    .src('test/login.coffee', read: false)
+    .src('test/list.coffee', read: false)
     .pipe(mocha())

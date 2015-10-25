@@ -65,44 +65,12 @@ module.exports = Authorizer = (function() {
     return open(Urls.loginInstructions());
   };
 
-  Authorizer.prototype.getToken = function(answers) {
-    return new Promise((function(_this) {
-      return function(resolve, reject) {
-        var params;
-        params = {
-          url: Urls.getToken(),
-          headers: {
-            'X-CLI-Version': pkg.version
-          },
-          qs: answers,
-          method: 'post',
-          json: true
-        };
-        return request(params, function(err, resp) {
-          if (err) {
-            Log.error(err);
-          }
-          if (resp.statusCode === 200) {
-            _this.saveToken(resp.body.access_token);
-            return resolve();
-          } else {
-            return reject({
-              code: resp.statusCode,
-              status: resp.body.status
-            });
-          }
-        });
-      };
-    })(this));
-  };
-
   Authorizer.prototype.forceLogin = function(cb) {
     var Log;
     Log = require('./log');
     Log.stop();
     Log.br();
-    Log.p(Color.redYellow('Please login to closeheat.com to check out your app list.'));
-    return this.login(cb);
+    return Log.p(Color.redYellow('Please login to closeheat.com to check out your app list.'));
   };
 
   Authorizer.prototype.unauthorized = function(resp) {
