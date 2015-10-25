@@ -10,13 +10,10 @@ class Authorized
   @request: (params...) ->
     [opts, cb] = params
     token_params = @tokenParams(opts, cb)
-    console.log('hello')
-    console.log token_params
 
     if token_params
       opts.qs = _.merge(opts.qs || {}, token_params)
       opts.headers = { 'X-CLI-Version': pkg.version }
-      console.log 'why'
       request opts, @loginOnUnauthorized(opts, cb)
 
   @tokenParams: (opts, cb) ->

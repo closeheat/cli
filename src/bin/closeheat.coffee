@@ -9,7 +9,6 @@ setGlobals = (program) ->
   global.API_URL = program.api || 'http://api.closeheat.com'
   global.CONFIG_DIR = program.configDir || path.join(homePath(), '.closeheat')
   global.BROWSER = program.browser
-  console.log program
 
 program
   .version(pkg.version)

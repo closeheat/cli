@@ -7,29 +7,20 @@ proxyquire =  require('proxyquire')
 expect = require('chai').expect
 command = require './helpers/command'
 
-home_path = path.join(process.cwd(), 'test', 'fixtures', 'home')
-config_path = path.join(home_path, '.closeheat', 'config.json')
-
-assertConfig = (expected) ->
-  actual = JSON.parse(fs.readFileSync(config_path).toString())
-  expect(actual).to.eql(expected)
-
-cleanConfig = ->
-  return unless fs.existsSync(config_path)
-  fs.unlinkSync(config_path)
-
-writeConfig = (content) ->
-  fs.writeFileSync(config_path, JSON.stringify(content))
+TestConfig = require './helpers/test_config'
+Config = require '../src/config'
 
 describe 'list', ->
   describe 'with token', ->
-    before ->
-      writeConfig(access_token: 'example-token')
+    beforeEach ->
+      TestConfig.init()
+      TestConfig.rm()
+      Config.update('access_token', 'existing-token')
 
       @app = express()
       @server = @app.listen(1234)
 
-    after ->
+    afterEach ->
       @server.close()
 
     it 'authorized', (done) ->
@@ -50,4 +41,16 @@ describe 'list', ->
         expect(stdout).to.match(/closeheat clone example-slug/)
         expect(stdout).to.match(/Edit any of your apps by cloning it with:/)
         expect(stdout).to.match(/closeheat clone your-awesome-app/)
+        done()
+
+    it 'unauthorized', (done) ->
+      @app.get '/apps', (req, res) ->
+        res.status(401).send message: 'Unauthorized'
+
+      command('list').then (stdout) ->
+        expect(stdout).to.match(/You need to log in for that./)
+        expect(stdout).to.match(/Type/)
+        expect(stdout).to.match(/closeheat login/)
+        expect(stdout).to.match(/or open/)
+        expect(stdout).to.match(/to do it swiftly./)
         done()

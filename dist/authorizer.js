@@ -75,8 +75,8 @@ module.exports = Authorizer = (function() {
     var Log;
     Log = require('./log');
     Log.stop();
-    Log.br();
-    return Log.p(Color.redYellow('Please login to closeheat.com to check out your app list.'));
+    Log.p(Color.redYellow('You need to log in for that.'));
+    return Log.p("Type " + (Color.violet('closeheat login')) + " or open " + (Color.violet(Urls.loginInstructions())) + " to do it swiftly.");
   };
 
   Authorizer.prototype.unauthorized = function(resp) {

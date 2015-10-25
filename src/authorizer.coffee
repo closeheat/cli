@@ -53,9 +53,8 @@ class Authorizer
   forceLogin: (cb) ->
     Log = require './log'
     Log.stop()
-    Log.br()
-    Log.p Color.redYellow('Please login to closeheat.com to check out your app list.')
-    # @openLogin()
+    Log.p Color.redYellow('You need to log in for that.')
+    Log.p("Type #{Color.violet('closeheat login')} or open #{Color.violet(Urls.loginInstructions())} to do it swiftly.")
 
   unauthorized: (resp) ->
     resp.statusCode == 401
