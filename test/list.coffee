@@ -1,14 +1,9 @@
-fs = require 'fs'
-path = require 'path'
-nock = require 'nock'
-express = require 'express'
-_ = require 'lodash'
-proxyquire =  require('proxyquire')
 expect = require('chai').expect
-command = require './helpers/command'
 
 TestConfig = require './helpers/test_config'
+TestApi = require './helpers/test_api'
 Config = require '../src/config'
+command = require './helpers/command'
 
 describe 'list', ->
   describe 'with token', ->
@@ -16,15 +11,14 @@ describe 'list', ->
       TestConfig.init()
       TestConfig.rm()
       Config.update('access_token', 'existing-token')
-
-      @app = express()
-      @server = @app.listen(1234)
+      @api = new TestApi()
+      @server = @api.start()
 
     afterEach ->
       @server.close()
 
     it 'authorized', (done) ->
-      @app.get '/apps', (req, res) ->
+      @api.routes.get '/apps', (req, res) ->
         res.send apps: [
           {
             name: 'Example app',
@@ -44,7 +38,7 @@ describe 'list', ->
         done()
 
     it 'unauthorized', (done) ->
-      @app.get '/apps', (req, res) ->
+      @api.routes.get '/apps', (req, res) ->
         res.status(401).send message: 'Unauthorized'
 
       command('list').then (stdout) ->
