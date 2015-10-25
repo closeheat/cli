@@ -11,10 +11,17 @@ module.exports = (command) ->
     newlines: false
 
   new Promise (resolve, reject) ->
-    test_command = "#{closeheat} #{command} --api http://localhost:1234 --config-dir #{TestConfig.dir()} --no-browser"
+    test_command = [
+      closeheat
+      command
+      '--api http://localhost:1234'
+      "--config-dir #{TestConfig.dir()}"
+      '--no-browser'
+      '--no-git'
+    ]
 
     nixt(opts)
-      .run(test_command)
+      .run(test_command.join(' '))
       .expect((result) ->
         resolve(result.stdout)
       )

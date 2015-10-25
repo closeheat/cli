@@ -28,9 +28,6 @@ module.exports = Cloner = (function() {
           Log.stop();
           Log.inner("Cloned the app code to directory '" + app_name + "'.");
           Log.br();
-          Log.line('Run the server by typing:');
-          Log.code(["cd " + app_name, 'closeheat']);
-          Log.br();
           Log.p('The quickest way to deploy changes to closeheat.com and GitHub is with:');
           Log.secondaryCode('closeheat deploy');
           Log.br();
@@ -67,6 +64,9 @@ module.exports = Cloner = (function() {
   Cloner.prototype.execCloning = function(github_repo, branch, app_name) {
     this.git = new Git();
     return new Promise(function(resolve, reject) {
+      if (!global.git) {
+        return resolve();
+      }
       return new Git().exec('clone', ["git@github.com:" + github_repo + ".git", app_name], function(err, resp) {
         if (err) {
           return reject(err);

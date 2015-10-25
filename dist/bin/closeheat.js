@@ -15,10 +15,11 @@ Log = require('../log');
 setGlobals = function(program) {
   global.API_URL = program.api || 'http://api.closeheat.com';
   global.CONFIG_DIR = program.configDir || path.join(homePath(), '.closeheat');
-  return global.BROWSER = program.browser;
+  global.BROWSER = program.browser;
+  return global.GIT = program.git;
 };
 
-program.version(pkg.version).usage('<keywords>').option('--api [url]', 'API endpoint. Default: http://api.closeheat.com').option('--config-dir [path]', 'Configuration directory. Default: ~/.closeheat').option('--no-browser', 'Never launch browser for anything.');
+program.version(pkg.version).usage('<keywords>').option('--api [url]', 'API endpoint. Default: http://api.closeheat.com').option('--config-dir [path]', 'Configuration directory. Default: ~/.closeheat').option('--no-browser', 'Never launch browser for anything.').option('--no-git', 'Never use git.');
 
 program.command('deploy').description('Deploys your app to closeheat.com via GitHub.').action(function() {
   var Deployer;
@@ -61,14 +62,14 @@ program.command('login [access-token]').description('Log in to closeheat.com wit
 });
 
 program.command('clone [app-name]').description('Clones the closeheat app files.').action(function(app_name) {
-  var Apps, Cloner;
+  var Cloner, List;
   setGlobals(program);
   if (app_name) {
     Cloner = require('../cloner');
     return new Cloner().clone(app_name);
   } else {
-    Apps = require('../apps');
-    return new Apps().list();
+    List = require('../list');
+    return new List().show();
   }
 });
 

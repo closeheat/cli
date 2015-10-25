@@ -24,13 +24,6 @@ class Cloner
         Log.inner "Cloned the app code to directory '#{app_name}'."
 
         Log.br()
-        Log.line 'Run the server by typing:'
-        Log.code [
-          "cd #{app_name}"
-          'closeheat'
-        ]
-
-        Log.br()
         Log.p 'The quickest way to deploy changes to closeheat.com and GitHub is with:'
         Log.secondaryCode 'closeheat deploy'
 
@@ -56,6 +49,8 @@ class Cloner
     @git = new Git()
 
     new Promise (resolve, reject) ->
+      return resolve() unless global.git
+
       new Git().exec 'clone', ["git@github.com:#{github_repo}.git", app_name], (err, resp) ->
         return reject(err) if err
 
