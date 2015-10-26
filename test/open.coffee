@@ -2,6 +2,7 @@ expect = require('chai').expect
 
 command = require './helpers/command'
 TestApi = require './helpers/test_api'
+assertStdout = require './helpers/assert_stdout'
 
 describe 'open', ->
   beforeEach ->
@@ -17,5 +18,9 @@ describe 'open', ->
       res.send slug: 'example-slug'
 
     command('open').then (stdout) ->
-      expect(stdout).to.match(/Opening your app at http:\/\/example-slug.closeheatapp.com./)
+      assertStdout stdout,
+        """
+        TEST: Executing 'git remote --verbose'
+        Opening your app at http://example-slug.closeheatapp.com.
+        """
       done()
