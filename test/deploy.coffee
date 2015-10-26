@@ -1,6 +1,7 @@
 expect = require('chai').expect
 
 command = require './helpers/command'
+assertStdout = require './helpers/assert_stdout'
 TestApi = require './helpers/test_api'
 
 describe 'deploy', ->
@@ -27,23 +28,23 @@ describe 'deploy', ->
           ]
 
     command('deploy').then (stdout) ->
-      expect(stdout).to.match(/Deploying the app to closeheat.com via GitHub./)
-
-      # does not execute init since .git exists in cli repo
-      expect(stdout).to.match(/TEST: Executing 'git add .'/)
-      expect(stdout).to.match(/All files added./)
-      expect(stdout).to.match(/Executing 'git commit m: true \'Quick deploy\''/)
-      expect(stdout).to.match(/Files commited./)
-      expect(stdout).to.match(/Pushing to GitHub./)
-      expect(stdout).to.match(/TEST: Executing 'git remote '/)
-
-      # get main branch
-      expect(stdout).to.match(/TEST: Executing 'git symbolic-ref --short HEAD'/)
-      expect(stdout).to.match(/TEST: Executing 'git push origin example-branch'/)
-
-      expect(stdout).to.match(/Pushed to example-branch branch on GitHub./)
-
-      # start of logs
-      expect(stdout).to.match(/TEST: Executing 'git remote --verbose'/)
-      expect(stdout).to.match(/closeheat | Testing logs./)
+      #TODO: fix init log (.git exists in cli repo)
+      assertStdout stdout,
+        """
+        - Deploying the app to closeheat.com via GitHub.
+        TEST: Executing 'git add .'
+          All files added.
+        TEST: Executing 'git commit m: true \'Quick deploy\''
+          Files commited.
+          Pushing to GitHub.
+        TEST: Executing 'git remote '
+        TEST: Executing 'git symbolic-ref --short HEAD'
+        TEST: Executing 'git push origin example-branch'
+          Pushed to example-branch branch on GitHub.
+        TEST: Executing 'git remote --verbose'
+          closeheat | Testing logs.
+        App deployed to http://example-slug.closeheatapp.com.
+        Open it quicker with:
+          closeheat open
+        """
       done()

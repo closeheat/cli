@@ -18,22 +18,37 @@ module.exports = Color = (function() {
   RED_YELLOW = '#FF6664';
 
   Color.orange = function(msg) {
+    if (!global.COLORS) {
+      return msg;
+    }
     return Couleurs.fg(msg, ORANGE);
   };
 
   Color.red = function(msg) {
+    if (!global.COLORS) {
+      return msg;
+    }
     return Couleurs.fg(msg, RED);
   };
 
   Color.redYellow = function(msg) {
+    if (!global.COLORS) {
+      return msg;
+    }
     return Couleurs.fg(msg, RED_YELLOW);
   };
 
   Color.violet = function(msg) {
+    if (!global.COLORS) {
+      return msg;
+    }
     return Couleurs.fg(msg, VIOLET);
   };
 
   Color.bare = function(msg) {
+    if (!global.COLORS) {
+      return msg;
+    }
     return chalk.stripColor(msg);
   };
 

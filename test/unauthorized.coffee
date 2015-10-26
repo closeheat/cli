@@ -75,16 +75,6 @@ describe 'graceful when unauthorized', ->
       @api.routes.post '/deploy/slug', (req, res) ->
         res.status(401).send message: 'Unauthorized'
 
-      @api.routes.get '/apps/example-slug/builds/for_cli', (req, res) ->
-        res.send
-          build:
-            status: 'success'
-            log: [
-              {
-                message: 'Testing logs.'
-              }
-            ]
-
       command('deploy').then (stdout) ->
         expect(stdout).to.match(/Deploying the app to closeheat.com via GitHub./)
 
@@ -116,6 +106,7 @@ describe 'graceful when unauthorized', ->
         res.status(401).send message: 'Unauthorized'
 
       command('deploy').then (stdout) ->
+        expect(stdout).to.match(/Deploying the app to closeheat.com via GitHiub./)
         expect(stdout).to.match(/Deploying the app to closeheat.com via GitHub./)
 
         # does not execute init since .git exists in cli repo

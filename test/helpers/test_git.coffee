@@ -9,7 +9,7 @@ class TestGit
       @prettyArgs(args)
     ]
 
-    console.log "TEST: Executing '#{pretty_cmd.join(' ')}'"
+    console.log "\nTEST: Executing '#{pretty_cmd.join(' ')}'"
 
     if @[_.camelCase(cmd)]
       @[_.camelCase(cmd)](args, cb)

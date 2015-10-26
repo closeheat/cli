@@ -32,6 +32,9 @@ module.exports = Log = (function() {
     if (br == null) {
       br = 1;
     }
+    if (!global.COLORS) {
+      return '';
+    }
     block_colours = ['#FFBB5D', '#FF6664', '#F8006C', '#3590F3'];
     blocks = _.map(block_colours, function(hex) {
       return Couleurs.bg(' ', hex);
@@ -103,7 +106,6 @@ module.exports = Log = (function() {
   };
 
   Log.error = function(msg, exit, err, type) {
-    var printStackTrace, trace;
     if (exit == null) {
       exit = true;
     }
@@ -114,23 +116,6 @@ module.exports = Log = (function() {
     this.br();
     this.line((Color.red('ERROR')) + " | " + msg);
     this.br();
-    if (type === 'login') {
-      return;
-    }
-    printStackTrace = require('stacktrace-js');
-    trace = [err.toString()];
-    if (err) {
-      trace = trace.concat(printStackTrace({
-        e: err
-      }));
-    } else {
-      trace = trace.concat(printStackTrace());
-    }
-    _.each(trace, (function(_this) {
-      return function(trace_line) {
-        return _this.innerError(trace_line, false);
-      };
-    })(this));
     return this.sendErrorLog(msg, trace).then(function() {
       if (exit) {
         return process.exit();

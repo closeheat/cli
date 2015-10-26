@@ -8,12 +8,14 @@ Log = require '../log'
 setGlobals = (program) ->
   global.API_URL = program.api || 'http://api.closeheat.com'
   global.CONFIG_DIR = program.configDir || path.join(homePath(), '.closeheat')
+  global.COLORS = program.colors
 
 program
   .version(pkg.version)
   .usage('<keywords>')
   .option('--api [url]', 'API endpoint. Default: http://api.closeheat.com')
   .option('--config-dir [path]', 'Configuration directory. Default: ~/.closeheat')
+  .option('--no-colors', 'Disable colors.')
 
 program
   .command('deploy')

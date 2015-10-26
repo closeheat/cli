@@ -10,7 +10,7 @@ module.exports = TestGit = (function() {
     var args, cb, cmd, i, pretty_cmd;
     cmd = arguments[0], args = 3 <= arguments.length ? slice.call(arguments, 1, i = arguments.length - 1) : (i = 1, []), cb = arguments[i++];
     pretty_cmd = ['git', cmd, this.prettyArgs(args)];
-    console.log("TEST: Executing '" + (pretty_cmd.join(' ')) + "'");
+    console.log("\nTEST: Executing '" + (pretty_cmd.join(' ')) + "'");
     if (this[_.camelCase(cmd)]) {
       return this[_.camelCase(cmd)](args, cb);
     } else {

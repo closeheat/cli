@@ -2,12 +2,18 @@ expect = require('chai').expect
 
 Config = require '../src/config'
 command = require './helpers/command'
+assertStdout = require './helpers/assert_stdout'
 TestApi = require './helpers/test_api'
+TestConfig = require './helpers/test_config'
 
 describe 'clone', ->
   beforeEach ->
     @api = new TestApi()
     @server = @api.start()
+
+    TestConfig.init()
+    TestConfig.rm()
+    Config.update('access_token', 'example-token')
 
   afterEach ->
     @server.close()
@@ -22,14 +28,15 @@ describe 'clone', ->
       ]
 
     command('clone').then (stdout) ->
-      expect(stdout).to.match(/Getting information about your websites./)
-      expect(stdout).to.match(/You have 1 websites./)
-      expect(stdout).to.match(/Name/)
-      expect(stdout).to.match(/Clone command/)
-      expect(stdout).to.match(/Example app/)
-      expect(stdout).to.match(/closeheat clone example-slug/)
-      expect(stdout).to.match(/Edit any of your websites by cloning it with:/)
-      expect(stdout).to.match(/closeheat clone awesome-website/)
+      assertStdout stdout,
+        """
+        - Getting information about your websites.
+          You have 1 websites.
+          Name          Clone command
+          Example app  closeheat clone example-slug
+        Edit any of your websites by cloning it with:
+          closeheat clone awesome-website
+        """
       done()
 
   it 'with app name', (done) ->
@@ -41,10 +48,17 @@ describe 'clone', ->
           slug: 'example-slug'
 
     command('clone example-slug').then (stdout) ->
-      expect(stdout).to.match(/Getting application data for example-slug./)
-      expect(stdout).to.match(/TEST: Executing 'git clone git@github.com:example\/repo.git example-slug'/)
-      expect(stdout).to.match(/Cloning GitHub repository from example\/repo./)
-      expect(stdout).to.match(/Cloned the app code to directory 'example-slug'/)
+      assertStdout stdout,
+        """
+        - Getting application data for example-slug.
+        - Cloning GitHub repository from example\/repo.
+        TEST: Executing 'git clone git@github.com:example\/repo.git example-slug'
+          Cloned the app code to directory 'example-slug'.
+        The quickest way to deploy changes to closeheat.com and GitHub is with:
+          closeheat deploy
+        For more awesome tricks type:
+          closeheat help
+        """
       done()
 
   it 'with invalid app name', (done) ->
@@ -53,5 +67,9 @@ describe 'clone', ->
       res.send 'BAD RESPONSE'
 
     command('clone example-slug').then (stdout) ->
-      expect(stdout).to.match(/does not exist./)
+      assertStdout stdout,
+        """
+        - Getting application data for example-slug.
+        ERROR | App named 'example-slug' does not exist.
+        """
       done()

@@ -18,6 +18,7 @@ Config = require './config'
 module.exports =
 class Log
   @logo: (br = 1) ->
+    return '' unless global.COLORS
     block_colours = [
       '#FFBB5D'
       '#FF6664'
@@ -70,20 +71,6 @@ class Log
     @br()
     @line("#{Color.red('ERROR')} | #{msg}")
     @br()
-
-    return if type == 'login'
-
-    printStackTrace = require('stacktrace-js')
-
-    trace = [err.toString()]
-
-    if err
-      trace = trace.concat printStackTrace(e: err)
-    else
-      trace = trace.concat printStackTrace()
-
-    _.each trace, (trace_line) =>
-      @innerError(trace_line, false)
 
     @sendErrorLog(msg, trace).then ->
       process.exit() if exit
