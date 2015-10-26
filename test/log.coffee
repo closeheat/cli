@@ -28,5 +28,5 @@ describe 'log', ->
 
     command('log').then (stdout) ->
       expect(stdout).to.match(/TEST: Executing 'git remote --verbose'/)
-      expect(stdout).to.match(/closeheat | Testing logs./)
+      expect(stdout).to.match(/closeheat \| Testing logs./)
       done()

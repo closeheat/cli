@@ -55,6 +55,7 @@ class Authorizer
     Log.stop()
     Log.p Color.redYellow('You need to log in for that.')
     Log.p("Type #{Color.violet('closeheat login')} or open #{Color.violet(Urls.loginInstructions())} to do it swiftly.")
+    process.exit()
 
   unauthorized: (resp) ->
     resp.statusCode == 401
