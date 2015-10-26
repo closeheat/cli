@@ -43,8 +43,8 @@ describe 'deploy', ->
           Pushed to example-branch branch on GitHub.
         TEST: Executing 'git remote --verbose'
           closeheat | Testing logs.
-        App deployed to http://example-slug.closeheatapp.com.
-        Open it quicker with:
+        Website published at http://example-slug.closeheatapp.com.
+        Open it with:
           closeheat open
         """
       done()

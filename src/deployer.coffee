@@ -33,8 +33,8 @@ class Deployer
             new DeployLog().fromCurrentCommit().then (deployed_name) ->
               Notifier.notify('app_deploy', deployed_name)
               url = "http://#{deployed_name}.closeheatapp.com"
-              Log.p("App deployed to #{Color.violet(url)}.")
-              Log.p('Open it quicker with:')
+              Log.p("Website published at #{Color.violet(url)}.")
+              Log.p('Open it with:')
               Log.code('closeheat open')
     ).catch((err) ->
       Log.error(err)

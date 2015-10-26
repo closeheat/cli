@@ -2,6 +2,7 @@ expect = require('chai').expect
 
 TestApi = require './helpers/test_api'
 command = require './helpers/command'
+assertStdout = require './helpers/assert_stdout'
 
 describe 'list', ->
   beforeEach ->
@@ -21,14 +22,15 @@ describe 'list', ->
       ]
 
     command('list').then (stdout) ->
-      expect(stdout).to.match(/Getting information about your websites./)
-      expect(stdout).to.match(/You have 1 websites./)
-      expect(stdout).to.match(/Name/)
-      expect(stdout).to.match(/Clone command/)
-      expect(stdout).to.match(/Example app/)
-      expect(stdout).to.match(/closeheat clone example-slug/)
-      expect(stdout).to.match(/Edit any of your websites by cloning it with:/)
-      expect(stdout).to.match(/closeheat clone awesome-website/)
+      assertStdout stdout,
+        """
+        - Getting information about your websites.
+          You have 1 websites.
+          Name          Clone command
+          Example app  closeheat clone example-slug
+        Edit any of your websites by cloning it with:
+          closeheat clone awesome-website
+        """
       done()
 
   it 'should show deploy instructions when no websites', (done) ->
@@ -36,7 +38,11 @@ describe 'list', ->
       res.send apps: []
 
     command('list').then (stdout) ->
-      expect(stdout).to.match(/You have no websites./)
-      expect(stdout).to.match(/Publish this folder as a website by typing:/)
-      expect(stdout).to.match(/closeheat deploy your-website-name/)
+      assertStdout stdout,
+        """
+        - Getting information about your websites.
+          You have no websites.
+        Publish this folder as a website by typing:
+          closeheat deploy your-website-name
+        """
       done()

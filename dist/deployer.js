@@ -49,8 +49,8 @@ module.exports = Deployer = (function() {
                 var url;
                 Notifier.notify('app_deploy', deployed_name);
                 url = "http://" + deployed_name + ".closeheatapp.com";
-                Log.p("App deployed to " + (Color.violet(url)) + ".");
-                Log.p('Open it quicker with:');
+                Log.p("Website published at " + (Color.violet(url)) + ".");
+                Log.p('Open it with:');
                 return Log.code('closeheat open');
               });
             });
