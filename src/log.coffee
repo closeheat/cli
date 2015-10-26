@@ -8,6 +8,10 @@ opbeat = require('opbeat')(
   secretToken: 'f12b94d66534f8cc856401008ddd06b627bc5d53'
   clientLogLevel: 'fatal'
   active: 'true'
+  logger:
+    fatal: ->
+    debug: ->
+    info: ->
 )
 
 Spinner = require './spinner'
@@ -72,19 +76,21 @@ class Log
     @line("#{Color.red('ERROR')} | #{msg}")
     @br()
 
-    @sendErrorLog(msg, trace).then ->
+    @sendErrorLog(msg).then ->
       process.exit() if exit
 
-  @sendErrorLog: (msg, trace) ->
+  @sendErrorLog: (msg) ->
     new Promise (resolve, reject) ->
       opbeat.on 'logged', resolve
       opbeat.on 'error', resolve
 
-      opbeat.captureError new Error(msg),
-        extra:
-          closeheat_version: Config.version()
-          token: new Authorizer().accessToken()
-          trace: trace
+      StackTrace = require('stacktrace-js')
+      StackTrace.get().then (trace) ->
+        opbeat.captureError msg,
+          extra:
+            closeheat_version: Config.version()
+            token: new Authorizer().accessToken()
+            trace: trace
 
   @backendError: ->
     @error('Backend responded with an error.')

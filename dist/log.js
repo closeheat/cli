@@ -13,7 +13,12 @@ opbeat = require('opbeat')({
   appId: 'c19a8164de',
   secretToken: 'f12b94d66534f8cc856401008ddd06b627bc5d53',
   clientLogLevel: 'fatal',
-  active: 'true'
+  active: 'true',
+  logger: {
+    fatal: function() {},
+    debug: function() {},
+    info: function() {}
+  }
 });
 
 Spinner = require('./spinner');
@@ -116,23 +121,27 @@ module.exports = Log = (function() {
     this.br();
     this.line((Color.red('ERROR')) + " | " + msg);
     this.br();
-    return this.sendErrorLog(msg, trace).then(function() {
+    return this.sendErrorLog(msg).then(function() {
       if (exit) {
         return process.exit();
       }
     });
   };
 
-  Log.sendErrorLog = function(msg, trace) {
+  Log.sendErrorLog = function(msg) {
     return new Promise(function(resolve, reject) {
+      var StackTrace;
       opbeat.on('logged', resolve);
       opbeat.on('error', resolve);
-      return opbeat.captureError(new Error(msg), {
-        extra: {
-          closeheat_version: Config.version(),
-          token: new Authorizer().accessToken(),
-          trace: trace
-        }
+      StackTrace = require('stacktrace-js');
+      return StackTrace.get().then(function(trace) {
+        return opbeat.captureError(msg, {
+          extra: {
+            closeheat_version: Config.version(),
+            token: new Authorizer().accessToken(),
+            trace: trace
+          }
+        });
       });
     });
   };

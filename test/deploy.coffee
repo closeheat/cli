@@ -12,6 +12,12 @@ describe 'deploy', ->
   afterEach ->
     @server.close()
 
+  # TODO: test when
+  # - .git doesnt exist
+  # - files already added
+  # - files already commited
+  # - files already pushed
+  # - files already deployed on closeheat
   it 'should push to GitHub and display deploy log', (done) ->
     @timeout(5000)
     @api.routes.post '/deploy/slug', (req, res) ->
