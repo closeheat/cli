@@ -1,6 +1,7 @@
 expect = require('chai').expect
 
 command = require './helpers/command'
+assertStdout = require './helpers/assert_stdout'
 TestApi = require './helpers/test_api'
 
 describe 'log', ->
@@ -27,6 +28,9 @@ describe 'log', ->
           ]
 
     command('log').then (stdout) ->
-      expect(stdout).to.match(/TEST: Executing 'git remote --verbose'/)
-      expect(stdout).to.match(/closeheat \| Testing logs./)
+      assertStdout stdout,
+        """
+        TEST: Executing 'git remote --verbose'
+          closeheat | Testing logs.
+        """
       done()
