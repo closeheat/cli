@@ -66,14 +66,13 @@ class Authorizer
 
   ensureGitHubAuthorized: ->
     new Promise (resolve, reject) ->
-      console.log 'a'
-      Authorized.request Urls.githubAuthorized(), (resp) ->
-        console.log 'b'
-        if resp.authorized
+      Authorized.request url: Urls.githubAuthorized(), method: 'get', (err, resp) ->
+        authorized = JSON.parse(resp.body).authorized
+        if authorized
           resolve()
         else
+          Log = require './log'
           Log.error('GitHub not authorized', false)
-          Log.innerError "We cannot set you up for deployment because you did not authorize GitHub."
+          Log.innerError "We cannot set you up for deployment because you did not authorize GitHub.", false
           Log.br()
-          Log.innerError "Visit #{Urls.authorizeGithub()} and rerun the command."
-          process.exit()
+          Log.innerError "Visit #{Urls.authorizeGitHub()} and rerun the command."

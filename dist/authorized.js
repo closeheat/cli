@@ -18,18 +18,24 @@ module.exports = Authorized = (function() {
     var cb, opts, params, token_params;
     params = 1 <= arguments.length ? slice.call(arguments, 0) : [];
     opts = params[0], cb = params[1];
+    Log = require('./log');
+    if (!_.isPlainObject(opts)) {
+      Log.error("Request opts is not an object: " + opts);
+    }
     token_params = this.tokenParams(opts, cb);
     if (token_params) {
       opts.qs = _.merge(opts.qs || {}, token_params);
       opts.headers = {
         'X-CLI-Version': pkg.version
       };
+      console.log(params);
       return request(opts, this.loginOnUnauthorized(opts, cb));
     }
   };
 
   Authorized.tokenParams = function(opts, cb) {
     var api_token, authorizer;
+    Authorizer = require('./authorizer');
     authorizer = new Authorizer();
     api_token = authorizer.accessToken();
     if (api_token === 'none' || !api_token) {
@@ -48,6 +54,7 @@ module.exports = Authorized = (function() {
   Authorized.loginOnUnauthorized = function(opts, cb) {
     return function(err, resp) {
       var authorizer;
+      Log = require('./log');
       if (err) {
         Log.error(err);
       }

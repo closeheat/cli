@@ -9,15 +9,20 @@ module.exports =
 class Authorized
   @request: (params...) ->
     [opts, cb] = params
+    Log = require './log'
+    Log.error("Request opts is not an object: #{opts}") unless _.isPlainObject(opts)
     token_params = @tokenParams(opts, cb)
 
     if token_params
       opts.qs = _.merge(opts.qs || {}, token_params)
       opts.headers = { 'X-CLI-Version': pkg.version }
+      console.log params
       request opts, @loginOnUnauthorized(opts, cb)
 
   @tokenParams: (opts, cb) ->
+    Authorizer = require './authorizer'
     authorizer = new Authorizer()
+
     api_token = authorizer.accessToken()
 
     if api_token == 'none' || !api_token
@@ -28,6 +33,7 @@ class Authorized
 
   @loginOnUnauthorized: (opts, cb) =>
     (err, resp) =>
+      Log = require './log'
       Log.error(err) if err
       authorizer = new Authorizer()
 

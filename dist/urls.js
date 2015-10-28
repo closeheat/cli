@@ -16,7 +16,7 @@ module.exports = Urls = (function() {
   };
 
   Urls.githubAuthorized = function() {
-    return (this.api()) + "/github_authorized";
+    return (this.api()) + "/github-authorized";
   };
 
   Urls.appsIndex = function() {
@@ -25,6 +25,18 @@ module.exports = Urls = (function() {
 
   Urls.deployedSlug = function() {
     return (this.api()) + "/deploy/slug";
+  };
+
+  Urls.suggestSlug = function() {
+    return (this.api()) + "/suggest/slug";
+  };
+
+  Urls.isFreeSlug = function() {
+    return (this.api()) + "/free/slug";
+  };
+
+  Urls.isFreeRepo = function() {
+    return (this.api()) + "/free/slug";
   };
 
   Urls.setupExistingRepo = function() {
@@ -51,7 +63,7 @@ module.exports = Urls = (function() {
     return (this.api()) + "/users/token";
   };
 
-  Urls.authorizeGithub = function() {
+  Urls.authorizeGitHub = function() {
     return (this.base()) + "/authorize-github";
   };
 

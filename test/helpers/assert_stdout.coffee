@@ -13,3 +13,5 @@ module.exports = (stdout, expected) ->
 
   _.each split(stdout), (line, index) ->
     expect(line).to.eql(expected_lines[index])
+
+  console.log stdout

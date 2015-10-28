@@ -15,13 +15,22 @@ class Urls
     # 'http://10.30.0.1:4000/api'
 
   @githubAuthorized: ->
-    "#{@api()}/github_authorized"
+    "#{@api()}/github-authorized"
 
   @appsIndex: ->
     "#{@api()}/apps"
 
   @deployedSlug: ->
     "#{@api()}/deploy/slug"
+
+  @suggestSlug: ->
+    "#{@api()}/suggest/slug"
+
+  @isFreeSlug: ->
+    "#{@api()}/free/slug"
+
+  @isFreeRepo: ->
+    "#{@api()}/free/slug"
 
   @setupExistingRepo: ->
     "#{@api()}/deploy/existing"
@@ -41,7 +50,7 @@ class Urls
   @getToken: ->
     "#{@api()}/users/token"
 
-  @authorizeGithub: ->
+  @authorizeGitHub: ->
     "#{@base()}/authorize-github"
 
   @notifier: ->

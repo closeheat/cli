@@ -39,8 +39,8 @@ class Publisher
     # will automatically check if cli is authenticated
     authorizer = new Authorizer()
 
-    authorizer.ensureGitHubAuthorized().then ->
-      @checkContinousDeliveryExists().then (result) ->
+    authorizer.ensureGitHubAuthorized().then =>
+      @checkContinousDeliveryExists().then (result) =>
         if (result.exists)
           Log.p "Hey there! This folder is already published to closeheat."
           Log.p "It is available at #{Color.violet("#{result.slug}.closeheatapp.com")}."
@@ -58,8 +58,8 @@ class Publisher
     new Promise (resolve, reject) =>
       return resolve(exists: false) unless fs.existsSync('.git')
 
-      @getGitHubRepoUrl().then (repo_url) ->
-        return resolve(exists: false) unless repo_url
+      @getGitHubRepoUrl().then (repo) ->
+        return resolve(exists: false) unless repo
 
         Authorized.request url: Urls.deployedSlug(), qs: { repo: repo }, method: 'post', json: true, (err, resp) ->
           return reject(err) if err
@@ -73,16 +73,17 @@ class Publisher
       @git.exec 'remote', ['--verbose'], (err, resp) ->
         return reject(err) if err
 
+        # TODO: select only GitHub repo
         resolve(resp.match(GITHUB_REPO_REGEX)[1])
 
   setupContinousDelivery: ->
-    @askSlug().then (slug) ->
-      @getGitHubRepoUrl().then (repo_url) ->
+    @askSlug().then (slug) =>
+      @getGitHubRepoUrl().then (repo_url) =>
         if repo_url
-          @askReuseExistingGitHubRepo(repo_url).then (reuse) ->
+          @askReuseGitHubRepo(repo_url).then (reuse) =>
             if reuse
-              @attachGitHubHooks(repo_url, slug).then ->
-                @successfulSetup(repo, slug)
+              @attachGitHubHooks(repo_url, slug).then =>
+                @successfulSetup(repo_url, slug)
             else
               @createNewGitHubRepo(slug)
         else
@@ -97,7 +98,7 @@ class Publisher
     Log.p 'Success!'
     Log.p "Your website #{Color.violet("#{slug}.closeheatapp.com")} is now published."
     Log.br()
-    Log.p "GitHub repository #{repo.organization}/#{repo.name} is setup for continuous deployment."
+    Log.p "GitHub repository #{repo} is setup for continuous deployment."
     Log.p "Every change to master branch will be immediately published."
     Log.br()
     Log.p "The logs of each deploy are available with #{Color.violet('closeheat log')}."
@@ -138,6 +139,20 @@ class Publisher
               Log.p 'You already have a GitHub repo with this name.'
               @askSlug()
 
+  isFreeSlug: (slug) ->
+    new Promise (resolve, reject) =>
+      Authorized.request url: Urls.isFreeSlug(), qs: { slug: slug }, method: 'post', json: true, (err, resp) ->
+        return reject(err) if err
+
+        resolve(resp.body.free)
+
+  isFreeRepo: (repo) ->
+    new Promise (resolve, reject) =>
+      Authorized.request url: Urls.isFreeRepo(), qs: { repo: repo }, method: 'post', json: true, (err, resp) ->
+        return reject(err) if err
+
+        resolve(resp.body.free)
+
   folder: ->
     _.last(process.cwd().split('/'))
 
@@ -153,7 +168,7 @@ class Publisher
       Authorized.request url: Urls.suggestSlug(), qs: { folder: @folder() }, method: 'post', json: true, (err, resp) ->
         return reject(err) if err
 
-        resolve(resp.slug)
+        resolve(resp.body.slug)
 
   attachGitHubHooks: (repo_url, slug) ->
     new Promise (resolve, reject) ->

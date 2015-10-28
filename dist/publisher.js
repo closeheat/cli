@@ -56,23 +56,25 @@ module.exports = Publisher = (function() {
     var authorizer;
     Log.p('You are about to publish a new website.');
     authorizer = new Authorizer();
-    return authorizer.ensureGitHubAuthorized().then(function() {
-      return this.checkContinousDeliveryExists().then(function(result) {
-        if (result.exists) {
-          Log.p("Hey there! This folder is already published to closeheat.");
-          Log.p("It is available at " + (Color.violet(result.slug + ".closeheatapp.com")) + ".");
-          Log.p("You can open it swiftly by typing " + (Color.violet('closeheat open')) + ".");
-          Log.br();
-          Log.p("It has a continuous deployment setup from GitHub at " + result.repo_url);
-          Log.br();
-          Log.p("Anyways - if you'd like to publish your current code changes, just type:");
-          Log.p(Color.violet('closeheat quick-publish'));
-          return Log.p("Doing that will commit and push all of your changes to the GitHub repository and publish it.");
-        } else {
-          return this.setupContinousDelivery();
-        }
-      });
-    });
+    return authorizer.ensureGitHubAuthorized().then((function(_this) {
+      return function() {
+        return _this.checkContinousDeliveryExists().then(function(result) {
+          if (result.exists) {
+            Log.p("Hey there! This folder is already published to closeheat.");
+            Log.p("It is available at " + (Color.violet(result.slug + ".closeheatapp.com")) + ".");
+            Log.p("You can open it swiftly by typing " + (Color.violet('closeheat open')) + ".");
+            Log.br();
+            Log.p("It has a continuous deployment setup from GitHub at " + result.repo_url);
+            Log.br();
+            Log.p("Anyways - if you'd like to publish your current code changes, just type:");
+            Log.p(Color.violet('closeheat quick-publish'));
+            return Log.p("Doing that will commit and push all of your changes to the GitHub repository and publish it.");
+          } else {
+            return _this.setupContinousDelivery();
+          }
+        });
+      };
+    })(this));
   };
 
   Publisher.prototype.checkContinousDeliveryExists = function() {
@@ -83,8 +85,8 @@ module.exports = Publisher = (function() {
             exists: false
           });
         }
-        return _this.getGitHubRepoUrl().then(function(repo_url) {
-          if (!repo_url) {
+        return _this.getGitHubRepoUrl().then(function(repo) {
+          if (!repo) {
             return resolve({
               exists: false
             });
@@ -132,23 +134,25 @@ module.exports = Publisher = (function() {
   };
 
   Publisher.prototype.setupContinousDelivery = function() {
-    return this.askSlug().then(function(slug) {
-      return this.getGitHubRepoUrl().then(function(repo_url) {
-        if (repo_url) {
-          return this.askReuseExistingGitHubRepo(repo_url).then(function(reuse) {
-            if (reuse) {
-              return this.attachGitHubHooks(repo_url, slug).then(function() {
-                return this.successfulSetup(repo, slug);
-              });
-            } else {
-              return this.createNewGitHubRepo(slug);
-            }
-          });
-        } else {
-          return this.createNewGitHubRepo(slug);
-        }
-      });
-    });
+    return this.askSlug().then((function(_this) {
+      return function(slug) {
+        return _this.getGitHubRepoUrl().then(function(repo_url) {
+          if (repo_url) {
+            return _this.askReuseGitHubRepo(repo_url).then(function(reuse) {
+              if (reuse) {
+                return _this.attachGitHubHooks(repo_url, slug).then(function() {
+                  return _this.successfulSetup(repo_url, slug);
+                });
+              } else {
+                return _this.createNewGitHubRepo(slug);
+              }
+            });
+          } else {
+            return _this.createNewGitHubRepo(slug);
+          }
+        });
+      };
+    })(this));
   };
 
   Publisher.prototype.createNewGitHubRepo = function(slug) {
@@ -163,7 +167,7 @@ module.exports = Publisher = (function() {
     Log.p('Success!');
     Log.p("Your website " + (Color.violet(slug + ".closeheatapp.com")) + " is now published.");
     Log.br();
-    Log.p("GitHub repository " + repo.organization + "/" + repo.name + " is setup for continuous deployment.");
+    Log.p("GitHub repository " + repo + " is setup for continuous deployment.");
     Log.p("Every change to master branch will be immediately published.");
     Log.br();
     Log.p("The logs of each deploy are available with " + (Color.violet('closeheat log')) + ".");
@@ -219,6 +223,46 @@ module.exports = Publisher = (function() {
     })(this));
   };
 
+  Publisher.prototype.isFreeSlug = function(slug) {
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        return Authorized.request({
+          url: Urls.isFreeSlug(),
+          qs: {
+            slug: slug
+          },
+          method: 'post',
+          json: true
+        }, function(err, resp) {
+          if (err) {
+            return reject(err);
+          }
+          return resolve(resp.body.free);
+        });
+      };
+    })(this));
+  };
+
+  Publisher.prototype.isFreeRepo = function(repo) {
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        return Authorized.request({
+          url: Urls.isFreeRepo(),
+          qs: {
+            repo: repo
+          },
+          method: 'post',
+          json: true
+        }, function(err, resp) {
+          if (err) {
+            return reject(err);
+          }
+          return resolve(resp.body.free);
+        });
+      };
+    })(this));
+  };
+
   Publisher.prototype.folder = function() {
     return _.last(process.cwd().split('/'));
   };
@@ -257,7 +301,7 @@ module.exports = Publisher = (function() {
           if (err) {
             return reject(err);
           }
-          return resolve(resp.slug);
+          return resolve(resp.body.slug);
         });
       };
     })(this));
