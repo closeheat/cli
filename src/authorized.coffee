@@ -16,7 +16,6 @@ class Authorized
     if token_params
       opts.qs = _.merge(opts.qs || {}, token_params)
       opts.headers = { 'X-CLI-Version': pkg.version }
-      console.log params
       request opts, @loginOnUnauthorized(opts, cb)
 
   @tokenParams: (opts, cb) ->

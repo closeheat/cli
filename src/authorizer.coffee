@@ -68,6 +68,7 @@ class Authorizer
     new Promise (resolve, reject) ->
       Authorized.request url: Urls.githubAuthorized(), method: 'get', (err, resp) ->
         authorized = JSON.parse(resp.body).authorized
+
         if authorized
           resolve()
         else

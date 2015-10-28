@@ -20,19 +20,6 @@ class Publisher
   constructor: ->
     @git = new Git()
 
-  publish: ->
-    @isGitRepo().then (is_git_repo) ->
-      console.log is_git_repo
-      if (is_git_repo)
-        @isCloseheatApp().then (is_closeheat_app) ->
-          if (is_closeheat_app)
-            # ask for commit msg
-          else
-            # ask for new closeheat app name
-      else
-        @newWebsite()
-        # ask for new closeheat app name
-
   newWebsite: ->
     Log.p('You are about to publish a new website.')
 
@@ -46,7 +33,7 @@ class Publisher
           Log.p "It is available at #{Color.violet("#{result.slug}.closeheatapp.com")}."
           Log.p "You can open it swiftly by typing #{Color.violet('closeheat open')}."
           Log.br()
-          Log.p "It has a continuous deployment setup from GitHub at #{result.repo_url}"
+          Log.p "It has a continuous deployment setup from GitHub at #{result.repo}"
           Log.br()
           Log.p "Anyways - if you'd like to publish your current code changes, just type:"
           Log.p Color.violet('closeheat quick-publish')
@@ -63,9 +50,9 @@ class Publisher
 
         Authorized.request url: Urls.deployedSlug(), qs: { repo: repo }, method: 'post', json: true, (err, resp) ->
           return reject(err) if err
-          return resolve(exists: false) if _.isUndefined(resp.body.slug)
+          return resolve(exists: false) unless resp.body.exists
 
-          resolve(exists: true, slug: resp.body.slug, repo_url: repo_url)
+          resolve(exists: true, slug: resp.body.slug, repo: repo)
 
   GITHUB_REPO_REGEX = /origin*.+:(.+\/.+).git \(push\)/
   getGitHubRepoUrl: ->

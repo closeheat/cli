@@ -10,8 +10,10 @@ split = (stdout) ->
 
 module.exports = (stdout, expected) ->
   expected_lines = expected.split('\n')
+  actual_lines = split(stdout)
 
-  _.each split(stdout), (line, index) ->
+  _.each actual_lines, (line, index) ->
     expect(line).to.eql(expected_lines[index])
 
   console.log stdout
+  expect(actual_lines.length).to.eql(expected_lines.length)

@@ -35,23 +35,6 @@ module.exports = Publisher = (function() {
     this.git = new Git();
   }
 
-  Publisher.prototype.publish = function() {
-    return this.isGitRepo().then(function(is_git_repo) {
-      console.log(is_git_repo);
-      if (is_git_repo) {
-        return this.isCloseheatApp().then(function(is_closeheat_app) {
-          if (is_closeheat_app) {
-
-          } else {
-
-          }
-        });
-      } else {
-        return this.newWebsite();
-      }
-    });
-  };
-
   Publisher.prototype.newWebsite = function() {
     var authorizer;
     Log.p('You are about to publish a new website.');
@@ -64,7 +47,7 @@ module.exports = Publisher = (function() {
             Log.p("It is available at " + (Color.violet(result.slug + ".closeheatapp.com")) + ".");
             Log.p("You can open it swiftly by typing " + (Color.violet('closeheat open')) + ".");
             Log.br();
-            Log.p("It has a continuous deployment setup from GitHub at " + result.repo_url);
+            Log.p("It has a continuous deployment setup from GitHub at " + result.repo);
             Log.br();
             Log.p("Anyways - if you'd like to publish your current code changes, just type:");
             Log.p(Color.violet('closeheat quick-publish'));
@@ -102,7 +85,7 @@ module.exports = Publisher = (function() {
             if (err) {
               return reject(err);
             }
-            if (_.isUndefined(resp.body.slug)) {
+            if (!resp.body.exists) {
               return resolve({
                 exists: false
               });
@@ -110,7 +93,7 @@ module.exports = Publisher = (function() {
             return resolve({
               exists: true,
               slug: resp.body.slug,
-              repo_url: repo_url
+              repo: repo
             });
           });
         });

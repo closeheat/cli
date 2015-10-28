@@ -28,7 +28,6 @@ module.exports = Authorized = (function() {
       opts.headers = {
         'X-CLI-Version': pkg.version
       };
-      console.log(params);
       return request(opts, this.loginOnUnauthorized(opts, cb));
     }
   };
