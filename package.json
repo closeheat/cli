@@ -20,6 +20,7 @@
     "postinstall": "closeheat postinstall"
   },
   "dependencies": {
+    "ansi-regex": "^2.0.0",
     "bluebird": "^2.9.8",
     "chalk": "^1.1.1",
     "charge": "^0.1.0",
