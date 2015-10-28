@@ -17,7 +17,7 @@ class Authorized
       request opts, @loginOnUnauthorized(opts, cb)
 
   @tokenParams: (opts, cb) ->
-    authorizer = new Authorizer
+    authorizer = new Authorizer()
     api_token = authorizer.accessToken()
 
     if api_token == 'none' || !api_token

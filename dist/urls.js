@@ -15,12 +15,20 @@ module.exports = Urls = (function() {
     return global.API_URL;
   };
 
+  Urls.githubAuthorized = function() {
+    return (this.api()) + "/github_authorized";
+  };
+
   Urls.appsIndex = function() {
     return (this.api()) + "/apps";
   };
 
   Urls.deployedSlug = function() {
     return (this.api()) + "/deploy/slug";
+  };
+
+  Urls.setupExistingRepo = function() {
+    return (this.api()) + "/deploy/existing";
   };
 
   Urls.latestBuild = function(slug) {

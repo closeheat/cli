@@ -34,6 +34,10 @@ module.exports = Deployer = (function() {
   }
 
   Deployer.prototype.deploy = function() {
+    return this.getSlug();
+  };
+
+  Deployer.prototype.deploy = function() {
     Log.spin('Deploying the app to closeheat.com via GitHub.');
     return this.initGit().then((function(_this) {
       return function() {

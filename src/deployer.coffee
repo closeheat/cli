@@ -20,6 +20,9 @@ class Deployer
     @git = new Git()
 
   deploy: ->
+    @getSlug()
+
+  deploy: ->
     Log.spin('Deploying the app to closeheat.com via GitHub.')
     @initGit().then(=>
       @addEverything().then =>

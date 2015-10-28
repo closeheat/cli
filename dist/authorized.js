@@ -30,7 +30,7 @@ module.exports = Authorized = (function() {
 
   Authorized.tokenParams = function(opts, cb) {
     var api_token, authorizer;
-    authorizer = new Authorizer;
+    authorizer = new Authorizer();
     api_token = authorizer.accessToken();
     if (api_token === 'none' || !api_token) {
       authorizer.forceLogin((function(_this) {

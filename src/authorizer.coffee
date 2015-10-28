@@ -8,6 +8,7 @@ open = require 'open'
 Urls = require './urls'
 Color = require './color'
 Config = require './config'
+Authorized = require './authorized'
 
 module.exports =
 class Authorizer
@@ -62,3 +63,17 @@ class Authorizer
 
   checkLoggedIn: (resp, cb) ->
     @forceLogin(cb) if @unauthorized(resp)
+
+  ensureGitHubAuthorized: ->
+    new Promise (resolve, reject) ->
+      console.log 'a'
+      Authorized.request Urls.githubAuthorized(), (resp) ->
+        console.log 'b'
+        if resp.authorized
+          resolve()
+        else
+          Log.error('GitHub not authorized', false)
+          Log.innerError "We cannot set you up for deployment because you did not authorize GitHub."
+          Log.br()
+          Log.innerError "Visit #{Urls.authorizeGithub()} and rerun the command."
+          process.exit()

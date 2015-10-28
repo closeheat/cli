@@ -18,6 +18,15 @@ program
   .option('--no-colors', 'Disable colors.')
 
 program
+  .command('publish')
+  .description('Publishes this folder to closeheat.com via GitHub.')
+  .action ->
+    setGlobals(program)
+    Publisher = require '../publisher'
+
+    new Publisher().newWebsite()
+
+program
   .command('deploy')
   .description('Deploys your app to closeheat.com via GitHub.')
   .action ->

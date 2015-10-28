@@ -1,4 +1,4 @@
-var Authorizer, Color, Config, Promise, Urls, fs, inquirer, open, pkg, request;
+var Authorized, Authorizer, Color, Config, Promise, Urls, fs, inquirer, open, pkg, request;
 
 fs = require('fs');
 
@@ -17,6 +17,8 @@ Urls = require('./urls');
 Color = require('./color');
 
 Config = require('./config');
+
+Authorized = require('./authorized');
 
 module.exports = Authorizer = (function() {
   function Authorizer() {}
@@ -88,6 +90,24 @@ module.exports = Authorizer = (function() {
     if (this.unauthorized(resp)) {
       return this.forceLogin(cb);
     }
+  };
+
+  Authorizer.prototype.ensureGitHubAuthorized = function() {
+    return new Promise(function(resolve, reject) {
+      console.log('a');
+      return Authorized.request(Urls.githubAuthorized(), function(resp) {
+        console.log('b');
+        if (resp.authorized) {
+          return resolve();
+        } else {
+          Log.error('GitHub not authorized', false);
+          Log.innerError("We cannot set you up for deployment because you did not authorize GitHub.");
+          Log.br();
+          Log.innerError("Visit " + (Urls.authorizeGithub()) + " and rerun the command.");
+          return process.exit();
+        }
+      });
+    });
   };
 
   return Authorizer;
