@@ -90,9 +90,16 @@ class Publisher
           @createNewGitHubRepo(slug)
 
   createNewGitHubRepo: (slug) ->
-    @askNewRepoName().then (repo) ->
-      @publishWithGitHubRepo(repo, slug).then ->
+    @askNewRepoName().then (repo) =>
+      @publishWithGitHubRepo(repo, slug).then =>
         @successfulSetup(repo, slug)
+
+  publishWithGitHubRepo: (repo, slug) ->
+    new Promise (resolve, reject) =>
+      Authorized.request url: Urls.publishNewWebsite(), qs: { repo: slug, slug: slug }, method: 'post', json: true, (err, resp) ->
+        return reject(err) if err
+
+        resolve(resp.body.success)
 
   successfulSetup: (repo, slug) ->
     Log.p 'Success!'
@@ -158,10 +165,10 @@ class Publisher
 
   suggestDefaultRepo: ->
     new Promise (resolve, reject) =>
-      Authorized.request url: Urls.suggestGitHubRepo(), qs: { folder: @folder() }, method: 'post', json: true, (err, resp) ->
+      Authorized.request url: Urls.suggestRepo(), qs: { folder: @folder() }, method: 'post', json: true, (err, resp) ->
         return reject(err) if err
 
-        resolve(resp.name)
+        resolve(resp.body.repo)
 
   suggestDefaultSlug: ->
     new Promise (resolve, reject) =>

@@ -156,11 +156,34 @@ module.exports = Publisher = (function() {
   };
 
   Publisher.prototype.createNewGitHubRepo = function(slug) {
-    return this.askNewRepoName().then(function(repo) {
-      return this.publishWithGitHubRepo(repo, slug).then(function() {
-        return this.successfulSetup(repo, slug);
-      });
-    });
+    return this.askNewRepoName().then((function(_this) {
+      return function(repo) {
+        return _this.publishWithGitHubRepo(repo, slug).then(function() {
+          return _this.successfulSetup(repo, slug);
+        });
+      };
+    })(this));
+  };
+
+  Publisher.prototype.publishWithGitHubRepo = function(repo, slug) {
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        return Authorized.request({
+          url: Urls.publishNewWebsite(),
+          qs: {
+            repo: slug,
+            slug: slug
+          },
+          method: 'post',
+          json: true
+        }, function(err, resp) {
+          if (err) {
+            return reject(err);
+          }
+          return resolve(resp.body.success);
+        });
+      };
+    })(this));
   };
 
   Publisher.prototype.successfulSetup = function(repo, slug) {
@@ -271,7 +294,7 @@ module.exports = Publisher = (function() {
     return new Promise((function(_this) {
       return function(resolve, reject) {
         return Authorized.request({
-          url: Urls.suggestGitHubRepo(),
+          url: Urls.suggestRepo(),
           qs: {
             folder: _this.folder()
           },
@@ -281,7 +304,7 @@ module.exports = Publisher = (function() {
           if (err) {
             return reject(err);
           }
-          return resolve(resp.name);
+          return resolve(resp.body.repo);
         });
       };
     })(this));

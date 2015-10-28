@@ -31,12 +31,20 @@ module.exports = Urls = (function() {
     return (this.api()) + "/suggest/slug";
   };
 
+  Urls.suggestRepo = function() {
+    return (this.api()) + "/suggest/repo";
+  };
+
   Urls.isFreeSlug = function() {
     return (this.api()) + "/free/slug";
   };
 
   Urls.isFreeRepo = function() {
     return (this.api()) + "/free/slug";
+  };
+
+  Urls.publishNewWebsite = function() {
+    return (this.api()) + "/deploy/new";
   };
 
   Urls.setupExistingRepo = function() {
