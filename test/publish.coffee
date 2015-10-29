@@ -72,12 +72,24 @@ describe 'publish', ->
 
     @api.routes.post '/suggest/slug', (req, res) ->
       res.send
-        slug: 'hello'
+        slug: 'suggested-slug'
+
+    @api.routes.post '/free/slug', (req, res) ->
+      res.send
+        free: true
+
+    @api.routes.post '/deploy/existing', (req, res) ->
+      res.send
+        success: true
 
     prompts = [
       {
-        question: 'What subdomain'
+        question: 'What subdomain would you like to choose'
         answer: 'example-subdomain'
+      }
+      {
+        question: 'Would you like to use your existing'
+        answer: 'y'
       }
     ]
 
@@ -86,13 +98,18 @@ describe 'publish', ->
         """
         You are about to publish a new website.
         TEST: Executing 'git remote --verbose'
-        ? What subdomain would you like to choose at SUBDOMAIN.closeheatapp.com? (you will be able to add top level domain later) (hello)
+        ? What subdomain would you like to choose at SUBDOMAIN.closeheatapp.com? (you will be able to add top level domain later) (suggested-slug)
         ? What subdomain would you like to choose at SUBDOMAIN.closeheatapp.com? (you will be able to add top level domain later) example-subdomain
-        It is available at existing-slug.closeheatapp.com.
-        You can open it swiftly by typing closeheat open.
-        It has a continuous deployment setup from GitHub at example-org/example-repo
-        Anyways - if you'd like to publish your current code changes, just type:
-        closeheat quick-publish
-        Doing that will commit and push all of your changes to the GitHub repository and publish it.
+        TEST: Executing 'git remote --verbose'
+        ? Would you like to use your existing example-org/example-repo GitHub repository repo for continuos delivery? (Y/n)
+        ? Would you like to use your existing example-org/example-repo GitHub repository repo for continuos delivery? Yes
+        Success!
+        Your website example-subdomain.closeheatapp.com is now published.
+        GitHub repository example-org/example-repo is setup for continuous deployment.
+        Every change to master branch will be immediately published.
+        The logs of each deploy are available with closeheat log.
+        It\'s useful to have them right after your git push with git push origin master && closeheat log
+        To set up a custom domain or change a public directory type:
+          closeheat settings
         """
       done()

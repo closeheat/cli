@@ -110,7 +110,6 @@ class Publisher
           name: 'slug'
           default: slug
         }, (answer) =>
-
           @isFreeSlug(answer.slug).then (is_free) =>
             if is_free
               resolve(answer.slug)

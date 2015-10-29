@@ -23,5 +23,7 @@ module.exports = (stdout, expected) ->
   _.each actual_lines, (line, index) ->
     expect(line).to.eql(expected_lines[index])
 
-  console.log stdout
+  return if actual_lines.length == expected_lines.length
+
+  console.log(actual_lines)
   expect(actual_lines.length).to.eql(expected_lines.length)

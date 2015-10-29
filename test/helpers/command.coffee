@@ -13,7 +13,7 @@ module.exports = (command, prompts) ->
     return cli unless prompts
 
     _.reduce prompts, (obj, prompt) ->
-      obj.on(///#{prompt.question}///).respond(prompt.answer)
+      obj.on(///#{prompt.question}///).respond("#{prompt.answer}\n")
     , cli
 
   new Promise (resolve, reject) ->
