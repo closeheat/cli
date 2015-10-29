@@ -10,7 +10,7 @@ gracefulUnauthorized =
   Type closeheat login or open http://app.closeheat.com/api/login to do it swiftly.
   """
 
-describe 'graceful when unauthorized', ->
+describe 'graceful when user cli is not authorized', ->
   before ->
     @api = new TestApi()
     @server = @api.start()
