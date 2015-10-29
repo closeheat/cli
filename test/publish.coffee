@@ -3,6 +3,8 @@ expect = require('chai').expect
 command = require './helpers/command'
 assertStdout = require './helpers/assert_stdout'
 TestApi = require './helpers/test_api'
+TestConfig = require './helpers/test_config'
+Config = require '../src/config'
 
 success = (repo) ->
   """
@@ -20,6 +22,10 @@ describe 'publish', ->
   beforeEach ->
     @api = new TestApi()
     @server = @api.start()
+
+    TestConfig.init()
+    TestConfig.rm()
+    Config.update('access_token', 'example-token')
 
     @api.routes.get '/github-authorized', (req, res) ->
       res.send
@@ -133,6 +139,7 @@ describe 'publish', ->
           }
         ]
 
+        # also add origin to remotes
         command('publish', prompts).then (stdout) ->
           assertStdout stdout,
             """

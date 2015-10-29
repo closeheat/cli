@@ -3,6 +3,8 @@ expect = require('chai').expect
 command = require './helpers/command'
 TestApi = require './helpers/test_api'
 assertStdout = require './helpers/assert_stdout'
+TestConfig = require './helpers/test_config'
+Config = require '../src/config'
 
 gracefulUnauthorized =
   """
@@ -14,6 +16,10 @@ describe 'graceful when GitHub not authorized', ->
   before ->
     @api = new TestApi()
     @server = @api.start()
+
+    TestConfig.init()
+    TestConfig.rm()
+    Config.update('access_token', 'example-token')
 
     @api.routes.get '/github-authorized', (req, res) ->
       res.send

@@ -3,11 +3,17 @@ expect = require('chai').expect
 TestApi = require './helpers/test_api'
 command = require './helpers/command'
 assertStdout = require './helpers/assert_stdout'
+TestConfig = require './helpers/test_config'
+Config = require '../src/config'
 
 describe 'list', ->
   beforeEach ->
     @api = new TestApi()
     @server = @api.start()
+
+    TestConfig.init()
+    TestConfig.rm()
+    Config.update('access_token', 'example-token')
 
   afterEach ->
     @server.close()

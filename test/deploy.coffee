@@ -3,15 +3,22 @@ expect = require('chai').expect
 command = require './helpers/command'
 assertStdout = require './helpers/assert_stdout'
 TestApi = require './helpers/test_api'
+TestConfig = require './helpers/test_config'
+Config = require '../src/config'
 
 describe 'deploy', ->
   beforeEach ->
     @api = new TestApi()
     @server = @api.start()
 
+    TestConfig.init()
+    TestConfig.rm()
+    Config.update('access_token', 'example-token')
+
   afterEach ->
     @server.close()
 
+  # THIS IS QUICK-PUBLISH
   # TODO: test when
   # - .git doesnt exist
   # - files already added
