@@ -4,6 +4,18 @@ command = require './helpers/command'
 assertStdout = require './helpers/assert_stdout'
 TestApi = require './helpers/test_api'
 
+success = (repo) ->
+  """
+  Success!
+  Your website example-subdomain.closeheatapp.com is now published.
+  GitHub repository #{repo} is setup for continuous deployment.
+  Every change to master branch will be immediately published.
+  The logs of each deploy are available with closeheat log.
+  It\'s useful to have them right after your git push with git push origin master && closeheat log
+  To set up a custom domain or change a public directory type:
+    closeheat settings
+  """
+
 describe 'publish', ->
   beforeEach ->
     @api = new TestApi()
@@ -95,14 +107,7 @@ describe 'publish', ->
             TEST: Executing 'git remote --verbose'
             ? Would you like to use your existing example-org/example-repo GitHub repository repo for continuos delivery? (Y/n)
             ? Would you like to use your existing example-org/example-repo GitHub repository repo for continuos delivery? Yes
-            Success!
-            Your website example-subdomain.closeheatapp.com is now published.
-            GitHub repository example-org/example-repo is setup for continuous deployment.
-            Every change to master branch will be immediately published.
-            The logs of each deploy are available with closeheat log.
-            It\'s useful to have them right after your git push with git push origin master && closeheat log
-            To set up a custom domain or change a public directory type:
-              closeheat settings
+            #{success('example-org/example-repo')}
             """
           done()
 
@@ -140,13 +145,6 @@ describe 'publish', ->
             ? Would you like to use your existing example-org/example-repo GitHub repository repo for continuos delivery? No
             ? What is the GitHub repository would you like to create for this website? Ex. Nedomas/NAME?
             ? What is the GitHub repository would you like to create for this website? Ex. Nedomas/NAME? example-new-repo
-            Success!
-            Your website example-subdomain.closeheatapp.com is now published.
-            GitHub repository example-new-repo is setup for continuous deployment.
-            Every change to master branch will be immediately published.
-            The logs of each deploy are available with closeheat log.
-            It\'s useful to have them right after your git push with git push origin master && closeheat log
-            To set up a custom domain or change a public directory type:
-              closeheat settings
+            #{success('example-new-repo')}
             """
           done()
