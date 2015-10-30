@@ -20,11 +20,11 @@ setGlobals = function(program) {
 
 program.version(pkg.version).usage('<keywords>').option('--api [url]', 'API endpoint. Default: http://api.closeheat.com').option('--config-dir [path]', 'Configuration directory. Default: ~/.closeheat').option('--no-colors', 'Disable colors.');
 
-program.command('publish').description('Publishes this folder to closeheat.com via GitHub.').action(function() {
-  var Publisher;
+program.command('publish').description('Sets up continuous website delivery from GitHub to closeheat.').action(function() {
+  var ContinuousDeployment;
   setGlobals(program);
-  Publisher = require('../publisher');
-  return new Publisher().newWebsite();
+  ContinuousDeployment = require('../continuous_deployment');
+  return new ContinuousDeployment().start();
 });
 
 program.command('deploy').description('Deploys your app to closeheat.com via GitHub.').action(function() {

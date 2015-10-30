@@ -19,12 +19,14 @@ program
 
 program
   .command('publish')
-  .description('Publishes this folder to closeheat.com via GitHub.')
+  .description('Sets up continuous website delivery from GitHub to closeheat.')
   .action ->
     setGlobals(program)
-    Publisher = require '../publisher'
+    ContinuousDeployment = require '../continuous_deployment'
+    new ContinuousDeployment().start()
+    # Publisher = require '../publisher'
 
-    new Publisher().newWebsite()
+    # new Publisher().setup()
 
 program
   .command('deploy')
