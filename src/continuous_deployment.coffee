@@ -61,16 +61,19 @@ class ContinuousDeployment
       { key: 'website', fn: Website.create }
     ]
 
-    runner = Promise.reduce seq, (opts, obj) ->
-      console.log arguments
+    only = _.reject seq, (obj) -> _.include(_.keys(opts), obj.key)
+    return opts if _.isEmpty(only)
+    console.log _.keys(opts)
 
+    runner = Promise.reduce only, (opts, obj) ->
       obj.fn(opts).then (result) ->
+        console.log 'last'
+        console.log result
         result
     , {}
 
-    runner.then ->
-      console.log 'done'
-      console.log arguments
+    runner.then (opts) =>
+      @run(opts)
       # st(missing)]().then (new_opts) =>
       # @run(new_opts)
 

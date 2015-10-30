@@ -1,4 +1,4 @@
-var Authorized, Color, GitHubManager, Log, Promise, SlugManager, Urls, Website, inquirer, path;
+var Authorized, Color, GitHubManager, Log, Promise, SlugManager, Urls, Website, _, inquirer, path;
 
 inquirer = require('inquirer');
 
@@ -20,13 +20,21 @@ Color = require('./color');
 
 GitHubManager = require('./github_manager');
 
+_ = require('lodash');
+
 module.exports = Website = (function() {
   function Website() {}
 
   Website.create = function(opts) {
     console.log('fucked');
     console.log(opts);
-    return Website.execRequest(opts.slug, opts.repo);
+    return Website.execRequest(opts.slug, opts.repo)["catch"](function(resp) {
+      if (resp.error === 'app-exists') {
+        return _.assign(opts, {
+          slug: null
+        });
+      }
+    });
   };
 
   Website.websiteExists = function() {
@@ -64,6 +72,11 @@ module.exports = Website = (function() {
   Website.execRequest = function(slug, repo) {
     return new Promise((function(_this) {
       return function(resolve, reject) {
+        reject({
+          slug: slug,
+          repo: repo,
+          error: 'app-exists'
+        });
         return Authorized.request({
           url: Urls.publishNewWebsite(),
           qs: {
@@ -76,15 +89,11 @@ module.exports = Website = (function() {
           if (err) {
             return reject(err);
           }
-          if (resp.body.success) {
-            return resolve(opts);
-          } else {
-            return reject({
-              slug: slug,
-              repo: repo,
-              error: 'app-exists'
-            });
-          }
+          return reject({
+            slug: slug,
+            repo: repo,
+            error: 'app-exists'
+          });
         });
       };
     })(this));

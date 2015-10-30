@@ -63,7 +63,7 @@ module.exports = ContinuousDeployment = (function() {
   };
 
   ContinuousDeployment.prototype.run = function(opts) {
-    var runner, seq;
+    var only, runner, seq;
     if (opts == null) {
       opts = {};
     }
@@ -79,16 +79,25 @@ module.exports = ContinuousDeployment = (function() {
         fn: Website.create
       }
     ];
-    runner = Promise.reduce(seq, function(opts, obj) {
-      console.log(arguments);
+    only = _.reject(seq, function(obj) {
+      return _.include(_.keys(opts), obj.key);
+    });
+    if (_.isEmpty(only)) {
+      return opts;
+    }
+    console.log(_.keys(opts));
+    runner = Promise.reduce(only, function(opts, obj) {
       return obj.fn(opts).then(function(result) {
+        console.log('last');
+        console.log(result);
         return result;
       });
     }, {});
-    return runner.then(function() {
-      console.log('done');
-      return console.log(arguments);
-    });
+    return runner.then((function(_this) {
+      return function(opts) {
+        return _this.run(opts);
+      };
+    })(this));
   };
 
   ContinuousDeployment.prototype.exec = function(opts) {

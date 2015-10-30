@@ -9,13 +9,16 @@ Log = require './log'
 Authorized = require './authorized'
 Color = require './color'
 GitHubManager = require './github_manager'
+_ = require 'lodash'
 
 module.exports =
 class Website
   @create: (opts) =>
     console.log('fucked')
     console.log(opts)
-    @execRequest(opts.slug, opts.repo)
+    @execRequest(opts.slug, opts.repo).catch (resp) ->
+      return _.assign(opts, slug: null) if resp.error == 'app-exists'
+
 
   @websiteExists: ->
     new Promise (resolve, reject) =>
@@ -32,10 +35,11 @@ class Website
 
   @execRequest: (slug, repo) ->
     new Promise (resolve, reject) =>
+      reject(slug: slug, repo: repo, error: 'app-exists')
       Authorized.request url: Urls.publishNewWebsite(), qs: { repo: repo, slug: slug }, method: 'post', json: true, (err, resp) ->
         return reject(err) if err
 
-        if resp.body.success
-          resolve(opts)
-        else
-          reject(slug: slug, repo: repo, error: 'app-exists')
+        # if resp.body.success
+        #   resolve(opts)
+        # else
+        reject(slug: slug, repo: repo, error: 'app-exists')
