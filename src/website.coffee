@@ -9,6 +9,7 @@ Log = require './log'
 Authorized = require './authorized'
 Color = require './color'
 GitHubManager = require './github_manager'
+GitRepository = require './git_repository'
 _ = require 'lodash'
 
 module.exports =
@@ -19,15 +20,17 @@ class Website
     @execRequest(opts.slug, opts.repo).catch (resp) ->
       return _.assign(opts, slug: null) if resp.error == 'app-exists'
 
-
-  @websiteExists: ->
+  @get: ->
     new Promise (resolve, reject) =>
-      new GitHubManager().existing().then (existing) ->
-        # if existing
-        #   @backendExists.
+      GitRepository.exists().then (repo) =>
+        return resolve(exists: false) unless repo.exists
 
-  @backendExists: (repo) ->
+        @backend(repo.name).then(resolve)
+
+  @backend: (repo) ->
     new Promise (resolve, reject) =>
+      # mock
+      return resolve(exists: false, repo: repo, slug: 'hello')
       Authorized.request url: Urls.websiteExists(), qs: { repo: repo }, method: 'post', json: true, (err, resp) ->
         return reject(err) if err
 

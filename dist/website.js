@@ -1,4 +1,4 @@
-var Authorized, Color, GitHubManager, Log, Promise, SlugManager, Urls, Website, _, inquirer, path;
+var Authorized, Color, GitHubManager, GitRepository, Log, Promise, SlugManager, Urls, Website, _, inquirer, path;
 
 inquirer = require('inquirer');
 
@@ -20,6 +20,8 @@ Color = require('./color');
 
 GitHubManager = require('./github_manager');
 
+GitRepository = require('./git_repository');
+
 _ = require('lodash');
 
 module.exports = Website = (function() {
@@ -37,17 +39,29 @@ module.exports = Website = (function() {
     });
   };
 
-  Website.websiteExists = function() {
+  Website.get = function() {
     return new Promise((function(_this) {
       return function(resolve, reject) {
-        return new GitHubManager().existing().then(function(existing) {});
+        return GitRepository.exists().then(function(repo) {
+          if (!repo.exists) {
+            return resolve({
+              exists: false
+            });
+          }
+          return _this.backend(repo.name).then(resolve);
+        });
       };
     })(this));
   };
 
-  Website.backendExists = function(repo) {
+  Website.backend = function(repo) {
     return new Promise((function(_this) {
       return function(resolve, reject) {
+        return resolve({
+          exists: false,
+          repo: repo,
+          slug: 'hello'
+        });
         return Authorized.request({
           url: Urls.websiteExists(),
           qs: {

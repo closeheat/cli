@@ -42,32 +42,16 @@ module.exports = ContinuousDeployment = (function() {
   }
 
   ContinuousDeployment.prototype.start = function() {
-    Log.p('You are about to publish a new website.');
-    return this.run();
+    return this.ensureNoWebsite().then((function(_this) {
+      return function() {
+        Log.p('You are about to publish a new website.');
+        return _this.run();
+      };
+    })(this));
   };
 
-  ContinuousDeployment.prototype.promisify = function(result) {
-    return new Promise(function(resolve, reject) {
-      return resolve(result);
-    });
-  };
-
-  ContinuousDeployment.prototype.useOrGet = function(opts, thing, get) {
-    if (opts[thing]) {
-      return this.promisify(opts[thing]);
-    } else {
-      console.log('gettin');
-      console.log(get);
-      return get;
-    }
-  };
-
-  ContinuousDeployment.prototype.run = function(opts) {
-    var only, runner, seq;
-    if (opts == null) {
-      opts = {};
-    }
-    seq = [
+  ContinuousDeployment.prototype.steps = function() {
+    return [
       {
         key: 'slug',
         fn: SlugManager.choose
@@ -79,15 +63,25 @@ module.exports = ContinuousDeployment = (function() {
         fn: Website.create
       }
     ];
-    only = _.reject(seq, function(obj) {
+  };
+
+  ContinuousDeployment.prototype.unfullfilledSteps = function(opts) {
+    return _.reject(this.steps(), function(obj) {
       return _.include(_.keys(opts), obj.key);
     });
-    if (_.isEmpty(only)) {
+  };
+
+  ContinuousDeployment.prototype.run = function(opts) {
+    var runner;
+    if (opts == null) {
+      opts = {};
+    }
+    if (_.isEmpty(this.unfullfilledSteps(opts))) {
       return opts;
     }
-    console.log(_.keys(opts));
-    runner = Promise.reduce(only, function(opts, obj) {
-      return obj.fn(opts).then(function(result) {
+    runner = Promise.reduce(this.unfullfilledSteps(opts), function(new_opts, obj) {
+      console.log(arguments);
+      return obj.fn(new_opts).then(function(result) {
         console.log('last');
         console.log(result);
         return result;
@@ -100,76 +94,23 @@ module.exports = ContinuousDeployment = (function() {
     })(this));
   };
 
-  ContinuousDeployment.prototype.exec = function(opts) {
-    return this.run(opts).then(function(data) {
-      console.log(data);
-      console.log('ehe');
-      return console.log(arguments);
-    }).fail((function(_this) {
-      return function(err) {
-        console.log('FAIL');
-        return _this.exec({
-          validated_slug: 'hello',
-          repo: 'hello'
-        }).then(function() {
-          return console.log('OTHER');
-        });
-      };
-    })(this));
-  };
-
   ContinuousDeployment.prototype.ensureNoWebsite = function(data) {
-    return GitRepository.exists().then((function(_this) {
-      return function(repo) {
-        if (!repo.exists) {
+    return Website.get().then((function(_this) {
+      return function(website) {
+        if (!website.exists) {
           return;
         }
-        return Website.exists(repo.name).then(function(website) {
-          if (!website.exists) {
-            return;
-          }
-          return _this.exec({
-            ensure_no_website: website_exists
-          });
-        });
+        return _this.exists(website);
       };
     })(this));
   };
 
-  ContinuousDeployment.prototype.configure = function() {
-    return this.ensureWebsiteDoesntExist().then(function() {
-      return SlugManager.choose().then(function(slug) {
-        return GitHubManager.choose(slug).then(function(repo) {
-          return AppManager.create(slug, repo);
-        });
-      });
-    });
-  };
-
-  ContinuousDeployment.prototype.ensureWebsiteDoesntExist = function() {
-    return GitRepository.exists().then((function(_this) {
-      return function(repo) {
-        if (!repo.exists) {
-          return;
-        }
-        return Website.exists(repo.name).then(function(website) {
-          if (!website.exists) {
-            return;
-          }
-          if (website.exists) {
-            return _this.exists(website.slug, website.repo);
-          }
-        });
-      };
-    })(this));
-  };
-
-  ContinuousDeployment.prototype.exists = function(result) {
+  ContinuousDeployment.prototype.exists = function(website) {
     Log.p("Hey there! This folder is already published to closeheat.");
-    Log.p("It is available at " + (Color.violet(result.slug + ".closeheatapp.com")) + ".");
+    Log.p("It is available at " + (Color.violet(website.slug + ".closeheatapp.com")) + ".");
     Log.p("You can open it swiftly by typing " + (Color.violet('closeheat open')) + ".");
     Log.br();
-    Log.p("It has a continuous deployment setup from GitHub at " + result.repo);
+    Log.p("It has a continuous deployment setup from GitHub at " + website.repo);
     Log.br();
     Log.p("Anyways - if you'd like to publish your current code changes, just type:");
     Log.p(Color.violet('closeheat quick-publish'));

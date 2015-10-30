@@ -27,46 +27,27 @@ class ContinuousDeployment
     @git = new Git()
 
   start: ->
-    Log.p('You are about to publish a new website.')
-    @run()
+    @ensureNoWebsite().then =>
+      Log.p('You are about to publish a new website.')
+      @run()
 
-  promisify: (result) ->
-    new Promise (resolve, reject) ->
-      resolve(result)
-
-  useOrGet: (opts, thing, get) ->
-    if opts[thing]
-      @promisify(opts[thing])
-    else
-      console.log 'gettin'
-      console.log get
-      get
-
-  run: (opts = {}) ->
-    # console.log opts
-    # deps = {
-    #   slug: @useOrGet(opts, 'slug', -> SlugManager.choose(opts))
-    #   repo: @useOrGet(opts, 'repo', -> GitHubManager.choose(opts) )
-    #   website: @useOrGet(opts, 'website', -> Website.create(opts) )
-    # }
-    #
-    # sequence = ['slug', 'repo', 'website']
-    # filled = _.pick deps, _.isString
-    # missing = _.without(sequence, filled...)
-    # console.log missing
-    #
-    seq = [
+  steps: ->
+    [
       { key: 'slug', fn: SlugManager.choose }
       { key: 'repo', fn: GitHubManager.choose }
       { key: 'website', fn: Website.create }
     ]
 
-    only = _.reject seq, (obj) -> _.include(_.keys(opts), obj.key)
-    return opts if _.isEmpty(only)
-    console.log _.keys(opts)
+  unfullfilledSteps: (opts) ->
+    _.reject @steps(), (obj) ->
+      _.include(_.keys(opts), obj.key)
 
-    runner = Promise.reduce only, (opts, obj) ->
-      obj.fn(opts).then (result) ->
+  run: (opts = {}) ->
+    return opts if _.isEmpty(@unfullfilledSteps(opts))
+
+    runner = Promise.reduce @unfullfilledSteps(opts), (new_opts, obj) ->
+      console.log arguments
+      obj.fn(new_opts).then (result) ->
         console.log 'last'
         console.log result
         result
@@ -74,72 +55,19 @@ class ContinuousDeployment
 
     runner.then (opts) =>
       @run(opts)
-      # st(missing)]().then (new_opts) =>
-      # @run(new_opts)
-
-
-    # graph = new shepherd.Graph()
-    # graph.add 'slug', SlugManager.choose, ['validated_slug']
-    # graph.add 'repo', GitHubManager.choose, ['validated_slug']
-    # graph.add 'website', Website.create, ['slug', 'repo', 'validated_slug']
-    #
-    # builder = graph.newBuilder().builds('website')
-    # builder.run(opts)
-
-  exec: (opts) ->
-    @run(opts)
-      .then (data) ->
-        console.log(data)
-        console.log 'ehe'
-        console.log(arguments)
-      .fail (err) =>
-        console.log 'FAIL'
-        @exec(validated_slug: 'hello', repo: 'hello').then ->
-          console.log 'OTHER'
-        # another = graph.newBuilder().builds('website').using({'slug': { _literal: 'This is my string' }})
-        # console.log 'OTHER'
-        # console.log graph.deleter('slug')
-        # graph.deleter('slug').then ->
-        #   console.log 'emeil'
-        #
-        #   builder.run().then (ea) ->
-        #     console.log arguments
-        #   console.log 'AFEERFAIL'
-        # builder.add
-
-
 
   ensureNoWebsite: (data) ->
-    GitRepository.exists().then (repo) =>
-      return unless repo.exists
+    Website.get().then (website) =>
+      return unless website.exists
 
-      Website.exists(repo.name).then (website) =>
-        return unless website.exists
+      @exists(website)
 
-        @exec(ensure_no_website: website_exists)
-
-
-  configure: ->
-    @ensureWebsiteDoesntExist().then ->
-      SlugManager.choose().then (slug) ->
-        GitHubManager.choose(slug).then (repo) ->
-          AppManager.create(slug, repo)
-
-  ensureWebsiteDoesntExist: ->
-    GitRepository.exists().then (repo) =>
-      return unless repo.exists
-
-      Website.exists(repo.name).then (website) =>
-        return unless website.exists
-
-        @exists(website.slug, website.repo) if website.exists
-
-  exists: (result) ->
+  exists: (website) ->
     Log.p "Hey there! This folder is already published to closeheat."
-    Log.p "It is available at #{Color.violet("#{result.slug}.closeheatapp.com")}."
+    Log.p "It is available at #{Color.violet("#{website.slug}.closeheatapp.com")}."
     Log.p "You can open it swiftly by typing #{Color.violet('closeheat open')}."
     Log.br()
-    Log.p "It has a continuous deployment setup from GitHub at #{result.repo}"
+    Log.p "It has a continuous deployment setup from GitHub at #{website.repo}"
     Log.br()
     Log.p "Anyways - if you'd like to publish your current code changes, just type:"
     Log.p Color.violet('closeheat quick-publish')
