@@ -22,24 +22,7 @@ module.exports = AppManager = (function() {
   function AppManager() {}
 
   AppManager.create = function(slug, repo) {
-    return AppManager.execRequest(slug, repo).then(AppManager.showSuccess);
-  };
-
-  AppManager.showSuccess = function(opts) {
-    var repo, slug;
-    slug = opts.slug;
-    repo = opts.repo;
-    Log.p('Success!');
-    Log.p("Your website " + (Color.violet(slug + ".closeheatapp.com")) + " is now published.");
-    Log.br();
-    Log.p("GitHub repository " + repo + " is setup for continuous deployment.");
-    Log.p("Every change to master branch will be immediately published.");
-    Log.br();
-    Log.p("The logs of each deploy are available with " + (Color.violet('closeheat log')) + ".");
-    Log.p("It's useful to have them right after your " + (Color.violet('git push')) + " with " + (Color.violet('git push origin master && closeheat log')));
-    Log.br();
-    Log.p("To set up a custom domain or change a public directory type:");
-    return Log.code('closeheat settings');
+    return AppManager.execRequest(slug, repo);
   };
 
   AppManager.execRequest = function(slug, repo) {
@@ -57,19 +40,13 @@ module.exports = AppManager = (function() {
           if (err) {
             return reject(err);
           }
-          return reject({
-            slug: '123',
-            repo: '3312'
-          });
-          return resolve({
-            slug: slug,
-            repo: repo
-          });
           if (resp.body.success) {
             return resolve(opts);
           } else {
             return reject({
-              type: resp.body.error_type
+              slug: slug,
+              repo: repo,
+              error: 'app-exists'
             });
           }
         });
