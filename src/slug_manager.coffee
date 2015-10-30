@@ -1,6 +1,7 @@
 inquirer = require 'inquirer'
 path = require 'path'
 Promise = require 'bluebird'
+_ = require 'lodash'
 inquirer = require 'inquirer'
 
 Urls = require './urls'
@@ -9,11 +10,17 @@ Log = require './log'
 
 module.exports =
 class SlugManager
-  @choose: ->
+  @choose: (opts) =>
+    return validated_slug if opts.slug
+
     @suggest()
       .then(UserInput.slug)
-      .then(@isFree)
-      .catch(@rechooseSlug)
+      .then (slug) =>
+         @isFree(slug)
+           .then (is_free) =>
+             return @rechooseSlug(opts) unless is_free
+
+             _.assign(opts, slug: slug)
 
   @suggest: ->
     default_app_name = path.basename(process.cwd())
@@ -25,11 +32,11 @@ class SlugManager
   @folder: ->
     _.last(process.cwd().split('/'))
 
-  @rechooseSlug: ->
+  @rechooseSlug: (opts) =>
     Log.p 'This slug is used'
-    @choose()
+    @choose(opts)
 
   @isFree: (slug) ->
     new Promise (resolve, reject) ->
-      resolve(slug)
+      resolve(true)
       # reject(slug)

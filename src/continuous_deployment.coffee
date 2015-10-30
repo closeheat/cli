@@ -17,7 +17,9 @@ Notifier = require './notifier'
 
 SlugManager = require './slug_manager'
 GitHubManager = require './github_manager'
-AppManager = require './app_manager'
+Website = require './website'
+
+shepherd = require("shepherd")
 
 module.exports =
 class ContinuousDeployment
@@ -26,14 +28,108 @@ class ContinuousDeployment
 
   start: ->
     Log.p('You are about to publish a new website.')
-    @configure()
+    @run()
+
+  promisify: (result) ->
+    new Promise (resolve, reject) ->
+      resolve(result)
+
+  useOrGet: (opts, thing, get) ->
+    if opts[thing]
+      @promisify(opts[thing])
+    else
+      console.log 'gettin'
+      console.log get
+      get
+
+  run: (opts = {}) ->
+    # console.log opts
+    # deps = {
+    #   slug: @useOrGet(opts, 'slug', -> SlugManager.choose(opts))
+    #   repo: @useOrGet(opts, 'repo', -> GitHubManager.choose(opts) )
+    #   website: @useOrGet(opts, 'website', -> Website.create(opts) )
+    # }
+    #
+    # sequence = ['slug', 'repo', 'website']
+    # filled = _.pick deps, _.isString
+    # missing = _.without(sequence, filled...)
+    # console.log missing
+    #
+    seq = [
+      { key: 'slug', fn: SlugManager.choose }
+      { key: 'repo', fn: GitHubManager.choose }
+      { key: 'website', fn: Website.create }
+    ]
+
+    runner = Promise.reduce seq, (opts, obj) ->
+      console.log arguments
+
+      obj.fn(opts).then (result) ->
+        result
+    , {}
+
+    runner.then ->
+      console.log 'done'
+      console.log arguments
+      # st(missing)]().then (new_opts) =>
+      # @run(new_opts)
+
+
+    # graph = new shepherd.Graph()
+    # graph.add 'slug', SlugManager.choose, ['validated_slug']
+    # graph.add 'repo', GitHubManager.choose, ['validated_slug']
+    # graph.add 'website', Website.create, ['slug', 'repo', 'validated_slug']
+    #
+    # builder = graph.newBuilder().builds('website')
+    # builder.run(opts)
+
+  exec: (opts) ->
+    @run(opts)
+      .then (data) ->
+        console.log(data)
+        console.log 'ehe'
+        console.log(arguments)
+      .fail (err) =>
+        console.log 'FAIL'
+        @exec(validated_slug: 'hello', repo: 'hello').then ->
+          console.log 'OTHER'
+        # another = graph.newBuilder().builds('website').using({'slug': { _literal: 'This is my string' }})
+        # console.log 'OTHER'
+        # console.log graph.deleter('slug')
+        # graph.deleter('slug').then ->
+        #   console.log 'emeil'
+        #
+        #   builder.run().then (ea) ->
+        #     console.log arguments
+        #   console.log 'AFEERFAIL'
+        # builder.add
+
+
+
+  ensureNoWebsite: (data) ->
+    GitRepository.exists().then (repo) =>
+      return unless repo.exists
+
+      Website.exists(repo.name).then (website) =>
+        return unless website.exists
+
+        @exec(ensure_no_website: website_exists)
+
 
   configure: ->
-    SlugManager.choose().then (slug) =>
-      GitHubManager.repo(slug).then (repo) =>
-        AppManager.create(slug, repo)
-          .then(@success)
-          .catch(@exists)
+    @ensureWebsiteDoesntExist().then ->
+      SlugManager.choose().then (slug) ->
+        GitHubManager.choose(slug).then (repo) ->
+          AppManager.create(slug, repo)
+
+  ensureWebsiteDoesntExist: ->
+    GitRepository.exists().then (repo) =>
+      return unless repo.exists
+
+      Website.exists(repo.name).then (website) =>
+        return unless website.exists
+
+        @exists(website.slug, website.repo) if website.exists
 
   exists: (result) ->
     Log.p "Hey there! This folder is already published to closeheat."
@@ -45,6 +141,7 @@ class ContinuousDeployment
     Log.p "Anyways - if you'd like to publish your current code changes, just type:"
     Log.p Color.violet('closeheat quick-publish')
     Log.p "Doing that will commit and push all of your changes to the GitHub repository and publish it."
+    process.exit()
 
   success: (opts) ->
     slug = opts.slug

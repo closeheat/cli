@@ -41,6 +41,9 @@ class Urls
   @setupExistingRepo: ->
     "#{@api()}/deploy/existing"
 
+  @websiteExists: ->
+    "#{@api()}/apps/exists"
+
   @latestBuild: (slug) ->
     "#{@api()}/apps/#{slug}/builds/latest"
 

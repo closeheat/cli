@@ -55,6 +55,7 @@
     "request": "^2.53.0",
     "rimraf": "^2.2.8",
     "shelljs": "^0.5.3",
+    "shepherd": "^2.6.0",
     "stacktrace-js": "1.0.1",
     "stripcolorcodes": "^0.1.0",
     "text-table": "^0.2.0",

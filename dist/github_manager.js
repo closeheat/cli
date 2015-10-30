@@ -1,4 +1,4 @@
-var Git, GitHubManager, Log, Promise, ReuseRepoContinuousDeployment, SlugManager, Urls, UserInput, _, inquirer, path;
+var Git, GitHubManager, GitRepository, Log, Promise, ReuseRepoContinuousDeployment, SlugManager, Urls, UserInput, _, inquirer, path;
 
 inquirer = require('inquirer');
 
@@ -20,46 +20,48 @@ UserInput = require('./user_input');
 
 Git = require('./git');
 
+GitRepository = require('./git_repository');
+
 ReuseRepoContinuousDeployment = require('./reuse_repo_continuous_deployment');
 
 module.exports = GitHubManager = (function() {
-  var GITHUB_REPO_REGEX;
-
   function GitHubManager() {}
 
-  GitHubManager.repo = function(slug) {
-    return GitHubManager.noRepo(slug).then(GitHubManager.newRepo)["catch"](GitHubManager.reuse);
-  };
-
-  GitHubManager.newRepo = UserInput.repo;
-
-  GitHubManager.reuse = function(err) {
-    return ReuseRepoContinuousDeployment.start(err.repo, err.slug)["catch"](function() {
-      return GitHubManager.newRepo(err.slug);
+  GitHubManager.choose = function(opts) {
+    var get_it;
+    console.log(opts);
+    get_it = GitRepository.exists().then(function(repo) {
+      if (repo.exists) {
+        return GitHubManager.reuse(repo.name, opts.slug);
+      }
+      return GitHubManager["new"](opts.slug);
+    });
+    return get_it.then(function(name) {
+      return _.assign(opts, {
+        repo: name
+      });
     });
   };
 
-  GITHUB_REPO_REGEX = /origin*.+:(.+\/.+).git \(push\)/;
+  GitHubManager["new"] = function(slug) {
+    return UserInput.repo(slug);
+  };
 
-  GitHubManager.noRepo = function(slug) {
-    return new Promise((function(_this) {
-      return function(resolve, reject) {
-        return new Git().exec('remote', ['--verbose'], function(err, resp) {
-          var existing_repo;
-          if (err) {
-            return reject(err);
-          }
-          existing_repo = resp.match(GITHUB_REPO_REGEX)[1];
-          if (existing_repo) {
-            return reject({
-              repo: existing_repo,
-              slug: slug
-            });
-          }
-          return resolve(slug);
-        });
+  GitHubManager.reuse = function(repo_name, slug) {
+    return UserInput.reuseRepo(repo_name).then((function(_this) {
+      return function(reuse) {
+        if (!reuse) {
+          return _this["new"](slug);
+        }
+        return repo_name;
       };
     })(this));
+  };
+
+  GitHubManager.create = function(repo_name) {
+    return new Promise(function(resolve, reject) {
+      return resolve();
+    });
   };
 
   return GitHubManager;

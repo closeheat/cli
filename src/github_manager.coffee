@@ -9,28 +9,31 @@ SlugManager = require './slug_manager'
 Log = require './log'
 UserInput = require './user_input'
 Git = require './git'
+GitRepository = require './git_repository'
 ReuseRepoContinuousDeployment = require './reuse_repo_continuous_deployment'
 
 module.exports =
 class GitHubManager
-  @repo: (slug) =>
-    @noRepo(slug)
-      .then(@newRepo)
-      .catch(@reuse)
+  @choose: (opts) =>
+    console.log opts
+    get_it = GitRepository.exists().then (repo) =>
+      return @reuse(repo.name, opts.slug) if repo.exists
 
-  @newRepo: UserInput.repo
+      @new(opts.slug)
 
-  @reuse: (err) =>
-    ReuseRepoContinuousDeployment.start(err.repo, err.slug).catch(=> @newRepo(err.slug))
+    get_it.then (name) ->
+      _.assign(opts, repo: name)
 
-  # TODO: select only GitHub repo
-  GITHUB_REPO_REGEX = /origin*.+:(.+\/.+).git \(push\)/
-  @noRepo: (slug) ->
-    new Promise (resolve, reject) =>
-      new Git().exec 'remote', ['--verbose'], (err, resp) ->
-        return reject(err) if err
+  @new: (slug) ->
+    UserInput.repo(slug)
 
-        existing_repo = resp.match(GITHUB_REPO_REGEX)[1]
-        return reject(repo: existing_repo, slug: slug) if existing_repo
+  @reuse: (repo_name, slug) ->
+    UserInput.reuseRepo(repo_name).then (reuse) =>
+      return @new(slug) unless reuse
 
-        resolve(slug)
+      repo_name
+
+  @create: (repo_name) ->
+    # do request
+    new Promise (resolve, reject) ->
+      resolve()

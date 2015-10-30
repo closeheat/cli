@@ -1,5 +1,4 @@
-var AppManager, Authorized, Color, GitHubManager, Log, Promise, SlugManager, Urls, inquirer, path,
-  bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+var Authorized, Color, GitHubManager, Log, Promise, SlugManager, Urls, Website, inquirer, path;
 
 inquirer = require('inquirer');
 
@@ -21,17 +20,16 @@ Color = require('./color');
 
 GitHubManager = require('./github_manager');
 
-module.exports = AppManager = (function() {
-  function AppManager() {
-    this.create = bind(this.create, this);
-  }
+module.exports = Website = (function() {
+  function Website() {}
 
-  AppManager.prototype.create = function(slug, repo) {
-    console.log('crea');
-    return this.execRequest(slug, repo);
+  Website.create = function(opts) {
+    console.log('fucked');
+    console.log(opts);
+    return Website.execRequest(opts.slug, opts.repo);
   };
 
-  AppManager.prototype.websiteExists = function() {
+  Website.websiteExists = function() {
     return new Promise((function(_this) {
       return function(resolve, reject) {
         return new GitHubManager().existing().then(function(existing) {});
@@ -39,7 +37,7 @@ module.exports = AppManager = (function() {
     })(this));
   };
 
-  AppManager.prototype.backendExists = function(repo) {
+  Website.backendExists = function(repo) {
     return new Promise((function(_this) {
       return function(resolve, reject) {
         return Authorized.request({
@@ -63,7 +61,7 @@ module.exports = AppManager = (function() {
     })(this));
   };
 
-  AppManager.prototype.execRequest = function(slug, repo) {
+  Website.execRequest = function(slug, repo) {
     return new Promise((function(_this) {
       return function(resolve, reject) {
         return Authorized.request({
@@ -92,6 +90,6 @@ module.exports = AppManager = (function() {
     })(this));
   };
 
-  return AppManager;
+  return Website;
 
 })();

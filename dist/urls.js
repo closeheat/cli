@@ -51,6 +51,10 @@ module.exports = Urls = (function() {
     return (this.api()) + "/deploy/existing";
   };
 
+  Urls.websiteExists = function() {
+    return (this.api()) + "/apps/exists";
+  };
+
   Urls.latestBuild = function(slug) {
     return (this.api()) + "/apps/" + slug + "/builds/latest";
   };
