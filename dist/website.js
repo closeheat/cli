@@ -28,9 +28,11 @@ module.exports = Website = (function() {
   function Website() {}
 
   Website.create = function(opts) {
-    console.log('fucked');
-    console.log(opts);
-    return Website.execRequest(opts.slug, opts.repo)["catch"](function(resp) {
+    return Website.execRequest(opts.slug, opts.repo).then(function(resp) {
+      return _.assign(opts, {
+        website: resp.url
+      });
+    })["catch"](function(resp) {
       if (resp.error === 'app-exists') {
         return _.assign(opts, {
           slug: null
@@ -57,26 +59,13 @@ module.exports = Website = (function() {
   Website.backend = function(repo) {
     return new Promise((function(_this) {
       return function(resolve, reject) {
-        return resolve({
-          exists: false,
-          repo: repo,
-          slug: 'hello'
-        });
-        return Authorized.request({
-          url: Urls.websiteExists(),
-          qs: {
-            repo: repo
-          },
-          method: 'post',
-          json: true
-        }, function(err, resp) {
-          if (err) {
-            return reject(err);
-          }
+        return Authorized.post(Urls.websiteExists(), {
+          repo: repo
+        }).then(function(resp) {
           return resolve({
-            exists: resp.body.exists,
+            exists: resp.exists,
             repo: repo,
-            slug: resp.body.slug
+            slug: resp.slug
           });
         });
       };
@@ -86,27 +75,12 @@ module.exports = Website = (function() {
   Website.execRequest = function(slug, repo) {
     return new Promise((function(_this) {
       return function(resolve, reject) {
-        reject({
-          slug: slug,
+        return Authorized.post(Urls.publishNewWebsite(), {
           repo: repo,
-          error: 'app-exists'
-        });
-        return Authorized.request({
-          url: Urls.publishNewWebsite(),
-          qs: {
-            repo: repo,
-            slug: slug
-          },
-          method: 'post',
-          json: true
-        }, function(err, resp) {
-          if (err) {
-            return reject(err);
-          }
-          return reject({
-            slug: slug,
-            repo: repo,
-            error: 'app-exists'
+          slug: slug
+        }).then(function(resp) {
+          return resolve({
+            url: resp.url
           });
         });
       };

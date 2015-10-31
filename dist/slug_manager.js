@@ -1,4 +1,4 @@
-var Log, Promise, SlugManager, Urls, UserInput, _, inquirer, path;
+var Authorized, Log, Promise, SlugManager, Urls, UserInput, _, inquirer, path;
 
 inquirer = require('inquirer');
 
@@ -15,6 +15,8 @@ Urls = require('./urls');
 UserInput = require('./user_input');
 
 Log = require('./log');
+
+Authorized = require('./authorized');
 
 module.exports = SlugManager = (function() {
   function SlugManager() {}
@@ -36,11 +38,15 @@ module.exports = SlugManager = (function() {
   };
 
   SlugManager.suggest = function() {
-    var default_app_name;
-    default_app_name = path.basename(process.cwd());
-    return new Promise(function(resolve, reject) {
-      return resolve(default_app_name);
-    });
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        return Authorized.post(Urls.suggestSlug(), {
+          folder: _this.folder()
+        }).then(function(resp) {
+          return resolve(resp.slug);
+        });
+      };
+    })(this));
   };
 
   SlugManager.folder = function() {

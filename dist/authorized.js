@@ -1,7 +1,8 @@
-var Authorized, Authorizer, Log, _, pkg, request,
-  slice = [].slice;
+var Authorized, Authorizer, Log, Promise, _, pkg, request;
 
-request = require('request');
+Promise = require('bluebird');
+
+request = Promise.promisify(require('request'));
 
 _ = require('lodash');
 
@@ -14,58 +15,50 @@ Log = require('./log');
 module.exports = Authorized = (function() {
   function Authorized() {}
 
-  Authorized.request = function() {
-    var cb, opts, params, token_params;
-    params = 1 <= arguments.length ? slice.call(arguments, 0) : [];
-    opts = params[0], cb = params[1];
+  Authorized.request = function(opts) {
     Log = require('./log');
     if (!_.isPlainObject(opts)) {
       Log.error("Request opts is not an object: " + opts);
     }
-    token_params = this.tokenParams(opts, cb);
-    if (token_params) {
-      opts.qs = _.merge(opts.qs || {}, token_params);
-      opts.headers = {
-        'X-CLI-Version': pkg.version
-      };
-      return request(opts, this.loginOnUnauthorized(opts, cb));
+    if (!this.token()) {
+      Log.error('Log in please');
     }
+    opts.qs = _.merge(opts.qs || {}, {
+      api_token: this.token()
+    });
+    opts.headers = {
+      'X-CLI-Version': pkg.version
+    };
+    return request(opts);
   };
 
-  Authorized.tokenParams = function(opts, cb) {
-    var api_token, authorizer;
+  Authorized.post = function(url, data) {
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        return _this.request({
+          url: url,
+          qs: data,
+          json: true,
+          method: 'post'
+        }).then(function(resp) {
+          return resolve(resp[0].body);
+        })["catch"](function() {
+          console.log('CATCH');
+          return reject;
+        });
+      };
+    })(this));
+  };
+
+  Authorized.token = function() {
+    var authorizer, result;
     Authorizer = require('./authorizer');
     authorizer = new Authorizer();
-    api_token = authorizer.accessToken();
-    if (api_token === 'none' || !api_token) {
-      authorizer.forceLogin((function(_this) {
-        return function() {
-          return _this.request(opts, cb);
-        };
-      })(this));
-      return false;
+    result = authorizer.accessToken();
+    if (result === 'none' || !result) {
+      return null;
     }
-    return {
-      api_token: api_token
-    };
-  };
-
-  Authorized.loginOnUnauthorized = function(opts, cb) {
-    return function(err, resp) {
-      var authorizer;
-      Log = require('./log');
-      if (err) {
-        Log.error(err);
-      }
-      authorizer = new Authorizer();
-      if (authorizer.unauthorized(resp)) {
-        return authorizer.forceLogin(function() {
-          return Authorized.request(opts, cb);
-        });
-      } else {
-        return cb(err, resp);
-      }
-    };
+    return result;
   };
 
   return Authorized;

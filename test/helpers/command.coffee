@@ -5,16 +5,19 @@ _ = require 'lodash'
 closeheat = './dist/bin/closeheat.js'
 TestConfig = require './test_config'
 
-module.exports = (command, prompts) ->
-  opts =
+module.exports = (command, opts = {}) ->
+  nixt_config =
     colors: false
 
   fillPrompts = (cli) ->
-    return cli unless prompts
+    return cli unless opts.prompts
 
-    _.reduce prompts, (obj, prompt) ->
+    _.reduce opts.prompts, (obj, prompt) ->
       obj.on(///#{prompt.question}///).respond("#{prompt.answer}\n")
     , cli
+
+  mockGit = (cli) ->
+    cli.env('CLOSEHEAT_TEST_MOCK_GIT', opts.git || false)
 
   new Promise (resolve, reject) ->
     test_command = [
@@ -25,8 +28,7 @@ module.exports = (command, prompts) ->
       '--no-colors'
     ]
 
-    fillPrompts(nixt(opts))
-      .env('CLOSEHEAT_TEST', true)
+    mockGit(fillPrompts(nixt(nixt_config)))
       .run(test_command.join(' '))
       .expect((result) ->
         resolve(result.stdout)

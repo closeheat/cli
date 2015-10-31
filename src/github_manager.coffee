@@ -15,7 +15,6 @@ ReuseRepoContinuousDeployment = require './reuse_repo_continuous_deployment'
 module.exports =
 class GitHubManager
   @choose: (opts) =>
-    console.log opts
     get_it = GitRepository.exists().then (repo) =>
       return @reuse(repo.name, opts.slug) if repo.exists
 

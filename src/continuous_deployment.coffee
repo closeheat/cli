@@ -29,7 +29,7 @@ class ContinuousDeployment
   start: ->
     @ensureNoWebsite().then =>
       Log.p('You are about to publish a new website.')
-      @run()
+      @run().then(@success)
 
   steps: ->
     [
@@ -46,10 +46,7 @@ class ContinuousDeployment
     return opts if _.isEmpty(@unfullfilledSteps(opts))
 
     runner = Promise.reduce @unfullfilledSteps(opts), (new_opts, obj) ->
-      console.log arguments
       obj.fn(new_opts).then (result) ->
-        console.log 'last'
-        console.log result
         result
     , {}
 
@@ -77,6 +74,7 @@ class ContinuousDeployment
   success: (opts) ->
     slug = opts.slug
     repo = opts.repo
+    # url = opts.url
 
     Log.p 'Success!'
     Log.p "Your website #{Color.violet("#{slug}.closeheatapp.com")} is now published."

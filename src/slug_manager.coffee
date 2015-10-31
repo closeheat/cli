@@ -7,6 +7,7 @@ inquirer = require 'inquirer'
 Urls = require './urls'
 UserInput = require './user_input'
 Log = require './log'
+Authorized = require './authorized'
 
 module.exports =
 class SlugManager
@@ -23,11 +24,9 @@ class SlugManager
              _.assign(opts, slug: slug)
 
   @suggest: ->
-    default_app_name = path.basename(process.cwd())
-
-    new Promise (resolve, reject) ->
-      resolve(default_app_name)
-    # TODO
+    new Promise (resolve, reject) =>
+      Authorized.post(Urls.suggestSlug(), folder: @folder()).then (resp) ->
+        resolve(resp.slug)
 
   @folder: ->
     _.last(process.cwd().split('/'))

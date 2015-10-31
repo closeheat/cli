@@ -29,7 +29,6 @@ module.exports = GitHubManager = (function() {
 
   GitHubManager.choose = function(opts) {
     var get_it;
-    console.log(opts);
     get_it = GitRepository.exists().then(function(repo) {
       if (repo.exists) {
         return GitHubManager.reuse(repo.name, opts.slug);

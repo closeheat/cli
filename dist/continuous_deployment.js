@@ -45,7 +45,7 @@ module.exports = ContinuousDeployment = (function() {
     return this.ensureNoWebsite().then((function(_this) {
       return function() {
         Log.p('You are about to publish a new website.');
-        return _this.run();
+        return _this.run().then(_this.success);
       };
     })(this));
   };
@@ -80,10 +80,7 @@ module.exports = ContinuousDeployment = (function() {
       return opts;
     }
     runner = Promise.reduce(this.unfullfilledSteps(opts), function(new_opts, obj) {
-      console.log(arguments);
       return obj.fn(new_opts).then(function(result) {
-        console.log('last');
-        console.log(result);
         return result;
       });
     }, {});

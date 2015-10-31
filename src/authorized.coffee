@@ -1,4 +1,5 @@
-request = require 'request'
+Promise = require 'bluebird'
+request = Promise.promisify(require('request'))
 _ = require 'lodash'
 pkg = require '../package.json'
 
@@ -7,36 +8,28 @@ Log = require './log'
 
 module.exports =
 class Authorized
-  @request: (params...) ->
-    [opts, cb] = params
+  @request: (opts) ->
     Log = require './log'
     Log.error("Request opts is not an object: #{opts}") unless _.isPlainObject(opts)
-    token_params = @tokenParams(opts, cb)
+    Log.error('Log in please') unless @token()
 
-    if token_params
-      opts.qs = _.merge(opts.qs || {}, token_params)
-      opts.headers = { 'X-CLI-Version': pkg.version }
-      request opts, @loginOnUnauthorized(opts, cb)
+    opts.qs = _.merge(opts.qs || {}, api_token: @token())
+    opts.headers = { 'X-CLI-Version': pkg.version }
+    request opts
 
-  @tokenParams: (opts, cb) ->
+  @post: (url, data) ->
+    new Promise (resolve, reject) =>
+      @request(url: url, qs: data, json: true, method: 'post').then((resp) ->
+        resolve(resp[0].body)
+      ).catch ->
+        console.log 'CATCH'
+        reject
+
+  @token: ->
     Authorizer = require './authorizer'
     authorizer = new Authorizer()
 
-    api_token = authorizer.accessToken()
+    result = authorizer.accessToken()
+    return null if result == 'none' || !result
 
-    if api_token == 'none' || !api_token
-      authorizer.forceLogin(=> @request(opts, cb))
-      return false
-
-    api_token: api_token
-
-  @loginOnUnauthorized: (opts, cb) =>
-    (err, resp) =>
-      Log = require './log'
-      Log.error(err) if err
-      authorizer = new Authorizer()
-
-      if authorizer.unauthorized(resp)
-        authorizer.forceLogin(=> @request(opts, cb))
-      else
-        cb(err, resp)
+    result
