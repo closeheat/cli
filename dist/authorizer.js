@@ -73,7 +73,7 @@ module.exports = Authorizer = (function() {
     }
   };
 
-  Authorizer.prototype.forceLogin = function(cb) {
+  Authorizer.forceLogin = function() {
     var Log;
     Log = require('./log');
     Log.stop();
@@ -82,13 +82,16 @@ module.exports = Authorizer = (function() {
     return process.exit();
   };
 
-  Authorizer.prototype.unauthorized = function(resp) {
+  Authorizer.unauthorized = function(resp) {
     return resp.statusCode === 401;
   };
 
-  Authorizer.prototype.checkLoggedIn = function(resp, cb) {
-    if (this.unauthorized(resp)) {
-      return this.forceLogin(cb);
+  Authorizer.checkUserLoggedIn = function(resp) {
+    if (!resp[0]) {
+      return;
+    }
+    if (this.unauthorized(resp[0])) {
+      return this.forceLogin();
     }
   };
 

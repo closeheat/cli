@@ -20,16 +20,18 @@ module.exports = Authorized = (function() {
     if (!_.isPlainObject(opts)) {
       Log.error("Request opts is not an object: " + opts);
     }
-    if (!this.token()) {
-      Log.error('Log in please');
-    }
     opts.qs = _.merge(opts.form || {}, {
       api_token: this.token()
     });
     opts.headers = {
       'X-CLI-Version': pkg.version
     };
-    return request(opts);
+    return request(opts).then((function(_this) {
+      return function(resp) {
+        Authorizer.checkUserLoggedIn(resp);
+        return resp.body;
+      };
+    })(this));
   };
 
   Authorized.post = function(url, data) {

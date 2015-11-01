@@ -51,18 +51,20 @@ class Authorizer
     Log.doneLine("Log in at #{Urls.loginInstructions()} in your browser.")
     open(Urls.loginInstructions()) unless process.env.CLOSEHEAT_TEST
 
-  forceLogin: (cb) ->
+  @forceLogin: ->
     Log = require './log'
     Log.stop()
     Log.p Color.redYellow('You need to log in for that.')
     Log.p("Type #{Color.violet('closeheat login')} or open #{Color.violet(Urls.loginInstructions())} to do it swiftly.")
     process.exit()
 
-  unauthorized: (resp) ->
+  @unauthorized: (resp) ->
     resp.statusCode == 401
 
-  checkLoggedIn: (resp, cb) ->
-    @forceLogin(cb) if @unauthorized(resp)
+  @checkUserLoggedIn: (resp) ->
+    return unless resp[0]
+
+    @forceLogin() if @unauthorized(resp[0])
 
   ensureGitHubAuthorized: ->
     new Promise (resolve, reject) ->

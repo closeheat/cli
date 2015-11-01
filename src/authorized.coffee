@@ -11,11 +11,14 @@ class Authorized
   @request: (opts) ->
     Log = require './log'
     Log.error("Request opts is not an object: #{opts}") unless _.isPlainObject(opts)
-    Log.error('Log in please') unless @token()
 
     opts.qs = _.merge(opts.form || {}, api_token: @token())
     opts.headers = { 'X-CLI-Version': pkg.version }
-    request opts
+
+    request(opts).then (resp) =>
+      Authorizer.checkUserLoggedIn(resp)
+
+      resp.body
 
   @post: (url, data = {}) ->
     @validateUrl(url)
