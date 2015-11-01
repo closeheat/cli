@@ -8,9 +8,9 @@ Urls = require './urls'
 SlugManager = require './slug_manager'
 Log = require './log'
 UserInput = require './user_input'
+User = require './user'
 Git = require './git'
 GitRepository = require './git_repository'
-ReuseRepoContinuousDeployment = require './reuse_repo_continuous_deployment'
 
 module.exports =
 class GitHubManager
@@ -24,7 +24,8 @@ class GitHubManager
       _.assign(opts, repo: name)
 
   @new: (slug) ->
-    UserInput.repo(slug)
+    User.get().then (user) ->
+      UserInput.repo("#{user.name}/#{slug}")
 
   @reuse: (repo_name, slug) ->
     UserInput.reuseRepo(repo_name).then (reuse) =>

@@ -31,7 +31,7 @@ module.exports = List = (function() {
           url: Urls.appsIndex(),
           method: 'get'
         }, function(err, resp) {
-          var e, error, parsed_resp;
+          var e, parsed_resp;
           Log.stop();
           if (err) {
             return Log.error(err);
@@ -39,8 +39,8 @@ module.exports = List = (function() {
           parsed_resp = null;
           try {
             parsed_resp = JSON.parse(resp.body);
-          } catch (error) {
-            e = error;
+          } catch (_error) {
+            e = _error;
             return Log.backendError();
           }
           if (parsed_resp.apps.length) {

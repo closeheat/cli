@@ -46,14 +46,14 @@ module.exports = Cloner = (function() {
         url: Urls.appData(app_name),
         method: 'get'
       }, function(err, resp) {
-        var app, e, error;
+        var app, e;
         if (err) {
           return reject(err);
         }
         try {
           app = JSON.parse(resp.body).app;
-        } catch (error) {
-          e = error;
+        } catch (_error) {
+          e = _error;
           return reject("App named '" + app_name + "' does not exist.");
         }
         return resolve(app);

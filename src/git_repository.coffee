@@ -24,6 +24,13 @@ class GitRepository
   # reuse: (slug, existing) =>
   #   ReuseRepoContinuousDeployment.start(existing, slug).catch(=> @newRepo(slug))
   #
+  @addOriginRemote: (url) ->
+    new Promise (resolve, reject) =>
+      new Git().exec 'remote', ["add origin #{url}"], (err, resp) ->
+        return reject(err) if err
+
+        resolve(resp)
+
   # TODO: select only GitHub repo
   GITHUB_REPO_REGEX = /origin*.+:(.+\/.+).git \(push\)/
   @exists: ->

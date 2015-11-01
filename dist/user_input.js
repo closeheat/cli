@@ -33,11 +33,10 @@ module.exports = UserInput = (function() {
     return new Promise((function(_this) {
       return function(resolve, reject) {
         return inquirer.prompt({
-          message: 'What is the GitHub repository would you like to create for this website? Ex. Nedomas/NAME?',
-          name: 'repo',
-          "default": suggested
+          message: "How will you name a new GitHub repository? (example: " + suggested + ")",
+          name: 'repo'
         }, function(answer) {
-          return resolve(answer.repo);
+          return resolve(answer.repo.replace(' ', ''));
         });
       };
     })(this));

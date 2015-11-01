@@ -129,17 +129,31 @@ describe 'publish', ->
       @timeout(5000)
 
       @api.routes.post '/apps/exists', (req, res) ->
+        expect(req.body.repo).to.eql('example-org/example-repo')
+
         res.send
           exists: false
 
       @api.routes.post '/suggest/slug', (req, res) ->
+        expect(req.body.folder).to.eql('cli')
+
         res.send
           slug: 'suggested-slug'
-  #
-  #       @api.routes.post '/deploy/new', (req, res) ->
-  #         res.send
-  #           success: true
-  #           url: 'http://example-subdomain.closeheatapp.com'
+
+      @api.routes.post '/user', (req, res) ->
+        expect(req.body.api_token).to.eql('example-token')
+
+        res.send
+          name: 'example-user'
+
+      @api.routes.post '/deploy/new', (req, res) ->
+        expect(req.body.repo).to.eql('example-org/example-new-repo')
+        expect(req.body.slug).to.eql('example-subdomain')
+
+        res.send
+          success: true
+          url: 'http://example-subdomain.closeheatapp.com'
+          repo_url: 'git@github.com:example-org/example-new-repo.git'
 
       prompts = [
         {
@@ -151,24 +165,24 @@ describe 'publish', ->
           answer: 'n'
         }
         {
-          question: 'What is the GitHub repository would you like to create for this website?'
-          answer: 'example-new-repo'
+          question: 'How will you name a new GitHub repository'
+          answer: 'example-org/example-new-repo'
         }
       ]
 
-      # also add origin to remotes
-      command('publish', prompts).then (stdout) ->
+      command('publish', prompts: prompts).then (stdout) ->
         assertStdout stdout,
           """
-          You are about to publish a new website.
           TEST: Executing 'git remote --verbose'
+          You are about to publish a new website.
           ? What subdomain would you like to choose at SUBDOMAIN.closeheatapp.com? (you will be able to add top level domain later) (suggested-slug)
           ? What subdomain would you like to choose at SUBDOMAIN.closeheatapp.com? (you will be able to add top level domain later) example-subdomain
           TEST: Executing 'git remote --verbose'
           ? Would you like to use your existing example-org/example-repo GitHub repository repo for continuos delivery? (Y/n)
           ? Would you like to use your existing example-org/example-repo GitHub repository repo for continuos delivery? No
-          ? What is the GitHub repository would you like to create for this website? Ex. Nedomas/NAME?
-          ? What is the GitHub repository would you like to create for this website? Ex. Nedomas/NAME? example-new-repo
-          #{success('example-new-repo')}
+          ? How will you name a new GitHub repository? (example: example-user/example-subdomain)
+          ? How will you name a new GitHub repository? (example: example-user/example-subdomain) example-org/example-new-repo
+          TEST: Executing 'git remote add origin git@github.com:example-org/example-new-repo.git'
+          #{success('example-org/example-new-repo')}
           """
         done()

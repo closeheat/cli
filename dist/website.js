@@ -29,8 +29,10 @@ module.exports = Website = (function() {
 
   Website.create = function(opts) {
     return Website.execRequest(opts.slug, opts.repo).then(function(resp) {
-      return _.assign(opts, {
-        website: resp.url
+      return GitRepository.addOriginRemote(resp.repo_url).then(function() {
+        return _.assign(opts, {
+          website: resp.url
+        });
       });
     })["catch"](function(resp) {
       if (resp.error === 'app-exists') {
@@ -80,7 +82,8 @@ module.exports = Website = (function() {
           slug: slug
         }).then(function(resp) {
           return resolve({
-            url: resp.url
+            url: resp.url,
+            repo_url: resp.repo_url
           });
         });
       };

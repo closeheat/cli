@@ -14,6 +14,9 @@ class Urls
     # 'http://api.closeheat.com'
     # 'http://10.30.0.1:4000/api'
 
+  @user: ->
+    "#{@api()}/user"
+
   @githubAuthorized: ->
     "#{@api()}/github-authorized"
 

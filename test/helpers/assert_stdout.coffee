@@ -11,6 +11,8 @@ split = (stdout) ->
     return line unless line[0] == '?'
 
     prompt_states = _.compact(line.split(ansiRegex))
+    return new Error("Error in prompt states: #{JSON.stringify(prompt_states)}") if prompt_states.length <= 2
+
     [empty, ..., filled] = prompt_states
     [empty, filled]
 

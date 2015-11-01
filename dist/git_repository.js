@@ -27,6 +27,19 @@ module.exports = GitRepository = (function() {
 
   function GitRepository() {}
 
+  GitRepository.addOriginRemote = function(url) {
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        return new Git().exec('remote', ["add origin " + url], function(err, resp) {
+          if (err) {
+            return reject(err);
+          }
+          return resolve(resp);
+        });
+      };
+    })(this));
+  };
+
   GITHUB_REPO_REGEX = /origin*.+:(.+\/.+).git \(push\)/;
 
   GitRepository.exists = function() {

@@ -1,4 +1,4 @@
-var Git, GitHubManager, GitRepository, Log, Promise, ReuseRepoContinuousDeployment, SlugManager, Urls, UserInput, _, inquirer, path;
+var Git, GitHubManager, GitRepository, Log, Promise, SlugManager, Urls, User, UserInput, _, inquirer, path;
 
 inquirer = require('inquirer');
 
@@ -18,11 +18,11 @@ Log = require('./log');
 
 UserInput = require('./user_input');
 
+User = require('./user');
+
 Git = require('./git');
 
 GitRepository = require('./git_repository');
-
-ReuseRepoContinuousDeployment = require('./reuse_repo_continuous_deployment');
 
 module.exports = GitHubManager = (function() {
   function GitHubManager() {}
@@ -43,7 +43,9 @@ module.exports = GitHubManager = (function() {
   };
 
   GitHubManager["new"] = function(slug) {
-    return UserInput.repo(slug);
+    return User.get().then(function(user) {
+      return UserInput.repo(user.name + "/" + slug);
+    });
   };
 
   GitHubManager.reuse = function(repo_name, slug) {

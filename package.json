@@ -68,6 +68,7 @@
   ],
   "devDependencies": {
     "acorn": "^2.4.0",
+    "body-parser": "^1.14.1",
     "chai": "^3.4.0",
     "coffee-script": "^1.8.0",
     "express": "^4.13.3",

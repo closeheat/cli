@@ -16,7 +16,8 @@ module.exports =
 class Website
   @create: (opts) =>
     @execRequest(opts.slug, opts.repo).then (resp) ->
-      _.assign(opts, website: resp.url)
+      GitRepository.addOriginRemote(resp.repo_url).then ->
+        _.assign(opts, website: resp.url)
     .catch (resp) ->
       return _.assign(opts, slug: null) if resp.error == 'app-exists'
 
@@ -36,4 +37,4 @@ class Website
     new Promise (resolve, reject) =>
       Authorized.post(Urls.publishNewWebsite(), repo: repo, slug: slug).then (resp) ->
         # reject(slug: slug, repo: repo, error: 'app-exists')
-        resolve(url: resp.url)
+        resolve(url: resp.url, repo_url: resp.repo_url)

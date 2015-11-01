@@ -19,12 +19,12 @@ class UserInput
 
   @repo: (suggested) ->
     new Promise (resolve, reject) =>
+      # show as example instead of default. inquirer / in defaults bug
       inquirer.prompt {
-        message: 'What is the GitHub repository would you like to create for this website? Ex. Nedomas/NAME?'
+        message: "How will you name a new GitHub repository? (example: #{suggested})"
         name: 'repo'
-        default: suggested
       }, (answer) =>
-        resolve(answer.repo)
+        resolve(answer.repo.replace(' ', ''))
 
   @reuseRepo: (repo_name) ->
     new Promise (resolve, reject) =>

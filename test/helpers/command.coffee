@@ -17,7 +17,7 @@ module.exports = (command, opts = {}) ->
     , cli
 
   mockGit = (cli) ->
-    cli.env('CLOSEHEAT_TEST_MOCK_GIT', opts.git || false)
+    cli.env 'CLOSEHEAT_TEST_MOCK_GIT', opts.git || '../test/fixtures/git/dist/default'
 
   new Promise (resolve, reject) ->
     test_command = [

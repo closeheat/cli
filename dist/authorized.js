@@ -23,7 +23,7 @@ module.exports = Authorized = (function() {
     if (!this.token()) {
       Log.error('Log in please');
     }
-    opts.qs = _.merge(opts.qs || {}, {
+    opts.qs = _.merge(opts.form || {}, {
       api_token: this.token()
     });
     opts.headers = {
@@ -33,11 +33,14 @@ module.exports = Authorized = (function() {
   };
 
   Authorized.post = function(url, data) {
+    if (data == null) {
+      data = {};
+    }
     return new Promise((function(_this) {
       return function(resolve, reject) {
         return _this.request({
           url: url,
-          qs: data,
+          form: data,
           json: true,
           method: 'post'
         }).then(function(resp) {

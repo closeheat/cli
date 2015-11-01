@@ -13,13 +13,13 @@ class Authorized
     Log.error("Request opts is not an object: #{opts}") unless _.isPlainObject(opts)
     Log.error('Log in please') unless @token()
 
-    opts.qs = _.merge(opts.qs || {}, api_token: @token())
+    opts.qs = _.merge(opts.form || {}, api_token: @token())
     opts.headers = { 'X-CLI-Version': pkg.version }
     request opts
 
-  @post: (url, data) ->
+  @post: (url, data = {}) ->
     new Promise (resolve, reject) =>
-      @request(url: url, qs: data, json: true, method: 'post').then((resp) ->
+      @request(url: url, form: data, json: true, method: 'post').then((resp) ->
         resolve(resp[0].body)
       ).catch ->
         console.log 'CATCH'

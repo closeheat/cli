@@ -15,6 +15,10 @@ module.exports = Urls = (function() {
     return global.API_URL;
   };
 
+  Urls.user = function() {
+    return (this.api()) + "/user";
+  };
+
   Urls.githubAuthorized = function() {
     return (this.api()) + "/github-authorized";
   };
