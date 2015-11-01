@@ -27,6 +27,9 @@ module.exports = Permissions = (function() {
     if (!resp[0]) {
       return;
     }
+    if (resp[0].statusCode === 200) {
+      return;
+    }
     return this.report(resp[0]);
   };
 
