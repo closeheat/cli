@@ -52,9 +52,9 @@ program
   .description('Opens your deployed app in the browser.')
   .action ->
     setGlobals(program)
-    Deployer = require '../deployer'
+    Opener = require '../opener'
 
-    new Deployer().open()
+    new Opener().open()
 
 program
   .command('list')

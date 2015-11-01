@@ -20,8 +20,10 @@ describe 'open', ->
 
   it 'should open app url', (done) ->
     @timeout(5000)
-    @api.routes.post '/deploy/slug', (req, res) ->
-      res.send slug: 'example-slug'
+    @api.routes.post '/apps/exists', (req, res) ->
+      res.send
+        exists: true
+        slug: 'example-slug'
 
     command('open').then (stdout) ->
       assertStdout stdout,

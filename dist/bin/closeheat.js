@@ -43,10 +43,10 @@ program.command('log').description('Polls the log of the last deployment. Usable
 });
 
 program.command('open').description('Opens your deployed app in the browser.').action(function() {
-  var Deployer;
+  var Opener;
   setGlobals(program);
-  Deployer = require('../deployer');
-  return new Deployer().open();
+  Opener = require('../opener');
+  return new Opener().open();
 });
 
 program.command('list').description('Shows a list of your deployed apps.').action(function() {
