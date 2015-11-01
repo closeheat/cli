@@ -29,10 +29,9 @@ module.exports = Website = (function() {
 
   Website.create = function(opts) {
     return Website.execRequest(opts.slug, opts.repo).then(function(resp) {
-      return GitRepository.addOriginRemote(resp.repo_url).then(function() {
-        return _.assign(opts, {
-          website: resp.url
-        });
+      return _.assign(opts, {
+        website: resp.url,
+        repo_url: resp.repo_url
       });
     })["catch"](function(resp) {
       if (resp.error === 'app-exists') {

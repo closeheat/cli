@@ -16,8 +16,7 @@ module.exports =
 class Website
   @create: (opts) =>
     @execRequest(opts.slug, opts.repo).then (resp) ->
-      GitRepository.addOriginRemote(resp.repo_url).then ->
-        _.assign(opts, website: resp.url)
+      _.assign(opts, website: resp.url, repo_url: resp.repo_url)
     .catch (resp) ->
       return _.assign(opts, slug: null) if resp.error == 'app-exists'
 

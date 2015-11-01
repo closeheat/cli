@@ -1,4 +1,4 @@
-var Authorized, Authorizer, Color, ContinuousDeployment, DeployLog, Git, GitHubManager, Initializer, Log, Notifier, Promise, SlugManager, Urls, Website, _, fs, inquirer, open, shepherd;
+var Authorized, Authorizer, Color, ContinuousDeployment, DeployLog, Git, GitHubManager, GitRepository, Initializer, Log, Notifier, Promise, SlugManager, Urls, Website, _, fs, inquirer, open, shepherd;
 
 Promise = require('bluebird');
 
@@ -34,6 +34,8 @@ GitHubManager = require('./github_manager');
 
 Website = require('./website');
 
+GitRepository = require('./git_repository');
+
 shepherd = require("shepherd");
 
 module.exports = ContinuousDeployment = (function() {
@@ -61,6 +63,9 @@ module.exports = ContinuousDeployment = (function() {
       }, {
         key: 'website',
         fn: Website.create
+      }, {
+        key: 'remote',
+        fn: GitRepository.ensureRemote
       }
     ];
   };

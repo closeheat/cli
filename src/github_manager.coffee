@@ -15,25 +15,17 @@ GitRepository = require './git_repository'
 module.exports =
 class GitHubManager
   @choose: (opts) =>
-    get_it = GitRepository.exists().then (repo) =>
-      return @reuse(repo.name, opts.slug) if repo.exists
-
-      @new(opts.slug)
-
-    get_it.then (name) ->
+    @oldOrNewRepo(opts).then (name) ->
       _.assign(opts, repo: name)
+
+  @oldOrNewRepo: (opts) ->
+    GitRepository.exists().then (repo) =>
+      if repo.exists
+        Log.p "Using your existing GitHub repository: #{repo.name}"
+        repo.name
+      else
+        @new(opts.slug)
 
   @new: (slug) ->
     User.get().then (user) ->
       UserInput.repo("#{user.name}/#{slug}")
-
-  @reuse: (repo_name, slug) ->
-    UserInput.reuseRepo(repo_name).then (reuse) =>
-      return @new(slug) unless reuse
-
-      repo_name
-
-  @create: (repo_name) ->
-    # do request
-    new Promise (resolve, reject) ->
-      resolve()

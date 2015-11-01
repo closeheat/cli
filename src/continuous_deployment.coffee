@@ -18,6 +18,7 @@ Notifier = require './notifier'
 SlugManager = require './slug_manager'
 GitHubManager = require './github_manager'
 Website = require './website'
+GitRepository = require './git_repository'
 
 shepherd = require("shepherd")
 
@@ -36,6 +37,7 @@ class ContinuousDeployment
       { key: 'slug', fn: SlugManager.choose }
       { key: 'repo', fn: GitHubManager.choose }
       { key: 'website', fn: Website.create }
+      { key: 'remote', fn: GitRepository.ensureRemote }
     ]
 
   unfullfilledSteps: (opts) ->

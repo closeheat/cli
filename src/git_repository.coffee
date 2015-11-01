@@ -13,17 +13,13 @@ ReuseRepoContinuousDeployment = require './reuse_repo_continuous_deployment'
 
 module.exports =
 class GitRepository
-  # exists: ->
-  #   @gitHubRemote
-  #   @existing().then( (existing) ->
-  #     @reuse(slug, existing)
-  #   ).catch -> @newRepo(slug)
-  #
-  # newRepo: UserInput.repo
-  #
-  # reuse: (slug, existing) =>
-  #   ReuseRepoContinuousDeployment.start(existing, slug).catch(=> @newRepo(slug))
-  #
+  @ensureRemote: (opts) =>
+    @exists().then (repo) =>
+      return _.assign(opts, remote: repo.name) if repo.exists
+
+      @addOriginRemote(opts.repo_url).then ->
+        _.assign(opts, remote: opts.repo_url)
+
   @addOriginRemote: (url) ->
     new Promise (resolve, reject) =>
       new Git().exec 'remote', ["add origin #{url}"], (err, resp) ->
@@ -38,6 +34,7 @@ class GitRepository
       new Git().exec 'remote', ['--verbose'], (err, resp) ->
         return reject(err) if err
 
-        existing_repo = resp.match(GITHUB_REPO_REGEX)[1]
+        repo_match = resp.match(GITHUB_REPO_REGEX)
+        return resolve(exists: false) unless repo_match
 
-        resolve(exists: !!existing_repo, name: existing_repo)
+        resolve(exists: true, name: repo_match[1])

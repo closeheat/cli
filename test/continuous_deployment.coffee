@@ -74,11 +74,6 @@ describe 'publish', ->
         res.send
           free: true
   #
-  #   describe 'GitHub repo does not exist', ->
-  #     it 'create new repo', (done) ->
-  #       # TODO
-  #       done()
-  #
   #   describe 'GitHub repo already exists', ->
   #     it 'use existing repo', (done) ->
   #       @timeout(5000)
@@ -95,15 +90,12 @@ describe 'publish', ->
   #         res.send
   #           success: true
   #           url: 'http://example-subdomain.closeheatapp.com'
+  #           repo_url: 'git@github.com:example-org/example-repo.git'
   #
   #       prompts = [
   #         {
   #           question: 'What subdomain would you like to choose'
   #           answer: 'example-subdomain'
-  #         }
-  #         {
-  #           question: 'Would you like to use your existing'
-  #           answer: 'y'
   #         }
   #       ]
   #
@@ -119,12 +111,11 @@ describe 'publish', ->
   #           ? What subdomain would you like to choose at SUBDOMAIN.closeheatapp.com? (you will be able to add top level domain later) (suggested-slug)
   #           ? What subdomain would you like to choose at SUBDOMAIN.closeheatapp.com? (you will be able to add top level domain later) example-subdomain
   #           TEST: Executing 'git remote --verbose'
-  #           ? Would you like to use your existing example-org/example-repo GitHub repository repo for continuos delivery? (Y/n)
-  #           ? Would you like to use your existing example-org/example-repo GitHub repository repo for continuos delivery? Yes
+  #           Using your existing GitHub repository: example-org/example-repo
   #           #{success('example-org/example-repo')}
   #           """
   #         done()
-  #
+
     it 'create new repo', (done) ->
       @timeout(5000)
 
@@ -161,16 +152,14 @@ describe 'publish', ->
           answer: 'example-subdomain'
         }
         {
-          question: 'Would you like to use your existing'
-          answer: 'n'
-        }
-        {
           question: 'How will you name a new GitHub repository'
           answer: 'example-org/example-new-repo'
         }
       ]
 
-      command('publish', prompts: prompts).then (stdout) ->
+      git = '../test/fixtures/git/dist/without_remotes'
+
+      command('publish', prompts: prompts, git: git).then (stdout) ->
         assertStdout stdout,
           """
           TEST: Executing 'git remote --verbose'
@@ -178,10 +167,9 @@ describe 'publish', ->
           ? What subdomain would you like to choose at SUBDOMAIN.closeheatapp.com? (you will be able to add top level domain later) (suggested-slug)
           ? What subdomain would you like to choose at SUBDOMAIN.closeheatapp.com? (you will be able to add top level domain later) example-subdomain
           TEST: Executing 'git remote --verbose'
-          ? Would you like to use your existing example-org/example-repo GitHub repository repo for continuos delivery? (Y/n)
-          ? Would you like to use your existing example-org/example-repo GitHub repository repo for continuos delivery? No
           ? How will you name a new GitHub repository? (example: example-user/example-subdomain)
           ? How will you name a new GitHub repository? (example: example-user/example-subdomain) example-org/example-new-repo
+          TEST: Executing 'git remote --verbose'
           TEST: Executing 'git remote add origin git@github.com:example-org/example-new-repo.git'
           #{success('example-org/example-new-repo')}
           """

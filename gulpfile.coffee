@@ -14,7 +14,7 @@ gulp.task 'default', ['coffee', 'img']
 
 gulp.task 'watch', ->
   gulp.watch('./src/**/*.coffee', ['default'])
-  gulp.watch('./test/helpers/*.coffee', ['default'])
+  gulp.watch('./test/fixtures/**/*.coffee', ['default'])
 
 gulp.task 'img', ->
   gulp

@@ -28,40 +28,29 @@ module.exports = GitHubManager = (function() {
   function GitHubManager() {}
 
   GitHubManager.choose = function(opts) {
-    var get_it;
-    get_it = GitRepository.exists().then(function(repo) {
-      if (repo.exists) {
-        return GitHubManager.reuse(repo.name, opts.slug);
-      }
-      return GitHubManager["new"](opts.slug);
-    });
-    return get_it.then(function(name) {
+    return GitHubManager.oldOrNewRepo(opts).then(function(name) {
       return _.assign(opts, {
         repo: name
       });
     });
   };
 
-  GitHubManager["new"] = function(slug) {
-    return User.get().then(function(user) {
-      return UserInput.repo(user.name + "/" + slug);
-    });
-  };
-
-  GitHubManager.reuse = function(repo_name, slug) {
-    return UserInput.reuseRepo(repo_name).then((function(_this) {
-      return function(reuse) {
-        if (!reuse) {
-          return _this["new"](slug);
+  GitHubManager.oldOrNewRepo = function(opts) {
+    return GitRepository.exists().then((function(_this) {
+      return function(repo) {
+        if (repo.exists) {
+          Log.p("Using your existing GitHub repository: " + repo.name);
+          return repo.name;
+        } else {
+          return _this["new"](opts.slug);
         }
-        return repo_name;
       };
     })(this));
   };
 
-  GitHubManager.create = function(repo_name) {
-    return new Promise(function(resolve, reject) {
-      return resolve();
+  GitHubManager["new"] = function(slug) {
+    return User.get().then(function(user) {
+      return UserInput.repo(user.name + "/" + slug);
     });
   };
 

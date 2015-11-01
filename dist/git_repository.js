@@ -27,6 +27,21 @@ module.exports = GitRepository = (function() {
 
   function GitRepository() {}
 
+  GitRepository.ensureRemote = function(opts) {
+    return GitRepository.exists().then(function(repo) {
+      if (repo.exists) {
+        return _.assign(opts, {
+          remote: repo.name
+        });
+      }
+      return GitRepository.addOriginRemote(opts.repo_url).then(function() {
+        return _.assign(opts, {
+          remote: opts.repo_url
+        });
+      });
+    });
+  };
+
   GitRepository.addOriginRemote = function(url) {
     return new Promise((function(_this) {
       return function(resolve, reject) {
@@ -46,14 +61,19 @@ module.exports = GitRepository = (function() {
     return new Promise((function(_this) {
       return function(resolve, reject) {
         return new Git().exec('remote', ['--verbose'], function(err, resp) {
-          var existing_repo;
+          var repo_match;
           if (err) {
             return reject(err);
           }
-          existing_repo = resp.match(GITHUB_REPO_REGEX)[1];
+          repo_match = resp.match(GITHUB_REPO_REGEX);
+          if (!repo_match) {
+            return resolve({
+              exists: false
+            });
+          }
           return resolve({
-            exists: !!existing_repo,
-            name: existing_repo
+            exists: true,
+            name: repo_match[1]
           });
         });
       };
