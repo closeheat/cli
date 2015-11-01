@@ -55,7 +55,7 @@ describe 'graceful when user cli is not authorized', ->
   describe 'log', ->
     it 'slug unauthorized', (done) ->
       @timeout(5000)
-      @api.routes.post '/deploy/slug', (req, res) ->
+      @api.routes.post '/apps/get_from_repo', (req, res) ->
         res.status(401).send
           type: 'user-unauthorized'
           message: 'Unauthorized'
@@ -70,7 +70,7 @@ describe 'graceful when user cli is not authorized', ->
 
     it 'builds unauthorized', (done) ->
       @timeout(5000)
-      @api.routes.post '/deploy/slug', (req, res) ->
+      @api.routes.post '/apps/get_from_repo', (req, res) ->
         res.send slug: 'example-slug'
 
       @api.routes.get '/apps/example-slug/builds/for_cli', (req, res) ->
@@ -87,7 +87,7 @@ describe 'graceful when user cli is not authorized', ->
         done()
 
   it 'open', (done) ->
-    @api.routes.post '/apps/exists', (req, res) ->
+    @api.routes.post '/apps/get_from_repo', (req, res) ->
       res.status(401).send
         type: 'user-unauthorized'
         message: 'Unauthorized'
@@ -104,7 +104,7 @@ describe 'graceful when user cli is not authorized', ->
     it 'slug unauthorized', (done) ->
       @timeout(5000)
 
-      @api.routes.post '/apps/exists', (req, res) ->
+      @api.routes.post '/apps/get_from_repo', (req, res) ->
         res.status(401).send
           type: 'user-unauthorized'
           message: 'Unauthorized'

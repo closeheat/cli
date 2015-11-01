@@ -87,14 +87,14 @@ module.exports = Pusher = (function() {
           url: Urls.currentUserInfo(),
           method: 'get'
         }, function(err, resp) {
-          var e, error, user_info;
+          var e, user_info;
           if (err) {
             return reject(err);
           }
           try {
             user_info = JSON.parse(resp.body).user;
-          } catch (error) {
-            e = error;
+          } catch (_error) {
+            e = _error;
             return Log.error('Backend responded with an error.');
           }
           if (user_info['github_token']) {

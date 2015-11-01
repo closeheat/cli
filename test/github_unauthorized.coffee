@@ -17,11 +17,7 @@ describe 'graceful when GitHub not authorized', ->
     @api = new TestApi()
     @server = @api.start()
 
-    TestConfig.init()
-    TestConfig.rm()
-    Config.update('access_token', 'example-token')
-
-    @api.routes.post '/apps/exists', (req, res) ->
+    @api.routes.post '/apps/get_from_repo', (req, res) ->
       res.status(401).send
         type: 'github-unauthorized'
         message: 'Unauthorized'
@@ -30,8 +26,6 @@ describe 'graceful when GitHub not authorized', ->
     @server.close()
 
   it 'publish', (done) ->
-    @timeout(5000)
-
     command('publish').then (stdout) ->
       assertStdout stdout,
         """

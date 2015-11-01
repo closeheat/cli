@@ -15,10 +15,6 @@ module.exports = Urls = (function() {
     return global.API_URL;
   };
 
-  Urls.user = function() {
-    return (this.api()) + "/user";
-  };
-
   Urls.githubAuthorized = function() {
     return (this.api()) + "/github-authorized";
   };
@@ -55,8 +51,8 @@ module.exports = Urls = (function() {
     return (this.api()) + "/deploy/existing";
   };
 
-  Urls.websiteExists = function() {
-    return (this.api()) + "/apps/exists";
+  Urls.websiteData = function() {
+    return (this.api()) + "/apps/get_from_repo";
   };
 
   Urls.latestBuild = function(slug) {
@@ -71,7 +67,7 @@ module.exports = Urls = (function() {
     return (this.api()) + "/apps";
   };
 
-  Urls.currentUserInfo = function() {
+  Urls.currentUser = function() {
     return (this.api()) + "/users/me";
   };
 

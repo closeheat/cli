@@ -4,4 +4,4 @@ Authorized = require './authorized'
 module.exports =
 class User
   @get: ->
-    Authorized.post(Urls.user())
+    Authorized.get(Urls.currentUser())

@@ -8,7 +8,7 @@ module.exports = User = (function() {
   function User() {}
 
   User.get = function() {
-    return Authorized.post(Urls.user());
+    return Authorized.get(Urls.currentUser());
   };
 
   return User;

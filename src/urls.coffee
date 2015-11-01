@@ -14,9 +14,6 @@ class Urls
     # 'http://api.closeheat.com'
     # 'http://10.30.0.1:4000/api'
 
-  @user: ->
-    "#{@api()}/user"
-
   @githubAuthorized: ->
     "#{@api()}/github-authorized"
 
@@ -44,8 +41,8 @@ class Urls
   @setupExistingRepo: ->
     "#{@api()}/deploy/existing"
 
-  @websiteExists: ->
-    "#{@api()}/apps/exists"
+  @websiteData: ->
+    "#{@api()}/apps/get_from_repo"
 
   @latestBuild: (slug) ->
     "#{@api()}/apps/#{slug}/builds/latest"
@@ -56,7 +53,7 @@ class Urls
   @createApp: ->
     "#{@api()}/apps"
 
-  @currentUserInfo: ->
+  @currentUser: ->
     "#{@api()}/users/me"
 
   @getToken: ->

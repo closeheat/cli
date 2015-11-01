@@ -11,16 +11,11 @@ describe 'open', ->
     @api = new TestApi()
     @server = @api.start()
 
-    TestConfig.init()
-    TestConfig.rm()
-    Config.update('access_token', 'example-token')
-
   afterEach ->
     @server.close()
 
   it 'should open app url', (done) ->
-    @timeout(5000)
-    @api.routes.post '/apps/exists', (req, res) ->
+    @api.routes.post '/apps/get_from_repo', (req, res) ->
       res.send
         exists: true
         slug: 'example-slug'
@@ -35,8 +30,7 @@ describe 'open', ->
       done()
 
   it 'should say when it does not exist', (done) ->
-    @timeout(5000)
-    @api.routes.post '/apps/exists', (req, res) ->
+    @api.routes.post '/apps/get_from_repo', (req, res) ->
       res.send
         exists: false
 

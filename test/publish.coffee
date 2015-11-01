@@ -23,29 +23,17 @@ describe 'publish', ->
     @api = new TestApi()
     @server = @api.start()
 
-    TestConfig.init()
-    TestConfig.rm()
-    Config.update('access_token', 'example-token')
-
-    @api.routes.get '/github-authorized', (req, res) ->
-      res.send
-        authorized: true
-
   afterEach ->
     @server.close()
 
   # TODO: test when
   # ? maybe - .git doesnt exist
   # - git not installed
-  # - files already added
-  # - files already commited
-  # - files already pushed
-  # - files already deployed on closeheat
 
   it 'continuous deployment already configured', (done) ->
     @timeout(5000)
 
-    @api.routes.post '/apps/exists', (req, res) ->
+    @api.routes.post '/apps/get_from_repo', (req, res) ->
       res.send
         exists: true
         slug: 'existing-slug'
@@ -66,9 +54,13 @@ describe 'publish', ->
 
   describe 'continuous deployment not setup', ->
     beforeEach ->
-      @api.routes.post '/deploy/slug', (req, res) ->
+      @api.routes.post '/apps/get_from_repo', (req, res) ->
         res.send
           exists: false
+
+      @api.routes.post '/suggest/slug', (req, res) ->
+        res.send
+          slug: 'suggested-slug'
 
       @api.routes.post '/free/slug', (req, res) ->
         res.send
@@ -77,14 +69,6 @@ describe 'publish', ->
     describe 'GitHub repo already exists', ->
       it 'use existing repo', (done) ->
         @timeout(5000)
-
-        @api.routes.post '/apps/exists', (req, res) ->
-          res.send
-            exists: false
-
-        @api.routes.post '/suggest/slug', (req, res) ->
-          res.send
-            slug: 'suggested-slug'
 
         @api.routes.post '/deploy/new', (req, res) ->
           res.send
@@ -120,21 +104,7 @@ describe 'publish', ->
     it 'create new repo', (done) ->
       @timeout(5000)
 
-      @api.routes.post '/apps/exists', (req, res) ->
-        expect(req.body.repo).to.eql('example-org/example-repo')
-
-        res.send
-          exists: false
-
-      @api.routes.post '/suggest/slug', (req, res) ->
-        expect(req.body.folder).to.eql('cli')
-
-        res.send
-          slug: 'suggested-slug'
-
-      @api.routes.post '/user', (req, res) ->
-        expect(req.body.api_token).to.eql('example-token')
-
+      @api.routes.get '/users/me', (req, res) ->
         res.send
           name: 'example-user'
 
