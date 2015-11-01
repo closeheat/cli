@@ -61,12 +61,9 @@ program
   .description('Shows a list of your deployed apps.')
   .action ->
     setGlobals(program)
-    Updater = require '../updater'
+    List = require '../list'
 
-    new Updater().update().then ->
-      List = require '../list'
-
-      new List().show()
+    new List().show()
 
 program
   .command('login [access-token]')

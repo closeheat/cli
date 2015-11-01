@@ -19,6 +19,8 @@ describe 'list', ->
     @server.close()
 
   it 'should show one website and instructions', (done) ->
+    @timeout(5000)
+
     @api.routes.get '/apps', (req, res) ->
       res.send apps: [
         {
@@ -40,6 +42,8 @@ describe 'list', ->
       done()
 
   it 'should show deploy instructions when no websites', (done) ->
+    @timeout(5000)
+
     @api.routes.get '/apps', (req, res) ->
       res.send apps: []
 

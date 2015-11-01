@@ -15,7 +15,7 @@ class List
     Log.spin 'Getting information about your websites.'
 
     new Promise (resolve, reject) =>
-      Authorized.get(url: Urls.appsIndex()).then (resp) ->
+      Authorized.get(Urls.appsIndex()).then (resp) =>
         Log.stop()
 
         if resp.apps.length

@@ -50,14 +50,10 @@ program.command('open').description('Opens your deployed app in the browser.').a
 });
 
 program.command('list').description('Shows a list of your deployed apps.').action(function() {
-  var Updater;
+  var List;
   setGlobals(program);
-  Updater = require('../updater');
-  return new Updater().update().then(function() {
-    var List;
-    List = require('../list');
-    return new List().show();
-  });
+  List = require('../list');
+  return new List().show();
 });
 
 program.command('login [access-token]').description('Log in to closeheat.com with this computer.').action(function(token) {

@@ -27,14 +27,12 @@ module.exports = List = (function() {
     Log.spin('Getting information about your websites.');
     return new Promise((function(_this) {
       return function(resolve, reject) {
-        return Authorized.get({
-          url: Urls.appsIndex()
-        }).then(function(resp) {
+        return Authorized.get(Urls.appsIndex()).then(function(resp) {
           Log.stop();
           if (resp.apps.length) {
-            this.table(resp.apps);
+            _this.table(resp.apps);
           } else {
-            this.noApps();
+            _this.noApps();
           }
           return resolve();
         });

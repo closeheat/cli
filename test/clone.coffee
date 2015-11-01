@@ -18,26 +18,26 @@ describe 'clone', ->
   afterEach ->
     @server.close()
 
-  # it 'without app name should show apps list', (done) ->
-  #   @api.routes.get '/apps', (req, res) ->
-  #     res.send apps: [
-  #       {
-  #         name: 'Example app',
-  #         slug: 'example-slug',
-  #       }
-  #     ]
-  #
-  #   command('clone').then (stdout) ->
-  #     assertStdout stdout,
-  #       """
-  #       - Getting information about your websites.
-  #         You have 1 websites.
-  #         Name          Clone command
-  #         Example app  closeheat clone example-slug
-  #       Edit any of your websites by cloning it with:
-  #         closeheat clone awesome-website
-  #       """
-  #     done()
+  it 'without app name should show apps list', (done) ->
+    @api.routes.get '/apps', (req, res) ->
+      res.send apps: [
+        {
+          name: 'Example app',
+          slug: 'example-slug',
+        }
+      ]
+
+    command('clone').then (stdout) ->
+      assertStdout stdout,
+        """
+        - Getting information about your websites.
+          You have 1 websites.
+          Name          Clone command
+          Example app  closeheat clone example-slug
+        Edit any of your websites by cloning it with:
+          closeheat clone awesome-website
+        """
+      done()
 
   it 'with app name', (done) ->
     @api.routes.get '/apps/example-slug', (req, res) ->

@@ -36,6 +36,7 @@ module.exports = Authorized = (function() {
     if (data == null) {
       data = {};
     }
+    this.validateUrl(url);
     return new Promise((function(_this) {
       return function(resolve, reject) {
         return _this.request({
@@ -46,14 +47,15 @@ module.exports = Authorized = (function() {
         }).then(function(resp) {
           return resolve(resp[0].body);
         })["catch"](function(err) {
-          console.log('CATCH');
-          return reject(err);
+          Log.p(err);
+          return process.exit();
         });
       };
     })(this));
   };
 
   Authorized.get = function(url) {
+    this.validateUrl(url);
     return new Promise((function(_this) {
       return function(resolve, reject) {
         return _this.request({
@@ -63,11 +65,19 @@ module.exports = Authorized = (function() {
         }).then(function(resp) {
           return resolve(resp[0].body);
         })["catch"](function(err) {
-          console.log('CATCH');
-          return reject(err);
+          Log.p(err);
+          return process.exit();
         });
       };
     })(this));
+  };
+
+  Authorized.validateUrl = function(url) {
+    if (_.isString(url)) {
+      return;
+    }
+    Log.p("Url " + url + " is not a string");
+    return process.exit();
   };
 
   Authorized.token = function() {

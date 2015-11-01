@@ -18,20 +18,30 @@ class Authorized
     request opts
 
   @post: (url, data = {}) ->
+    @validateUrl(url)
+
     new Promise (resolve, reject) =>
       @request(url: url, form: data, json: true, method: 'post').then((resp) ->
         resolve(resp[0].body)
       ).catch (err) ->
-        console.log 'CATCH'
-        reject(err)
+        Log.p(err)
+        process.exit()
 
   @get: (url) ->
+    @validateUrl(url)
+
     new Promise (resolve, reject) =>
       @request(url: url, json: true, method: 'get').then((resp) ->
         resolve(resp[0].body)
       ).catch (err) ->
-        console.log 'CATCH'
-        reject(err)
+        Log.p(err)
+        process.exit()
+
+  @validateUrl: (url) ->
+    return if _.isString(url)
+
+    Log.p("Url #{url} is not a string")
+    process.exit()
 
   @token: ->
     Authorizer = require './authorizer'
