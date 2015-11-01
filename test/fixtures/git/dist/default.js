@@ -42,6 +42,10 @@ module.exports = TestGit = (function() {
     return cb(null, 'example-branch');
   };
 
+  TestGit.prototype.revParse = function(args, cb) {
+    return cb(null, 'example-sha123');
+  };
+
   return TestGit;
 
 })();

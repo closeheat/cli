@@ -1,4 +1,4 @@
-var Authorized, BackendLogger, DeployLog, Git, Log, Promise, Urls, _,
+var Authorized, BackendLogger, DeployLog, Git, GitRepository, Log, Promise, Urls, Website, _,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 Promise = require('bluebird');
@@ -15,12 +15,13 @@ Urls = require('./urls');
 
 BackendLogger = require('./backend_logger');
 
+GitRepository = require('./git_repository');
+
+Website = require('./website');
+
 module.exports = DeployLog = (function() {
   function DeployLog() {
     this.requestAndLogStatus = bind(this.requestAndLogStatus, this);
-    var Deployer;
-    Deployer = require('./deployer');
-    this.deployer = new Deployer();
     this.backend_logger = new BackendLogger();
     this.git = new Git();
   }
@@ -28,17 +29,15 @@ module.exports = DeployLog = (function() {
   DeployLog.prototype.fromCurrentCommit = function() {
     return new Promise((function(_this) {
       return function(resolve, reject) {
-        return _this.deployer.getOriginRepo().then(function(repo) {
-          return _this.pollAndLogUntilDeployed(repo).then(function() {
-            Log.br();
-            return resolve(_this.slug);
-          });
+        return _this.pollAndLogUntilDeployed().then(function() {
+          Log.br();
+          return resolve(_this.slug);
         });
       };
     })(this));
   };
 
-  DeployLog.prototype.pollAndLogUntilDeployed = function(repo) {
+  DeployLog.prototype.pollAndLogUntilDeployed = function() {
     return new Promise((function(_this) {
       return function(resolve, reject) {
         _this.status = 'none';
@@ -46,35 +45,23 @@ module.exports = DeployLog = (function() {
         return _this.promiseWhile((function() {
           return !_.contains(['success', 'failed', null], _this.status);
         }), (function() {
-          return _this.requestAndLogStatus(repo);
+          return _this.requestAndLogStatus();
         })).then(resolve);
       };
     })(this));
   };
 
-  DeployLog.prototype.requestAndLogStatus = function(repo) {
-    return this.getSha().then((function(_this) {
-      return function(sha) {
-        return _this.deployer.getSlug(repo).then(function(slug) {
-          _this.slug = slug;
-          return Authorized.request({
-            url: Urls.buildForCLI(slug),
-            qs: {
-              commit_sha: sha
-            },
-            method: 'get',
-            json: true
-          }, function(err, resp) {
+  DeployLog.prototype.requestAndLogStatus = function() {
+    return Website.get().then((function(_this) {
+      return function(website) {
+        return _this.getSha().then(function(sha) {
+          return Authorized.post(Urls.buildForCLI(website.slug), {
+            commit_sha: sha
+          }).then(function(resp) {
             var build;
-            if (resp.statusCode === 404) {
-              return Log.error(resp.body.message);
-            } else if (resp.statusCode === 200) {
-              build = resp.body.build;
-              _this.backend_logger.log(build);
-              return _this.status = build.status;
-            } else {
-              return Log.error("Unknown backend error. We're fixing this already.");
-            }
+            build = resp.build;
+            _this.backend_logger.log(build);
+            return _this.status = build.status;
           });
         });
       };

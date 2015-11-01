@@ -38,3 +38,6 @@ class TestGit
 
   symbolicRef: (args, cb) ->
     cb(null, 'example-branch')
+
+  revParse: (args, cb) ->
+    cb(null, 'example-sha123')

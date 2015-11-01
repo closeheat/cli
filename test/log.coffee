@@ -20,10 +20,15 @@ describe 'log', ->
 
   it 'should display logs and exit on success', (done) ->
     @timeout(5000)
-    @api.routes.post '/deploy/slug', (req, res) ->
-      res.send slug: 'example-slug'
 
-    @api.routes.get '/apps/example-slug/builds/for_cli', (req, res) ->
+    @api.routes.post '/apps/exists', (req, res) ->
+      expect(req.body.repo).to.eql('example-org/example-repo')
+
+      res.send
+        exists: true
+        slug: 'example-slug'
+
+    @api.routes.post '/apps/example-slug/builds/for_cli', (req, res) ->
       res.send
         build:
           status: 'success'
