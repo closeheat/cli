@@ -45,9 +45,26 @@ module.exports = Authorized = (function() {
           method: 'post'
         }).then(function(resp) {
           return resolve(resp[0].body);
-        })["catch"](function() {
+        })["catch"](function(err) {
           console.log('CATCH');
-          return reject;
+          return reject(err);
+        });
+      };
+    })(this));
+  };
+
+  Authorized.get = function(url) {
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        return _this.request({
+          url: url,
+          json: true,
+          method: 'get'
+        }).then(function(resp) {
+          return resolve(resp[0].body);
+        })["catch"](function(err) {
+          console.log('CATCH');
+          return reject(err);
         });
       };
     })(this));

@@ -17,7 +17,7 @@ module.exports = Cloner = (function() {
 
   Cloner.prototype.clone = function(app_name) {
     Log.logo();
-    Log.spin("Getting application data for " + app_name + ".");
+    Log.spin("Getting website information for " + app_name + ".");
     return this.getAppData(app_name).then((function(_this) {
       return function(app) {
         Log.stop();
@@ -42,21 +42,11 @@ module.exports = Cloner = (function() {
 
   Cloner.prototype.getAppData = function(app_name) {
     return new Promise(function(resolve, reject) {
-      return Authorized.request({
-        url: Urls.appData(app_name),
-        method: 'get'
-      }, function(err, resp) {
-        var app, e;
-        if (err) {
-          return reject(err);
+      return Authorized.get(Urls.appData(app_name)).then(function(resp) {
+        if (!resp.app) {
+          return Log.error("Website named '" + app_name + "' does not exist.");
         }
-        try {
-          app = JSON.parse(resp.body).app;
-        } catch (_error) {
-          e = _error;
-          return reject("App named '" + app_name + "' does not exist.");
-        }
-        return resolve(app);
+        return resolve(resp.app);
       });
     });
   };

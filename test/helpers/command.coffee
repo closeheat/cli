@@ -16,8 +16,10 @@ module.exports = (command, opts = {}) ->
       obj.on(///#{prompt.question}///).respond("#{prompt.answer}\n")
     , cli
 
-  mockGit = (cli) ->
-    cli.env 'CLOSEHEAT_TEST_MOCK_GIT', opts.git || '../test/fixtures/git/dist/default'
+  mockEnv = (cli) ->
+    cli
+      .env('CLOSEHEAT_TEST', true)
+      .env('CLOSEHEAT_TEST_MOCK_GIT', opts.git || '../test/fixtures/git/dist/default')
 
   new Promise (resolve, reject) ->
     test_command = [
@@ -28,7 +30,7 @@ module.exports = (command, opts = {}) ->
       '--no-colors'
     ]
 
-    mockGit(fillPrompts(nixt(nixt_config)))
+    mockEnv(fillPrompts(nixt(nixt_config)))
       .run(test_command.join(' '))
       .expect((result) ->
         resolve(result.stdout)

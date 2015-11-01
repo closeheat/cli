@@ -10,7 +10,7 @@ module.exports =
 class Cloner
   clone: (app_name) ->
     Log.logo()
-    Log.spin "Getting application data for #{app_name}."
+    Log.spin "Getting website information for #{app_name}."
 
     @getAppData(app_name).then((app) =>
       Log.stop()
@@ -35,15 +35,10 @@ class Cloner
 
   getAppData: (app_name) ->
     new Promise (resolve, reject) ->
-      Authorized.request url: Urls.appData(app_name), method: 'get', (err, resp) ->
-        return reject(err) if err
+      Authorized.get(Urls.appData(app_name)).then (resp) ->
+        return Log.error "Website named '#{app_name}' does not exist." if !resp.app
 
-        try
-          app = JSON.parse(resp.body).app
-        catch e
-          return reject("App named '#{app_name}' does not exist.")
-
-        resolve(app)
+        resolve(resp.app)
 
   execCloning: (github_repo, branch, app_name) ->
     @git = new Git()

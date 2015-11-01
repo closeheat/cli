@@ -21,9 +21,17 @@ class Authorized
     new Promise (resolve, reject) =>
       @request(url: url, form: data, json: true, method: 'post').then((resp) ->
         resolve(resp[0].body)
-      ).catch ->
+      ).catch (err) ->
         console.log 'CATCH'
-        reject
+        reject(err)
+
+  @get: (url) ->
+    new Promise (resolve, reject) =>
+      @request(url: url, json: true, method: 'get').then((resp) ->
+        resolve(resp[0].body)
+      ).catch (err) ->
+        console.log 'CATCH'
+        reject(err)
 
   @token: ->
     Authorizer = require './authorizer'

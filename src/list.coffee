@@ -15,19 +15,11 @@ class List
     Log.spin 'Getting information about your websites.'
 
     new Promise (resolve, reject) =>
-      Authorized.request url: Urls.appsIndex(), method: 'get', (err, resp) =>
+      Authorized.get(url: Urls.appsIndex()).then (resp) ->
         Log.stop()
 
-        return Log.error(err) if err
-
-        parsed_resp = null
-        try
-          parsed_resp = JSON.parse(resp.body)
-        catch e
-          return Log.backendError()
-
-        if parsed_resp.apps.length
-          @table(parsed_resp.apps)
+        if resp.apps.length
+          @table(resp.apps)
         else
           @noApps()
 

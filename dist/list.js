@@ -27,26 +27,14 @@ module.exports = List = (function() {
     Log.spin('Getting information about your websites.');
     return new Promise((function(_this) {
       return function(resolve, reject) {
-        return Authorized.request({
-          url: Urls.appsIndex(),
-          method: 'get'
-        }, function(err, resp) {
-          var e, parsed_resp;
+        return Authorized.get({
+          url: Urls.appsIndex()
+        }).then(function(resp) {
           Log.stop();
-          if (err) {
-            return Log.error(err);
-          }
-          parsed_resp = null;
-          try {
-            parsed_resp = JSON.parse(resp.body);
-          } catch (_error) {
-            e = _error;
-            return Log.backendError();
-          }
-          if (parsed_resp.apps.length) {
-            _this.table(parsed_resp.apps);
+          if (resp.apps.length) {
+            this.table(resp.apps);
           } else {
-            _this.noApps();
+            this.noApps();
           }
           return resolve();
         });
