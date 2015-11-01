@@ -15,7 +15,7 @@ describe 'open', ->
     @server.close()
 
   it 'should open app url', (done) ->
-    @api.routes.post '/apps/get_from_repo', (req, res) ->
+    @api.routes.post '/apps/from_repo', (req, res) ->
       res.send
         exists: true
         slug: 'example-slug'
@@ -30,7 +30,7 @@ describe 'open', ->
       done()
 
   it 'should say when it does not exist', (done) ->
-    @api.routes.post '/apps/get_from_repo', (req, res) ->
+    @api.routes.post '/apps/from_repo', (req, res) ->
       res.send
         exists: false
 

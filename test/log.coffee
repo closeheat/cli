@@ -17,7 +17,7 @@ describe 'log', ->
   it 'should display logs and exit on success', (done) ->
     @timeout(5000)
 
-    @api.routes.post '/apps/get_from_repo', (req, res) ->
+    @api.routes.post '/apps/from_repo', (req, res) ->
       expect(req.body.repo).to.eql('example-org/example-repo')
 
       res.send

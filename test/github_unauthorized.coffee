@@ -17,7 +17,7 @@ describe 'graceful when GitHub not authorized', ->
     @api = new TestApi()
     @server = @api.start()
 
-    @api.routes.post '/apps/get_from_repo', (req, res) ->
+    @api.routes.post '/apps/from_repo', (req, res) ->
       res.status(401).send
         type: 'github-unauthorized'
         message: 'Unauthorized'

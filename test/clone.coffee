@@ -40,12 +40,12 @@ describe 'clone', ->
       done()
 
   it 'with app name', (done) ->
-    @api.routes.get '/apps/example-slug', (req, res) ->
+    @api.routes.post '/apps/from_slug', (req, res) ->
       res.send
-        app:
-          github_repo: 'example/repo'
-          default_branch: 'example-branch'
-          slug: 'example-slug'
+        exists: true
+        github_repo: 'example/repo'
+        default_branch: 'example-branch'
+        slug: 'example-slug'
 
     command('clone example-slug').then (stdout) ->
       assertStdout stdout,
@@ -63,8 +63,9 @@ describe 'clone', ->
 
   it 'with invalid app name', (done) ->
     @timeout(5000)
-    @api.routes.get '/apps/example-slug', (req, res) ->
-      res.send 'BAD RESPONSE'
+    @api.routes.post '/apps/from_slug', (req, res) ->
+      res.send
+        exists: false
 
     command('clone example-slug').then (stdout) ->
       assertStdout stdout,

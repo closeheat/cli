@@ -60,7 +60,7 @@ module.exports = Website = (function() {
   Website.backend = function(repo) {
     return new Promise((function(_this) {
       return function(resolve, reject) {
-        return Authorized.post(Urls.websiteData(), {
+        return Authorized.post(Urls.websiteDataFromRepo(), {
           repo: repo
         }).then(function(resp) {
           return resolve({
