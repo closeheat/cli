@@ -9,7 +9,7 @@ Config = require '../src/config'
 gracefulUnauthorized =
   """
   You need to log in for that.
-  Type closeheat login or open http://app.closeheat.com/api/login to do it swiftly.
+  Type closeheat login to do it swiftly.
   """
 
 describe 'graceful when user cli is not authorized', ->

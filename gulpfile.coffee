@@ -43,5 +43,5 @@ gulp.task 'coffee', ->
 
 gulp.task 'test', ->
   gulp
-    .src('test/log.coffee', read: false)
+    .src('test/*.coffee', read: false)
     .pipe(mocha())
