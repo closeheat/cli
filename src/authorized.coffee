@@ -15,30 +15,28 @@ class Authorized
     opts.qs = _.merge(opts.form || {}, api_token: @token())
     opts.headers = { 'X-CLI-Version': pkg.version }
 
-    request(opts).then (resp) =>
-      Authorizer.checkUserLoggedIn(resp)
+    request(opts).then((resp) =>
+      Permissions = require './permissions'
+      Permissions.check(resp)
 
-      resp.body
+      Errors = require './errors'
+      Errors.check(resp)
+
+      resp[0].body
+
+    ).catch (err) ->
+      Log.p(err)
+      process.exit()
 
   @post: (url, data = {}) ->
     @validateUrl(url)
 
-    new Promise (resolve, reject) =>
-      @request(url: url, form: data, json: true, method: 'post').then((resp) ->
-        resolve(resp[0].body)
-      ).catch (err) ->
-        Log.p(err)
-        process.exit()
+    @request(url: url, form: data, json: true, method: 'post')
 
   @get: (url) ->
     @validateUrl(url)
 
-    new Promise (resolve, reject) =>
-      @request(url: url, json: true, method: 'get').then((resp) ->
-        resolve(resp[0].body)
-      ).catch (err) ->
-        Log.p(err)
-        process.exit()
+    @request(url: url, json: true, method: 'get')
 
   @validateUrl: (url) ->
     return if _.isString(url)

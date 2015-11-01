@@ -78,7 +78,7 @@ module.exports = Authorizer = (function() {
     Log = require('./log');
     Log.stop();
     Log.p(Color.redYellow('You need to log in for that.'));
-    Log.p("Type " + (Color.violet('closeheat login')) + " or open " + (Color.violet(Urls.loginInstructions())) + " to do it swiftly.");
+    Log.p("Type " + (Color.violet('closeheat login')) + " to do it swiftly.");
     return process.exit();
   };
 
@@ -86,7 +86,7 @@ module.exports = Authorizer = (function() {
     return resp.statusCode === 401;
   };
 
-  Authorizer.checkUserLoggedIn = function(resp) {
+  Authorizer.gracefulUnauthorized = function(resp) {
     if (!resp[0]) {
       return;
     }

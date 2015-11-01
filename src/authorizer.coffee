@@ -55,13 +55,13 @@ class Authorizer
     Log = require './log'
     Log.stop()
     Log.p Color.redYellow('You need to log in for that.')
-    Log.p("Type #{Color.violet('closeheat login')} or open #{Color.violet(Urls.loginInstructions())} to do it swiftly.")
+    Log.p("Type #{Color.violet('closeheat login')} to do it swiftly.")
     process.exit()
 
   @unauthorized: (resp) ->
     resp.statusCode == 401
 
-  @checkUserLoggedIn: (resp) ->
+  @gracefulUnauthorized: (resp) ->
     return unless resp[0]
 
     @forceLogin() if @unauthorized(resp[0])

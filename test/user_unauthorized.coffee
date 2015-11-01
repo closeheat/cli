@@ -26,7 +26,9 @@ describe 'graceful when user cli is not authorized', ->
 
   it 'list', (done) ->
     @api.routes.get '/apps', (req, res) ->
-      res.status(401).send message: 'Unauthorized'
+      res.status(401).send
+        type: 'user-unauthorized'
+        message: 'Unauthorized'
 
     command('list').then (stdout) ->
       assertStdout stdout,
@@ -38,7 +40,9 @@ describe 'graceful when user cli is not authorized', ->
 
   it 'clone', (done) ->
     @api.routes.get '/apps/example-slug', (req, res) ->
-      res.status(401).send message: 'Unauthorized'
+      res.status(401).send
+        type: 'user-unauthorized'
+        message: 'Unauthorized'
 
     command('clone example-slug').then (stdout) ->
       assertStdout stdout,
@@ -52,7 +56,9 @@ describe 'graceful when user cli is not authorized', ->
     it 'slug unauthorized', (done) ->
       @timeout(5000)
       @api.routes.post '/deploy/slug', (req, res) ->
-        res.status(401).send message: 'Unauthorized'
+        res.status(401).send
+          type: 'user-unauthorized'
+          message: 'Unauthorized'
 
       command('log').then (stdout) ->
         assertStdout stdout,
@@ -68,7 +74,9 @@ describe 'graceful when user cli is not authorized', ->
         res.send slug: 'example-slug'
 
       @api.routes.get '/apps/example-slug/builds/for_cli', (req, res) ->
-        res.status(401).send message: 'Unauthorized'
+        res.status(401).send
+          type: 'user-unauthorized'
+          message: 'Unauthorized'
 
       command('log').then (stdout) ->
         assertStdout stdout,
@@ -80,7 +88,9 @@ describe 'graceful when user cli is not authorized', ->
 
   it 'open', (done) ->
     @api.routes.post '/apps/exists', (req, res) ->
-      res.status(401).send message: 'Unauthorized'
+      res.status(401).send
+        type: 'user-unauthorized'
+        message: 'Unauthorized'
 
     command('open').then (stdout) ->
       assertStdout stdout,
@@ -95,7 +105,9 @@ describe 'graceful when user cli is not authorized', ->
       @timeout(5000)
 
       @api.routes.post '/apps/exists', (req, res) ->
-        res.status(401).send message: 'Unauthorized'
+        res.status(401).send
+          type: 'user-unauthorized'
+          message: 'Unauthorized'
 
       command('publish').then (stdout) ->
         assertStdout stdout,

@@ -21,9 +21,10 @@ describe 'graceful when GitHub not authorized', ->
     TestConfig.rm()
     Config.update('access_token', 'example-token')
 
-    @api.routes.get '/github-authorized', (req, res) ->
-      res.send
-        authorized: false
+    @api.routes.post '/apps/exists', (req, res) ->
+      res.status(401).send
+        type: 'github-unauthorized'
+        message: 'Unauthorized'
 
   after ->
     @server.close()
@@ -34,7 +35,7 @@ describe 'graceful when GitHub not authorized', ->
     command('publish').then (stdout) ->
       assertStdout stdout,
         """
-        You are about to publish a new website.
+        TEST: Executing 'git remote --verbose'
         ERROR | GitHub not authorized
                 We cannot set you up for deployment because you did not authorize GitHub.
                 Visit http://app.closeheat.com/authorize-github and rerun the command.

@@ -28,10 +28,17 @@ module.exports = Authorized = (function() {
     };
     return request(opts).then((function(_this) {
       return function(resp) {
-        Authorizer.checkUserLoggedIn(resp);
-        return resp.body;
+        var Errors, Permissions;
+        Permissions = require('./permissions');
+        Permissions.check(resp);
+        Errors = require('./errors');
+        Errors.check(resp);
+        return resp[0].body;
       };
-    })(this));
+    })(this))["catch"](function(err) {
+      Log.p(err);
+      return process.exit();
+    });
   };
 
   Authorized.post = function(url, data) {
@@ -39,39 +46,21 @@ module.exports = Authorized = (function() {
       data = {};
     }
     this.validateUrl(url);
-    return new Promise((function(_this) {
-      return function(resolve, reject) {
-        return _this.request({
-          url: url,
-          form: data,
-          json: true,
-          method: 'post'
-        }).then(function(resp) {
-          return resolve(resp[0].body);
-        })["catch"](function(err) {
-          Log.p(err);
-          return process.exit();
-        });
-      };
-    })(this));
+    return this.request({
+      url: url,
+      form: data,
+      json: true,
+      method: 'post'
+    });
   };
 
   Authorized.get = function(url) {
     this.validateUrl(url);
-    return new Promise((function(_this) {
-      return function(resolve, reject) {
-        return _this.request({
-          url: url,
-          json: true,
-          method: 'get'
-        }).then(function(resp) {
-          return resolve(resp[0].body);
-        })["catch"](function(err) {
-          Log.p(err);
-          return process.exit();
-        });
-      };
-    })(this));
+    return this.request({
+      url: url,
+      json: true,
+      method: 'get'
+    });
   };
 
   Authorized.validateUrl = function(url) {
