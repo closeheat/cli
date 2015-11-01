@@ -42,28 +42,28 @@ describe 'publish', ->
   # - files already pushed
   # - files already deployed on closeheat
 
-  # it 'continuous deployment already configured', (done) ->
-  #   @timeout(5000)
-  #
-  #   @api.routes.post '/apps/exists', (req, res) ->
-  #     res.send
-  #       exists: true
-  #       slug: 'existing-slug'
-  #
-  #   command('publish').then (stdout) ->
-  #     assertStdout stdout,
-  #       """
-  #       TEST: Executing 'git remote --verbose'
-  #       Hey there! This folder is already published to closeheat.
-  #       It is available at existing-slug.closeheatapp.com.
-  #       You can open it swiftly by typing closeheat open.
-  #       It has a continuous deployment setup from GitHub at example-org/example-repo
-  #       Anyways - if you'd like to publish your current code changes, just type:
-  #       closeheat quick-publish
-  #       Doing that will commit and push all of your changes to the GitHub repository and publish it.
-  #       """
-  #     done()
-  #
+  it 'continuous deployment already configured', (done) ->
+    @timeout(5000)
+
+    @api.routes.post '/apps/exists', (req, res) ->
+      res.send
+        exists: true
+        slug: 'existing-slug'
+
+    command('publish').then (stdout) ->
+      assertStdout stdout,
+        """
+        TEST: Executing 'git remote --verbose'
+        Hey there! This folder is already published to closeheat.
+        It is available at existing-slug.closeheatapp.com.
+        You can open it swiftly by typing closeheat open.
+        It has a continuous deployment setup from GitHub at example-org/example-repo
+        Anyways - if you'd like to publish your current code changes, just type:
+        closeheat quick-publish
+        Doing that will commit and push all of your changes to the GitHub repository and publish it.
+        """
+      done()
+
   describe 'continuous deployment not setup', ->
     beforeEach ->
       @api.routes.post '/deploy/slug', (req, res) ->
@@ -73,48 +73,49 @@ describe 'publish', ->
       @api.routes.post '/free/slug', (req, res) ->
         res.send
           free: true
-  #
-  #   describe 'GitHub repo already exists', ->
-  #     it 'use existing repo', (done) ->
-  #       @timeout(5000)
-  #
-  #       @api.routes.post '/apps/exists', (req, res) ->
-  #         res.send
-  #           exists: false
-  #
-  #       @api.routes.post '/suggest/slug', (req, res) ->
-  #         res.send
-  #           slug: 'suggested-slug'
-  #
-  #       @api.routes.post '/deploy/new', (req, res) ->
-  #         res.send
-  #           success: true
-  #           url: 'http://example-subdomain.closeheatapp.com'
-  #           repo_url: 'git@github.com:example-org/example-repo.git'
-  #
-  #       prompts = [
-  #         {
-  #           question: 'What subdomain would you like to choose'
-  #           answer: 'example-subdomain'
-  #         }
-  #       ]
-  #
-  #       opts =
-  #         prompts: prompts
-  #         git: '../test/fixtures/git/dist/default'
-  #
-  #       command('publish', opts).then (stdout) ->
-  #         assertStdout stdout,
-  #           """
-  #           TEST: Executing 'git remote --verbose'
-  #           You are about to publish a new website.
-  #           ? What subdomain would you like to choose at SUBDOMAIN.closeheatapp.com? (you will be able to add top level domain later) (suggested-slug)
-  #           ? What subdomain would you like to choose at SUBDOMAIN.closeheatapp.com? (you will be able to add top level domain later) example-subdomain
-  #           TEST: Executing 'git remote --verbose'
-  #           Using your existing GitHub repository: example-org/example-repo
-  #           #{success('example-org/example-repo')}
-  #           """
-  #         done()
+
+    describe 'GitHub repo already exists', ->
+      it 'use existing repo', (done) ->
+        @timeout(5000)
+
+        @api.routes.post '/apps/exists', (req, res) ->
+          res.send
+            exists: false
+
+        @api.routes.post '/suggest/slug', (req, res) ->
+          res.send
+            slug: 'suggested-slug'
+
+        @api.routes.post '/deploy/new', (req, res) ->
+          res.send
+            success: true
+            url: 'http://example-subdomain.closeheatapp.com'
+            repo_url: 'git@github.com:example-org/example-repo.git'
+
+        prompts = [
+          {
+            question: 'What subdomain would you like to choose'
+            answer: 'example-subdomain'
+          }
+        ]
+
+        opts =
+          prompts: prompts
+          git: '../test/fixtures/git/dist/default'
+
+        command('publish', opts).then (stdout) ->
+          assertStdout stdout,
+            """
+            TEST: Executing 'git remote --verbose'
+            You are about to publish a new website.
+            ? What subdomain would you like to choose at SUBDOMAIN.closeheatapp.com? (you will be able to add top level domain later) (suggested-slug)
+            ? What subdomain would you like to choose at SUBDOMAIN.closeheatapp.com? (you will be able to add top level domain later) example-subdomain
+            TEST: Executing 'git remote --verbose'
+            Using your existing GitHub repository: example-org/example-repo
+            TEST: Executing 'git remote --verbose'
+            #{success('example-org/example-repo')}
+            """
+          done()
 
     it 'create new repo', (done) ->
       @timeout(5000)
