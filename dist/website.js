@@ -66,7 +66,8 @@ module.exports = Website = (function() {
           return resolve({
             exists: resp.exists,
             repo: repo,
-            slug: resp.slug
+            slug: resp.slug,
+            url: resp.url
           });
         });
       };

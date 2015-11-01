@@ -30,7 +30,7 @@ class Website
   @backend: (repo) ->
     new Promise (resolve, reject) =>
       Authorized.post(Urls.websiteExists(), repo: repo).then (resp) ->
-        resolve(exists: resp.exists, repo: repo, slug: resp.slug)
+        resolve(exists: resp.exists, repo: repo, slug: resp.slug, url: resp.url)
 
   @execRequest: (slug, repo) ->
     new Promise (resolve, reject) =>

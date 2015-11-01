@@ -24,11 +24,27 @@ describe 'open', ->
       res.send
         exists: true
         slug: 'example-slug'
+        url: 'http://example-slug.closeheatapp.com'
 
     command('open').then (stdout) ->
       assertStdout stdout,
         """
         TEST: Executing 'git remote --verbose'
-        Opening your app at http://example-slug.closeheatapp.com.
+        Opening your website at http://example-slug.closeheatapp.com.
+        """
+      done()
+
+  it 'should say when it does not exist', (done) ->
+    @timeout(5000)
+    @api.routes.post '/apps/exists', (req, res) ->
+      res.send
+        exists: false
+
+    command('open').then (stdout) ->
+      assertStdout stdout,
+        """
+        TEST: Executing 'git remote --verbose'
+        No published website from this folder exists.
+        To publish this folder, type: closeheat publish
         """
       done()
