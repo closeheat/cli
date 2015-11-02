@@ -6,16 +6,11 @@ mocha = require 'gulp-mocha'
 watch = require 'gulp-watch'
 insert = require 'gulp-insert'
 
-gulp.task 'default', ['coffee', 'img']
+gulp.task 'default', ['coffee']
 
 gulp.task 'watch', ->
   gulp.watch('./src/**/*.coffee', ['default'])
   gulp.watch('./test/fixtures/**/*.coffee', ['default'])
-
-gulp.task 'img', ->
-  gulp
-    .src('./src/**/*.png')
-    .pipe gulp.dest('./dist/')
 
 gulp.task 'coffee', ->
   gulp
