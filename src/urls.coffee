@@ -35,11 +35,8 @@ class Urls
   @setupExistingRepo: ->
     "#{@api()}/deploy/existing"
 
-  @websiteDataFromRepo: ->
-    "#{@api()}/apps/from_repo"
-
-  @websiteDataFromSlug: ->
-    "#{@api()}/apps/from_slug"
+  @findWebsite: ->
+    "#{@api()}/apps/find"
 
   @latestBuild: (slug) ->
     "#{@api()}/apps/#{slug}/builds/latest"

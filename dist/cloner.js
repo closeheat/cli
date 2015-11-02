@@ -42,7 +42,7 @@ module.exports = Cloner = (function() {
 
   Cloner.prototype.getAppData = function(slug) {
     return new Promise(function(resolve, reject) {
-      return Authorized.post(Urls.websiteDataFromSlug(), {
+      return Authorized.post(Urls.findWebsite(), {
         slug: slug
       }).then(function(resp) {
         if (!resp.exists) {

@@ -40,7 +40,7 @@ describe 'clone', ->
       done()
 
   it 'with app name', (done) ->
-    @api.routes.post '/apps/from_slug', (req, res) ->
+    @api.routes.post '/apps/find', (req, res) ->
       res.send
         exists: true
         github_repo: 'example/repo'
@@ -63,7 +63,7 @@ describe 'clone', ->
 
   it 'with invalid app name', (done) ->
     @timeout(5000)
-    @api.routes.post '/apps/from_slug', (req, res) ->
+    @api.routes.post '/apps/find', (req, res) ->
       res.send
         exists: false
 

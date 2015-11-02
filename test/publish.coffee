@@ -33,7 +33,7 @@ describe 'publish', ->
   it 'continuous deployment already configured', (done) ->
     @timeout(5000)
 
-    @api.routes.post '/apps/from_repo', (req, res) ->
+    @api.routes.post '/apps/find', (req, res) ->
       res.send
         exists: true
         slug: 'existing-slug'
@@ -54,7 +54,7 @@ describe 'publish', ->
 
   describe 'continuous deployment not setup', ->
     beforeEach ->
-      @api.routes.post '/apps/from_repo', (req, res) ->
+      @api.routes.post '/apps/find', (req, res) ->
         res.send
           exists: false
 

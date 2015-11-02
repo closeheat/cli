@@ -35,7 +35,7 @@ class Cloner
 
   getAppData: (slug) ->
     new Promise (resolve, reject) ->
-      Authorized.post(Urls.websiteDataFromSlug(), slug: slug).then (resp) ->
+      Authorized.post(Urls.findWebsite(), slug: slug).then (resp) ->
         return Log.error "Website named '#{slug}' does not exist." unless resp.exists
 
         resolve(resp)
