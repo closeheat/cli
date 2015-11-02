@@ -89,8 +89,6 @@ describe 'publish', ->
           You are about to publish a new website.
           ? What subdomain would you like? [example: HELLO.closeheatapp.com] (suggested-slug)
           ? What subdomain would you like? [example: HELLO.closeheatapp.com] example-subdomain
-          ? What subdomain would you like to choose at SUBDOMAIN.closeheatapp.com? (you will be able to add top level domain later) (suggested-slug)
-          ? What subdomain would you like to choose at SUBDOMAIN.closeheatapp.com? (you will be able to add top level domain later) example-subdomain
           TEST: Executing 'git remote --verbose'
           Using your existing GitHub repository: example-org/example-repo
           TEST: Executing 'git remote --verbose'
@@ -132,8 +130,8 @@ describe 'publish', ->
           """
           TEST: Executing 'git remote --verbose'
           You are about to publish a new website.
-          ? What subdomain would you like to choose at SUBDOMAIN.closeheatapp.com? (you will be able to add top level domain later) (suggested-slug)
-          ? What subdomain would you like to choose at SUBDOMAIN.closeheatapp.com? (you will be able to add top level domain later) example-subdomain
+          ? What subdomain would you like? [example: HELLO.closeheatapp.com] (suggested-slug)
+          ? What subdomain would you like? [example: HELLO.closeheatapp.com] example-subdomain
           TEST: Executing 'git remote --verbose'
           ? How will you name a new GitHub repository? (example: example-user/example-subdomain)
           ? How will you name a new GitHub repository? (example: example-user/example-subdomain) example-org/example-new-repo
@@ -142,7 +140,7 @@ describe 'publish', ->
           #{success('example-org/example-new-repo')}
           """
         done()
-
+    #
     # it 'slug taken', (done) ->
     #   @timeout(5000)
     #
