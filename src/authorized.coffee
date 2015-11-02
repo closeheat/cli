@@ -47,8 +47,4 @@ class Authorized
   @token: ->
     Authorizer = require './authorizer'
     authorizer = new Authorizer()
-
-    result = authorizer.accessToken()
-    return null if result == 'none' || !result
-
-    result
+    authorizer.accessToken()

@@ -1,4 +1,4 @@
-var Git, GitRepository, Log, Promise, ReuseRepoContinuousDeployment, SlugManager, Urls, UserInput, _, inquirer, path;
+var Git, GitRepository, Log, Promise, SlugManager, Urls, UserInput, _, inquirer, path;
 
 inquirer = require('inquirer');
 
@@ -19,8 +19,6 @@ Log = require('./log');
 UserInput = require('./user_input');
 
 Git = require('./git');
-
-ReuseRepoContinuousDeployment = require('./reuse_repo_continuous_deployment');
 
 module.exports = GitRepository = (function() {
   var GITHUB_REPO_REGEX;

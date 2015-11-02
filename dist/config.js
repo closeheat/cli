@@ -16,7 +16,7 @@ module.exports = Config = (function() {
     config_path = path.join(this.dir(), 'config.json');
     if (!fs.existsSync(config_path)) {
       fs.writeFileSync(config_path, JSON.stringify({
-        access_token: 'none'
+        access_token: ''
       }));
     }
     return config_path;

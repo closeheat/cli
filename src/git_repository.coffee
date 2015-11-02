@@ -9,7 +9,6 @@ SlugManager = require './slug_manager'
 Log = require './log'
 UserInput = require './user_input'
 Git = require './git'
-ReuseRepoContinuousDeployment = require './reuse_repo_continuous_deployment'
 
 module.exports =
 class GitRepository

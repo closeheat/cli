@@ -7,7 +7,7 @@ module.exports =
 class Config
   @file: ->
     config_path = path.join(@dir(), 'config.json')
-    fs.writeFileSync(config_path, JSON.stringify(access_token: 'none')) unless fs.existsSync(config_path)
+    fs.writeFileSync(config_path, JSON.stringify(access_token: '')) unless fs.existsSync(config_path)
     config_path
 
   @fileContents: ->

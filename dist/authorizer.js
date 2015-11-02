@@ -25,7 +25,7 @@ module.exports = Authorizer = (function() {
 
   Authorizer.prototype.saveToken = function(access_token) {
     var Log, config, overriden;
-    overriden = this.accessTokenExists();
+    overriden = this.accessToken();
     config = {
       access_token: access_token
     };
@@ -42,15 +42,11 @@ module.exports = Authorizer = (function() {
     return Config.fileContents().access_token;
   };
 
-  Authorizer.prototype.accessTokenExists = function() {
-    return Config.fileContents().access_token && Config.fileContents().access_token !== 'none';
-  };
-
   Authorizer.prototype.login = function(token) {
     if (token) {
       return this.saveToken(token);
     }
-    if (this.accessTokenExists()) {
+    if (this.accessToken()) {
       return this.youreLoggedIn();
     } else {
       return this.openLogin();

@@ -13,7 +13,7 @@ Authorized = require './authorized'
 module.exports =
 class Authorizer
   saveToken: (access_token) ->
-    overriden = @accessTokenExists()
+    overriden = @accessToken()
 
     config = { access_token: access_token }
     Config.update('access_token', access_token)
@@ -28,13 +28,10 @@ class Authorizer
   accessToken: ->
     Config.fileContents().access_token
 
-  accessTokenExists: ->
-    Config.fileContents().access_token && Config.fileContents().access_token != 'none'
-
   login: (token) ->
     return @saveToken(token) if token
 
-    if @accessTokenExists()
+    if @accessToken()
       @youreLoggedIn()
     else
       @openLogin()

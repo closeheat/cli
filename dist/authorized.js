@@ -72,14 +72,10 @@ module.exports = Authorized = (function() {
   };
 
   Authorized.token = function() {
-    var authorizer, result;
+    var authorizer;
     Authorizer = require('./authorizer');
     authorizer = new Authorizer();
-    result = authorizer.accessToken();
-    if (result === 'none' || !result) {
-      return null;
-    }
-    return result;
+    return authorizer.accessToken();
   };
 
   return Authorized;
