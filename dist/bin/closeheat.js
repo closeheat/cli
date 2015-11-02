@@ -85,14 +85,14 @@ program.command('help').description('Displays this menu.').action(function() {
   });
 });
 
-program.command('postinstall').description('This is run after the install for easy instructions.').action(function() {
+program.command('postinstall').description('Well, its a command robots run after the install.').action(function() {
   var Color;
   setGlobals(program);
   Color = require('../color');
   Log.br();
   Log.p('Installation successful.');
   Log.p('------------------------');
-  return Log.p("Run " + (Color.violet('closeheat list')) + " command for the list of your apps.");
+  return Log.p("Run " + (Color.violet('closeheat login')) + " to authorize your toolkit.");
 });
 
 program.command('*').action(function() {

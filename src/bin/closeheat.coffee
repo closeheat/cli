@@ -98,7 +98,7 @@ program
 
 program
   .command('postinstall')
-  .description('This is run after the install for easy instructions.')
+  .description('Well, its a command robots run after the install.')
   .action ->
     setGlobals(program)
 
@@ -106,7 +106,7 @@ program
     Log.br()
     Log.p('Installation successful.')
     Log.p('------------------------')
-    Log.p("Run #{Color.violet('closeheat list')} command for the list of your apps.")
+    Log.p("Run #{Color.violet('closeheat login')} to authorize your toolkit.")
 
 program
   .command('*')

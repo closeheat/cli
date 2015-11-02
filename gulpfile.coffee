@@ -1,14 +1,10 @@
 gulp = require 'gulp'
 coffee = require 'gulp-coffee'
 gutil = require 'gulp-util'
-shell = require 'gulp-shell'
 fs = require 'fs'
 mocha = require 'gulp-mocha'
 watch = require 'gulp-watch'
-replace = require 'gulp-replace'
-rename = require 'gulp-rename'
 insert = require 'gulp-insert'
-acorn = require 'acorn'
 
 gulp.task 'default', ['coffee', 'img']
 
