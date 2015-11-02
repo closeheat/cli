@@ -71,8 +71,8 @@ module.exports = ContinuousDeployment = (function() {
   };
 
   ContinuousDeployment.prototype.unfullfilledSteps = function(opts) {
-    return _.reject(this.steps(), function(obj) {
-      return _.include(_.keys(opts), obj.key);
+    return _.select(this.steps(), function(obj) {
+      return !opts[obj.key];
     });
   };
 

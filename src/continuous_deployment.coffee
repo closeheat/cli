@@ -41,8 +41,8 @@ class ContinuousDeployment
     ]
 
   unfullfilledSteps: (opts) ->
-    _.reject @steps(), (obj) ->
-      _.include(_.keys(opts), obj.key)
+    _.select @steps(), (obj) ->
+      !opts[obj.key]
 
   run: (opts = {}) ->
     return opts if _.isEmpty(@unfullfilledSteps(opts))

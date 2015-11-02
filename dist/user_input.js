@@ -19,7 +19,7 @@ module.exports = UserInput = (function() {
     return new Promise((function(_this) {
       return function(resolve, reject) {
         return inquirer.prompt({
-          message: 'What subdomain would you like to choose at SUBDOMAIN.closeheatapp.com? (you will be able to add top level domain later)',
+          message: 'What subdomain would you like? [example: HELLO.closeheatapp.com]',
           name: 'slug',
           "default": suggested
         }, function(answer) {
@@ -37,20 +37,6 @@ module.exports = UserInput = (function() {
           name: 'repo'
         }, function(answer) {
           return resolve(answer.repo.replace(' ', ''));
-        });
-      };
-    })(this));
-  };
-
-  UserInput.reuseRepo = function(repo_name) {
-    return new Promise((function(_this) {
-      return function(resolve, reject) {
-        return inquirer.prompt({
-          message: "Would you like to use your existing " + repo_name + " GitHub repository repo for continuos delivery?",
-          type: 'confirm',
-          name: 'reuse'
-        }, function(answer) {
-          return resolve(answer.reuse);
         });
       };
     })(this));

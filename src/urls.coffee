@@ -26,13 +26,7 @@ class Urls
   @suggestSlug: ->
     "#{@api()}/suggest/slug"
 
-  @suggestRepo: ->
-    "#{@api()}/suggest/repo"
-
   @isFreeSlug: ->
-    "#{@api()}/free/slug"
-
-  @isFreeRepo: ->
     "#{@api()}/free/slug"
 
   @publishNewWebsite: ->

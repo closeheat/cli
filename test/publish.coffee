@@ -62,44 +62,41 @@ describe 'publish', ->
         res.send
           slug: 'suggested-slug'
 
-      @api.routes.post '/free/slug', (req, res) ->
+    it 'use existing repo', (done) ->
+      @timeout(5000)
+
+      @api.routes.post '/deploy/new', (req, res) ->
         res.send
-          free: true
+          success: true
+          url: 'http://example-subdomain.closeheatapp.com'
+          repo_url: 'git@github.com:example-org/example-repo.git'
 
-    describe 'GitHub repo already exists', ->
-      it 'use existing repo', (done) ->
-        @timeout(5000)
+      prompts = [
+        {
+          question: 'What subdomain would you like'
+          answer: 'example-subdomain'
+        }
+      ]
 
-        @api.routes.post '/deploy/new', (req, res) ->
-          res.send
-            success: true
-            url: 'http://example-subdomain.closeheatapp.com'
-            repo_url: 'git@github.com:example-org/example-repo.git'
+      opts =
+        prompts: prompts
+        git: '../test/fixtures/git/dist/default'
 
-        prompts = [
-          {
-            question: 'What subdomain would you like to choose'
-            answer: 'example-subdomain'
-          }
-        ]
-
-        opts =
-          prompts: prompts
-          git: '../test/fixtures/git/dist/default'
-
-        command('publish', opts).then (stdout) ->
-          assertStdout stdout,
-            """
-            TEST: Executing 'git remote --verbose'
-            You are about to publish a new website.
-            ? What subdomain would you like to choose at SUBDOMAIN.closeheatapp.com? (you will be able to add top level domain later) (suggested-slug)
-            ? What subdomain would you like to choose at SUBDOMAIN.closeheatapp.com? (you will be able to add top level domain later) example-subdomain
-            TEST: Executing 'git remote --verbose'
-            Using your existing GitHub repository: example-org/example-repo
-            TEST: Executing 'git remote --verbose'
-            #{success('example-org/example-repo')}
-            """
-          done()
+      command('publish', opts).then (stdout) ->
+        assertStdout stdout,
+          """
+          TEST: Executing 'git remote --verbose'
+          You are about to publish a new website.
+          ? What subdomain would you like? [example: HELLO.closeheatapp.com] (suggested-slug)
+          ? What subdomain would you like? [example: HELLO.closeheatapp.com] example-subdomain
+          ? What subdomain would you like to choose at SUBDOMAIN.closeheatapp.com? (you will be able to add top level domain later) (suggested-slug)
+          ? What subdomain would you like to choose at SUBDOMAIN.closeheatapp.com? (you will be able to add top level domain later) example-subdomain
+          TEST: Executing 'git remote --verbose'
+          Using your existing GitHub repository: example-org/example-repo
+          TEST: Executing 'git remote --verbose'
+          #{success('example-org/example-repo')}
+          """
+        done()
 
     it 'create new repo', (done) ->
       @timeout(5000)
@@ -119,7 +116,7 @@ describe 'publish', ->
 
       prompts = [
         {
-          question: 'What subdomain would you like to choose'
+          question: 'What subdomain would you like'
           answer: 'example-subdomain'
         }
         {
@@ -145,3 +142,54 @@ describe 'publish', ->
           #{success('example-org/example-new-repo')}
           """
         done()
+
+    # it 'slug taken', (done) ->
+    #   @timeout(5000)
+    #
+    #   time = 1
+    #   @api.routes.post '/deploy/new', (req, res) ->
+    #     console.log 'got'
+    #     if time == 1
+    #       console.log 'got2'
+    #       res.send
+    #         success: false
+    #         error_type: 'slug-exists'
+    #         message: 'The subdomain is already taken.'
+    #     else
+    #       console.log 'got3'
+    #       res.send
+    #         success: true
+    #         url: 'http://example-subdomain.closeheatapp.com'
+    #         repo_url: 'git@github.com:example-org/example-new-repo.git'
+    #
+    #     time = 2
+    #
+    #   prompts = [
+    #     {
+    #       question: 'What subdomain would you like'
+    #       answer: 'example-subdomain'
+    #     }
+    #     {
+    #       question: 'subdomain would you like'
+    #       answer: 'free-subdomain'
+    #     }
+    #   ]
+    #
+    #   opts =
+    #     prompts: prompts
+    #     git: '../test/fixtures/git/dist/default'
+    #
+    #   command('publish', opts).then (stdout) ->
+    #     assertStdout stdout,
+    #       """
+    #       TEST: Executing 'git remote --verbose'
+    #       You are about to publish a new website.
+    #       ? What subdomain would you like? [example: HELLO.closeheatapp.com] (suggested-slug)
+    #       ? What subdomain would you like? [example: HELLO.closeheatapp.com] example-subdomain
+    #       TEST: Executing 'git remote --verbose'
+    #       Using your existing GitHub repository: example-org/example-repo
+    #       Subdomain example-subdomain is already taken. Could you choose another one?
+    #       TEST: Executing 'git remote --verbose'
+    #       #{success('example-org/example-repo')}
+    #       """
+    #     done()

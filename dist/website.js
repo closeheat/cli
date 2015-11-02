@@ -29,17 +29,26 @@ module.exports = Website = (function() {
 
   Website.create = function(opts) {
     return Website.execRequest(opts.slug, opts.repo).then(function(resp) {
+      if (!resp.success) {
+        return Website.handleProblem(resp, opts);
+      }
       return _.assign(opts, {
         website: resp.url,
         repo_url: resp.repo_url
       });
-    })["catch"](function(resp) {
-      if (resp.error === 'app-exists') {
-        return _.assign(opts, {
-          slug: null
-        });
-      }
     });
+  };
+
+  Website.handleProblem = function(resp, opts) {
+    if (resp.error_type === 'slug-exists') {
+      Log.p("Subdomain " + opts.slug + " is already taken. Could you choose another one?");
+      return _.assign(opts, {
+        slug: null
+      });
+    } else {
+      Log.p("Some error happened: " + (JSON.stringify(resp)));
+      return process.exit();
+    }
   };
 
   Website.get = function() {
@@ -82,6 +91,8 @@ module.exports = Website = (function() {
           slug: slug
         }).then(function(resp) {
           return resolve({
+            error_type: resp.error_type,
+            success: resp.success,
             url: resp.url,
             repo_url: resp.repo_url
           });
