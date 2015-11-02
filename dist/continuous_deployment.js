@@ -88,7 +88,7 @@ module.exports = ContinuousDeployment = (function() {
       return obj.fn(new_opts).then(function(result) {
         return result;
       });
-    }, {});
+    }, opts);
     return runner.then((function(_this) {
       return function(opts) {
         return _this.run(opts);

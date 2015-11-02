@@ -50,7 +50,7 @@ class ContinuousDeployment
     runner = Promise.reduce @unfullfilledSteps(opts), (new_opts, obj) ->
       obj.fn(new_opts).then (result) ->
         result
-    , {}
+    , opts
 
     runner.then (opts) =>
       @run(opts)

@@ -1,4 +1,4 @@
-var Authorized, Authorizer, Color, DeployLog, Git, Initializer, Log, Notifier, Promise, Publisher, Urls, _, fs, inquirer, open;
+var Authorized, Authorizer, Color, ContinuousDeployment, DeployLog, Git, GitHubManager, GitRepository, Initializer, Log, Notifier, Promise, SlugManager, Urls, Website, _, fs, inquirer, open, shepherd;
 
 Promise = require('bluebird');
 
@@ -28,148 +28,102 @@ Color = require('./color');
 
 Notifier = require('./notifier');
 
-module.exports = Publisher = (function() {
-  var GITHUB_REPO_REGEX;
+SlugManager = require('./slug_manager');
 
-  function Publisher() {
+GitHubManager = require('./github_manager');
+
+Website = require('./website');
+
+GitRepository = require('./git_repository');
+
+shepherd = require("shepherd");
+
+module.exports = ContinuousDeployment = (function() {
+  function ContinuousDeployment() {
     this.git = new Git();
   }
 
-  Publisher.prototype.setup = function() {
-    var authorizer;
-    Log.p('You are about to publish a new website.');
-    authorizer = new Authorizer();
-    return authorizer.ensureGitHubAuthorized().then((function(_this) {
+  ContinuousDeployment.prototype.start = function() {
+    return this.ensureNoWebsite().then((function(_this) {
       return function() {
-        return _this.checkContinousDeliveryExists().then(function(result) {
-          if (result.exists) {
-            Log.p("Hey there! This folder is already published to closeheat.");
-            Log.p("It is available at " + (Color.violet(result.slug + ".closeheatapp.com")) + ".");
-            Log.p("You can open it swiftly by typing " + (Color.violet('closeheat open')) + ".");
-            Log.br();
-            Log.p("It has a continuous deployment setup from GitHub at " + result.repo);
-            Log.br();
-            Log.p("Anyways - if you'd like to publish your current code changes, just type:");
-            Log.p(Color.violet('closeheat quick-publish'));
-            return Log.p("Doing that will commit and push all of your changes to the GitHub repository and publish it.");
-          } else {
-            return _this.setupContinousDelivery();
-          }
-        });
+        Log.p('You are about to publish a new website.');
+        return _this.run().then(_this.success);
       };
     })(this));
   };
 
-  Publisher.prototype.checkContinousDeliveryExists = function() {
-    return new Promise((function(_this) {
-      return function(resolve, reject) {
-        if (!fs.existsSync('.git')) {
-          return resolve({
-            exists: false
-          });
+  ContinuousDeployment.prototype.steps = function() {
+    return [
+      {
+        key: 'slug',
+        fn: SlugManager.choose
+      }, {
+        key: 'repo',
+        fn: GitHubManager.choose
+      }, {
+        key: 'website',
+        fn: Website.create
+      }, {
+        key: 'remote',
+        fn: GitRepository.ensureRemote
+      }
+    ];
+  };
+
+  ContinuousDeployment.prototype.unfullfilledSteps = function(opts) {
+    return _.select(this.steps(), function(obj) {
+      return !opts[obj.key];
+    });
+  };
+
+  ContinuousDeployment.prototype.run = function(opts) {
+    var runner;
+    if (opts == null) {
+      opts = {};
+    }
+    if (_.isEmpty(this.unfullfilledSteps(opts))) {
+      return opts;
+    }
+    runner = Promise.reduce(this.unfullfilledSteps(opts), function(new_opts, obj) {
+      return obj.fn(new_opts).then(function(result) {
+        return result;
+      });
+    }, opts);
+    return runner.then((function(_this) {
+      return function(opts) {
+        return _this.run(opts);
+      };
+    })(this));
+  };
+
+  ContinuousDeployment.prototype.ensureNoWebsite = function(data) {
+    return Website.get().then((function(_this) {
+      return function(website) {
+        if (!website.exists) {
+          return;
         }
-        return _this.getGitHubRepoUrl().then(function(repo) {
-          if (!repo) {
-            return resolve({
-              exists: false
-            });
-          }
-          return Authorized.request({
-            url: Urls.deployedSlug(),
-            qs: {
-              repo: repo
-            },
-            method: 'post',
-            json: true
-          }, function(err, resp) {
-            if (err) {
-              return reject(err);
-            }
-            if (!resp.body.exists) {
-              return resolve({
-                exists: false
-              });
-            }
-            return resolve({
-              exists: true,
-              slug: resp.body.slug,
-              repo: repo
-            });
-          });
-        });
+        return _this.exists(website);
       };
     })(this));
   };
 
-  GITHUB_REPO_REGEX = /origin*.+:(.+\/.+).git \(push\)/;
-
-  Publisher.prototype.getGitHubRepoUrl = function() {
-    return new Promise((function(_this) {
-      return function(resolve, reject) {
-        return _this.git.exec('remote', ['--verbose'], function(err, resp) {
-          if (err) {
-            return reject(err);
-          }
-          return resolve(resp.match(GITHUB_REPO_REGEX)[1]);
-        });
-      };
-    })(this));
+  ContinuousDeployment.prototype.exists = function(website) {
+    Log.p("Hey there! This folder is already published to closeheat.");
+    Log.p("It is available at " + (Color.violet(website.slug + ".closeheatapp.com")) + ".");
+    Log.p("You can open it swiftly by typing " + (Color.violet('closeheat open')) + ".");
+    Log.br();
+    Log.p("It has a continuous deployment setup from GitHub at " + website.repo);
+    Log.br();
+    Log.p("Anyways - if you'd like to publish your current code changes, just type:");
+    Log.p(Color.violet('closeheat quick-publish'));
+    Log.p("Doing that will commit and push all of your changes to the GitHub repository and publish it.");
+    return process.exit();
   };
 
-  Publisher.prototype.setupContinousDelivery = function() {
-    return this.askSlug().then((function(_this) {
-      return function(slug) {
-        return _this.getGitHubRepoUrl().then(function(repo_url) {
-          if (repo_url) {
-            return _this.askReuseGitHubRepo(repo_url).then(function(reuse) {
-              if (reuse) {
-                return _this.attachGitHubHooks(repo_url, slug).then(function() {
-                  return _this.successfulSetup(repo_url, slug);
-                });
-              } else {
-                return _this.createNewGitHubRepo(slug);
-              }
-            });
-          } else {
-            return _this.createNewGitHubRepo(slug);
-          }
-        });
-      };
-    })(this));
-  };
-
-  Publisher.prototype.createNewGitHubRepo = function(slug) {
-    return this.askNewRepoName().then((function(_this) {
-      return function(repo) {
-        return _this.publishWithGitHubRepo(repo, slug).then(function() {
-          return _this.successfulSetup(repo, slug);
-        });
-      };
-    })(this));
-  };
-
-  Publisher.prototype.publishWithGitHubRepo = function(repo, slug) {
-    return new Promise((function(_this) {
-      return function(resolve, reject) {
-        return Authorized.request({
-          url: Urls.publishNewWebsite(),
-          qs: {
-            repo: slug,
-            slug: slug
-          },
-          method: 'post',
-          json: true
-        }, function(err, resp) {
-          if (err) {
-            return reject(err);
-          }
-          return resolve(resp.body.success);
-        });
-      };
-    })(this));
-  };
-
-  Publisher.prototype.successfulSetup = function(repo, slug) {
+  ContinuousDeployment.prototype.success = function(opts) {
+    var repo, slug;
+    slug = opts.slug;
+    repo = opts.repo;
     Log.p('Success!');
     Log.p("Your website " + (Color.violet(slug + ".closeheatapp.com")) + " is now published.");
     Log.br();
@@ -183,169 +137,6 @@ module.exports = Publisher = (function() {
     return Log.code('closeheat settings');
   };
 
-  Publisher.prototype.askSlug = function() {
-    return this.suggestDefaultSlug().then((function(_this) {
-      return function(slug) {
-        return new Promise(function(resolve, reject) {
-          return inquirer.prompt({
-            message: 'What subdomain would you like to choose at SUBDOMAIN.closeheatapp.com? (you will be able to add top level domain later)',
-            name: 'slug',
-            "default": slug
-          }, function(answer) {
-            return _this.isFreeSlug(answer.slug).then(function(is_free) {
-              if (is_free) {
-                return resolve(answer.slug);
-              } else {
-                Log.p('This slug is used');
-                return _this.askSlug();
-              }
-            });
-          });
-        });
-      };
-    })(this));
-  };
-
-  Publisher.prototype.askNewRepoName = function() {
-    return this.suggestDefaultRepo().then((function(_this) {
-      return function(repo) {
-        return new Promise(function(resolve, reject) {
-          return inquirer.prompt({
-            message: 'What is the GitHub repository would you like to create for this website? Ex. Nedomas/NAME?',
-            name: 'repo',
-            "default": repo
-          }, function(answer) {
-            return _this.isFreeRepo(answer.repo).then(function(is_free) {
-              if (is_free) {
-                return resolve(answer.repo);
-              } else {
-                Log.p('You already have a GitHub repo with this name.');
-                return _this.askSlug();
-              }
-            });
-          });
-        });
-      };
-    })(this));
-  };
-
-  Publisher.prototype.isFreeSlug = function(slug) {
-    return new Promise((function(_this) {
-      return function(resolve, reject) {
-        return Authorized.request({
-          url: Urls.isFreeSlug(),
-          qs: {
-            slug: slug
-          },
-          method: 'post',
-          json: true
-        }, function(err, resp) {
-          if (err) {
-            return reject(err);
-          }
-          return resolve(resp.body.free);
-        });
-      };
-    })(this));
-  };
-
-  Publisher.prototype.isFreeRepo = function(repo) {
-    return new Promise((function(_this) {
-      return function(resolve, reject) {
-        return Authorized.request({
-          url: Urls.isFreeRepo(),
-          qs: {
-            repo: repo
-          },
-          method: 'post',
-          json: true
-        }, function(err, resp) {
-          if (err) {
-            return reject(err);
-          }
-          return resolve(resp.body.free);
-        });
-      };
-    })(this));
-  };
-
-  Publisher.prototype.folder = function() {
-    return _.last(process.cwd().split('/'));
-  };
-
-  Publisher.prototype.suggestDefaultRepo = function() {
-    return new Promise((function(_this) {
-      return function(resolve, reject) {
-        return Authorized.request({
-          url: Urls.suggestRepo(),
-          qs: {
-            folder: _this.folder()
-          },
-          method: 'post',
-          json: true
-        }, function(err, resp) {
-          if (err) {
-            return reject(err);
-          }
-          return resolve(resp.body.repo);
-        });
-      };
-    })(this));
-  };
-
-  Publisher.prototype.suggestDefaultSlug = function() {
-    return new Promise((function(_this) {
-      return function(resolve, reject) {
-        return Authorized.request({
-          url: Urls.suggestSlug(),
-          qs: {
-            folder: _this.folder()
-          },
-          method: 'post',
-          json: true
-        }, function(err, resp) {
-          if (err) {
-            return reject(err);
-          }
-          return resolve(resp.body.slug);
-        });
-      };
-    })(this));
-  };
-
-  Publisher.prototype.attachGitHubHooks = function(repo_url, slug) {
-    return new Promise(function(resolve, reject) {
-      return Authorized.request({
-        url: Urls.setupExistingRepo(),
-        qs: {
-          repo: repo_url,
-          slug: slug
-        },
-        method: 'post',
-        json: true
-      }, function(err, resp) {
-        if (err) {
-          return reject(err);
-        }
-        return resolve();
-      });
-    });
-  };
-
-  Publisher.prototype.askReuseGitHubRepo = function(repo_name) {
-    return new Promise((function(_this) {
-      return function(resolve, reject) {
-        return inquirer.prompt({
-          message: "Would you like to use your existing " + repo_name + " GitHub repository repo for continuos delivery?",
-          type: 'confirm',
-          name: 'reuse'
-        }, function(answer) {
-          return resolve(answer.reuse);
-        });
-      };
-    })(this));
-  };
-
-  return Publisher;
+  return ContinuousDeployment;
 
 })();

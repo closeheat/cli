@@ -22,11 +22,9 @@ program
   .description('Sets up continuous website delivery from GitHub to closeheat.')
   .action ->
     setGlobals(program)
-    ContinuousDeployment = require '../continuous_deployment'
-    new ContinuousDeployment().start()
-    # Publisher = require '../publisher'
 
-    # new Publisher().setup()
+    Publisher = require '../publisher'
+    new Publisher().start()
 
 program
   .command('deploy')
