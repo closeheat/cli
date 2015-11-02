@@ -73,49 +73,6 @@ module.exports = Authorizer = (function() {
     }
   };
 
-  Authorizer.forceLogin = function() {
-    var Log;
-    Log = require('./log');
-    Log.stop();
-    Log.p(Color.redYellow('You need to log in for that.'));
-    Log.p("Type " + (Color.violet('closeheat login')) + " to do it swiftly.");
-    return process.exit();
-  };
-
-  Authorizer.unauthorized = function(resp) {
-    return resp.statusCode === 401;
-  };
-
-  Authorizer.gracefulUnauthorized = function(resp) {
-    if (!resp[0]) {
-      return;
-    }
-    if (this.unauthorized(resp[0])) {
-      return this.forceLogin();
-    }
-  };
-
-  Authorizer.prototype.ensureGitHubAuthorized = function() {
-    return new Promise(function(resolve, reject) {
-      return Authorized.request({
-        url: Urls.githubAuthorized(),
-        method: 'get'
-      }, function(err, resp) {
-        var Log, authorized;
-        authorized = JSON.parse(resp.body).authorized;
-        if (authorized) {
-          return resolve();
-        } else {
-          Log = require('./log');
-          Log.error('GitHub not authorized', false);
-          Log.innerError("We cannot set you up for deployment because you did not authorize GitHub.", false);
-          Log.br();
-          return Log.innerError("Visit " + (Urls.authorizeGitHub()) + " and rerun the command.");
-        }
-      });
-    });
-  };
-
   return Authorizer;
 
 })();

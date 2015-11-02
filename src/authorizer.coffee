@@ -50,32 +50,3 @@ class Authorizer
 
     Log.doneLine("Log in at #{Urls.loginInstructions()} in your browser.")
     open(Urls.loginInstructions()) unless process.env.CLOSEHEAT_TEST
-
-  @forceLogin: ->
-    Log = require './log'
-    Log.stop()
-    Log.p Color.redYellow('You need to log in for that.')
-    Log.p("Type #{Color.violet('closeheat login')} to do it swiftly.")
-    process.exit()
-
-  @unauthorized: (resp) ->
-    resp.statusCode == 401
-
-  @gracefulUnauthorized: (resp) ->
-    return unless resp[0]
-
-    @forceLogin() if @unauthorized(resp[0])
-
-  ensureGitHubAuthorized: ->
-    new Promise (resolve, reject) ->
-      Authorized.request url: Urls.githubAuthorized(), method: 'get', (err, resp) ->
-        authorized = JSON.parse(resp.body).authorized
-
-        if authorized
-          resolve()
-        else
-          Log = require './log'
-          Log.error('GitHub not authorized', false)
-          Log.innerError "We cannot set you up for deployment because you did not authorize GitHub.", false
-          Log.br()
-          Log.innerError "Visit #{Urls.authorizeGitHub()} and rerun the command."
