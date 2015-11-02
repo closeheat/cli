@@ -42,5 +42,5 @@ class Website
 
   @execRequest: (slug, repo) ->
     new Promise (resolve, reject) =>
-      Authorized.post(Urls.publishNewWebsite(), repo: repo, slug: slug).then (resp) ->
+      Authorized.post(Urls.publish(), repo: repo, slug: slug).then (resp) ->
         resolve(error_type: resp.error_type, success: resp.success, url: resp.url, repo_url: resp.repo_url)

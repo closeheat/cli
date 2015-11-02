@@ -29,8 +29,8 @@ class Urls
   @isFreeSlug: ->
     "#{@api()}/free/slug"
 
-  @publishNewWebsite: ->
-    "#{@api()}/deploy/new"
+  @publish: ->
+    "#{@api()}/publish"
 
   @setupExistingRepo: ->
     "#{@api()}/deploy/existing"

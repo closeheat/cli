@@ -86,7 +86,7 @@ module.exports = Website = (function() {
   Website.execRequest = function(slug, repo) {
     return new Promise((function(_this) {
       return function(resolve, reject) {
-        return Authorized.post(Urls.publishNewWebsite(), {
+        return Authorized.post(Urls.publish(), {
           repo: repo,
           slug: slug
         }).then(function(resp) {

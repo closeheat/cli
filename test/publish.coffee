@@ -65,7 +65,7 @@ describe 'publish', ->
     it 'use existing repo', (done) ->
       @timeout(5000)
 
-      @api.routes.post '/deploy/new', (req, res) ->
+      @api.routes.post '/publish', (req, res) ->
         res.send
           success: true
           url: 'http://example-subdomain.closeheatapp.com'
@@ -103,7 +103,7 @@ describe 'publish', ->
         res.send
           name: 'example-user'
 
-      @api.routes.post '/deploy/new', (req, res) ->
+      @api.routes.post '/publish', (req, res) ->
         expect(req.body.repo).to.eql('example-org/example-new-repo')
         expect(req.body.slug).to.eql('example-subdomain')
 
@@ -145,7 +145,7 @@ describe 'publish', ->
     #   @timeout(5000)
     #
     #   time = 1
-    #   @api.routes.post '/deploy/new', (req, res) ->
+    #   @api.routes.post '/publish', (req, res) ->
     #     console.log 'got'
     #     if time == 1
     #       console.log 'got2'

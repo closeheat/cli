@@ -35,8 +35,8 @@ module.exports = Urls = (function() {
     return (this.api()) + "/free/slug";
   };
 
-  Urls.publishNewWebsite = function() {
-    return (this.api()) + "/deploy/new";
+  Urls.publish = function() {
+    return (this.api()) + "/publish";
   };
 
   Urls.setupExistingRepo = function() {
