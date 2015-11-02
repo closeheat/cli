@@ -1,15 +1,8 @@
-inquirer = require 'inquirer'
-path = require 'path'
-Promise = require 'bluebird'
-inquirer = require 'inquirer'
 _ = require 'lodash'
 
-Urls = require './urls'
-SlugManager = require './slug_manager'
 Log = require './log'
 UserInput = require './user_input'
 User = require './user'
-Git = require './git'
 GitRepository = require './git_repository'
 
 module.exports =

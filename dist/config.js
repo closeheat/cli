@@ -1,6 +1,4 @@
-var Config, fs, homePath, path, pkg;
-
-homePath = require('home-path');
+var Config, fs, path, pkg;
 
 path = require('path');
 

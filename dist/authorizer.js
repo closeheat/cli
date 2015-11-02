@@ -1,20 +1,8 @@
-var Authorized, Authorizer, Color, Config, Promise, Urls, fs, inquirer, open, pkg, request;
-
-fs = require('fs');
-
-inquirer = require('inquirer');
-
-request = require('request');
-
-pkg = require('../package.json');
-
-Promise = require('bluebird');
+var Authorized, Authorizer, Config, Urls, open;
 
 open = require('open');
 
 Urls = require('./urls');
-
-Color = require('./color');
 
 Config = require('./config');
 

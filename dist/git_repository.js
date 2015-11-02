@@ -1,22 +1,8 @@
-var Git, GitRepository, Log, Promise, SlugManager, Urls, UserInput, _, inquirer, path;
-
-inquirer = require('inquirer');
-
-path = require('path');
+var Git, GitRepository, Promise, _;
 
 Promise = require('bluebird');
 
-inquirer = require('inquirer');
-
 _ = require('lodash');
-
-Urls = require('./urls');
-
-SlugManager = require('./slug_manager');
-
-Log = require('./log');
-
-UserInput = require('./user_input');
 
 Git = require('./git');
 

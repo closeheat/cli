@@ -1,20 +1,12 @@
-var Authorized, Log, Promise, SlugManager, Urls, UserInput, _, inquirer, path;
-
-inquirer = require('inquirer');
-
-path = require('path');
+var Authorized, Promise, SlugManager, Urls, UserInput, _;
 
 Promise = require('bluebird');
 
 _ = require('lodash');
 
-inquirer = require('inquirer');
-
 Urls = require('./urls');
 
 UserInput = require('./user_input');
-
-Log = require('./log');
 
 Authorized = require('./authorized');
 

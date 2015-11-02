@@ -1,9 +1,7 @@
-var Authorized, Color, List, Log, Promise, Urls, _, request, table,
+var Authorized, Color, List, Log, Promise, Urls, _, table,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 Promise = require('bluebird');
-
-request = require('request');
 
 _ = require('lodash');
 

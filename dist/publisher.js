@@ -1,32 +1,12 @@
-var Authorized, Authorizer, Color, ContinuousDeployment, DeployLog, Git, GitHubManager, GitRepository, Initializer, Log, Notifier, Promise, SlugManager, Urls, Website, _, fs, inquirer, open, shepherd;
+var Color, GitHubManager, GitRepository, Log, Promise, Publisher, SlugManager, Website, _;
 
 Promise = require('bluebird');
 
-inquirer = require('inquirer');
-
 _ = require('lodash');
-
-open = require('open');
-
-fs = require('fs.extra');
-
-Git = require('./git');
-
-Initializer = require('./initializer');
-
-Authorized = require('./authorized');
-
-Authorizer = require('./authorizer');
-
-Urls = require('./urls');
-
-DeployLog = require('./deploy_log');
 
 Log = require('./log');
 
 Color = require('./color');
-
-Notifier = require('./notifier');
 
 SlugManager = require('./slug_manager');
 
@@ -36,14 +16,10 @@ Website = require('./website');
 
 GitRepository = require('./git_repository');
 
-shepherd = require("shepherd");
+module.exports = Publisher = (function() {
+  function Publisher() {}
 
-module.exports = ContinuousDeployment = (function() {
-  function ContinuousDeployment() {
-    this.git = new Git();
-  }
-
-  ContinuousDeployment.prototype.start = function() {
+  Publisher.prototype.start = function() {
     return this.ensureNoWebsite().then((function(_this) {
       return function() {
         Log.p('You are about to publish a new website.');
@@ -52,7 +28,7 @@ module.exports = ContinuousDeployment = (function() {
     })(this));
   };
 
-  ContinuousDeployment.prototype.steps = function() {
+  Publisher.prototype.steps = function() {
     return [
       {
         key: 'slug',
@@ -70,13 +46,13 @@ module.exports = ContinuousDeployment = (function() {
     ];
   };
 
-  ContinuousDeployment.prototype.unfullfilledSteps = function(opts) {
+  Publisher.prototype.unfullfilledSteps = function(opts) {
     return _.select(this.steps(), function(obj) {
       return !opts[obj.key];
     });
   };
 
-  ContinuousDeployment.prototype.run = function(opts) {
+  Publisher.prototype.run = function(opts) {
     var runner;
     if (opts == null) {
       opts = {};
@@ -96,7 +72,7 @@ module.exports = ContinuousDeployment = (function() {
     })(this));
   };
 
-  ContinuousDeployment.prototype.ensureNoWebsite = function(data) {
+  Publisher.prototype.ensureNoWebsite = function(data) {
     return Website.get().then((function(_this) {
       return function(website) {
         if (!website.exists) {
@@ -107,7 +83,7 @@ module.exports = ContinuousDeployment = (function() {
     })(this));
   };
 
-  ContinuousDeployment.prototype.exists = function(website) {
+  Publisher.prototype.exists = function(website) {
     Log.p("Hey there! This folder is already published to closeheat.");
     Log.p("It is available at " + (Color.violet(website.slug + ".closeheatapp.com")) + ".");
     Log.p("You can open it swiftly by typing " + (Color.violet('closeheat open')) + ".");
@@ -120,7 +96,7 @@ module.exports = ContinuousDeployment = (function() {
     return process.exit();
   };
 
-  ContinuousDeployment.prototype.success = function(opts) {
+  Publisher.prototype.success = function(opts) {
     var repo, slug;
     slug = opts.slug;
     repo = opts.repo;
@@ -137,6 +113,6 @@ module.exports = ContinuousDeployment = (function() {
     return Log.code('closeheat settings');
   };
 
-  return ContinuousDeployment;
+  return Publisher;
 
 })();

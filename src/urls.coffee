@@ -14,44 +14,23 @@ class Urls
     # 'http://api.closeheat.com'
     # 'http://10.30.0.1:4000/api'
 
-  @githubAuthorized: ->
-    "#{@api()}/github-authorized"
-
   @appsIndex: ->
     "#{@api()}/apps"
-
-  @deployedSlug: ->
-    "#{@api()}/deploy/slug"
 
   @suggestSlug: ->
     "#{@api()}/suggest/slug"
 
-  @isFreeSlug: ->
-    "#{@api()}/free/slug"
-
   @publish: ->
     "#{@api()}/publish"
-
-  @setupExistingRepo: ->
-    "#{@api()}/deploy/existing"
 
   @findWebsite: ->
     "#{@api()}/apps/find"
 
-  @latestBuild: (slug) ->
-    "#{@api()}/apps/#{slug}/builds/latest"
-
   @buildForCLI: (slug) ->
     "#{@api()}/apps/#{slug}/builds/for_cli"
 
-  @createApp: ->
-    "#{@api()}/apps"
-
   @currentUser: ->
     "#{@api()}/users/me"
-
-  @getToken: ->
-    "#{@api()}/users/token"
 
   @authorizeGitHub: ->
     "#{@base()}/authorize-github"

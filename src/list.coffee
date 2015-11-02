@@ -1,5 +1,4 @@
 Promise = require 'bluebird'
-request = require 'request'
 _ = require 'lodash'
 table = require('text-table')
 

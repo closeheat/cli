@@ -1,4 +1,4 @@
-var Authorized, BackendLogger, DeployLog, Git, GitRepository, Log, Promise, Urls, Website, _,
+var Authorized, BackendLogger, DeployLog, Git, Log, Promise, Urls, Website, _,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 Promise = require('bluebird');
@@ -14,8 +14,6 @@ Authorized = require('./authorized');
 Urls = require('./urls');
 
 BackendLogger = require('./backend_logger');
-
-GitRepository = require('./git_repository');
 
 Website = require('./website');
 

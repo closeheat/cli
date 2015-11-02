@@ -1,26 +1,12 @@
-var Git, GitHubManager, GitRepository, Log, Promise, SlugManager, Urls, User, UserInput, _, inquirer, path;
-
-inquirer = require('inquirer');
-
-path = require('path');
-
-Promise = require('bluebird');
-
-inquirer = require('inquirer');
+var GitHubManager, GitRepository, Log, User, UserInput, _;
 
 _ = require('lodash');
-
-Urls = require('./urls');
-
-SlugManager = require('./slug_manager');
 
 Log = require('./log');
 
 UserInput = require('./user_input');
 
 User = require('./user');
-
-Git = require('./git');
 
 GitRepository = require('./git_repository');
 

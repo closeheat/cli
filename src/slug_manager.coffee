@@ -1,12 +1,8 @@
-inquirer = require 'inquirer'
-path = require 'path'
 Promise = require 'bluebird'
 _ = require 'lodash'
-inquirer = require 'inquirer'
 
 Urls = require './urls'
 UserInput = require './user_input'
-Log = require './log'
 Authorized = require './authorized'
 
 module.exports =

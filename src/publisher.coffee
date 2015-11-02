@@ -1,32 +1,16 @@
 Promise = require 'bluebird'
-inquirer = require 'inquirer'
 _ = require 'lodash'
-open = require 'open'
-fs = require 'fs.extra'
-
-Git = require './git'
-Initializer = require './initializer'
-Authorized = require './authorized'
-Authorizer = require './authorizer'
-Urls = require './urls'
-DeployLog = require './deploy_log'
 
 Log = require './log'
 Color = require './color'
-Notifier = require './notifier'
 
 SlugManager = require './slug_manager'
 GitHubManager = require './github_manager'
 Website = require './website'
 GitRepository = require './git_repository'
 
-shepherd = require("shepherd")
-
 module.exports =
-class ContinuousDeployment
-  constructor: ->
-    @git = new Git()
-
+class Publisher
   start: ->
     @ensureNoWebsite().then =>
       Log.p('You are about to publish a new website.')

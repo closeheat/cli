@@ -1,24 +1,8 @@
-var Authorized, Color, Config, Permissions, Promise, Urls, fs, inquirer, open, pkg, request;
-
-fs = require('fs');
-
-inquirer = require('inquirer');
-
-request = require('request');
-
-pkg = require('../package.json');
-
-Promise = require('bluebird');
-
-open = require('open');
+var Color, Permissions, Urls;
 
 Urls = require('./urls');
 
 Color = require('./color');
-
-Config = require('./config');
-
-Authorized = require('./authorized');
 
 module.exports = Permissions = (function() {
   function Permissions() {}

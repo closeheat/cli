@@ -1,4 +1,3 @@
-homePath = require 'home-path'
 path = require 'path'
 pkg = require '../package.json'
 fs = require 'fs'

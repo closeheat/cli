@@ -6,7 +6,6 @@ Log = require './log'
 Authorized = require './authorized'
 Urls = require './urls'
 BackendLogger = require './backend_logger'
-GitRepository = require './git_repository'
 Website = require './website'
 
 module.exports =
