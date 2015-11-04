@@ -41,4 +41,4 @@ class Website
         resolve(resp.app)
 
   @execRequest: (slug, repo) ->
-    Authorized.post(Urls.publish(), repo: repo, slug: slug)
+    Authorized.post(Urls.publish(), github_repo: repo, slug: slug)

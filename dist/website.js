@@ -79,7 +79,7 @@ module.exports = Website = (function() {
 
   Website.execRequest = function(slug, repo) {
     return Authorized.post(Urls.publish(), {
-      repo: repo,
+      github_repo: repo,
       slug: slug
     });
   };
