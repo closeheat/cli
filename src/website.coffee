@@ -15,17 +15,17 @@ _ = require 'lodash'
 module.exports =
 class Website
   @create: (opts) =>
-    @execRequest(opts.slug, opts.repo).then (resp) =>
-      # return @handleProblem(resp, opts) unless resp.success
+    @execRequest(opts.slug, opts.repo).then((resp) =>
+      _.assign(opts, website: resp.app.url, github_repo_url: resp.app.github_repo_url)
+    ).catch (e) =>
+      return @handleProblem(e.message, opts)
 
-      _.assign(opts, website: resp.url, github_repo_url: resp.github_repo_url)
-
-  @handleProblem: (resp, opts) ->
-    if resp.error_type == 'slug-exists'
+  @handleProblem: (message, opts) ->
+    if message == 'slug-exists'
       Log.p "Subdomain #{opts.slug} is already taken. Could you choose another one?"
       return _.assign(opts, slug: null)
     else
-      Log.p "Some error happened: #{JSON.stringify(resp)}"
+      Log.p "Some error happened. Shoot a message to support@closeheat.com."
       process.exit()
 
   @get: ->
@@ -41,6 +41,4 @@ class Website
         resolve(resp.app)
 
   @execRequest: (slug, repo) ->
-    new Promise (resolve, reject) =>
-      Authorized.post(Urls.publish(), repo: repo, slug: slug).then (resp) ->
-        resolve(resp.app)
+    Authorized.post(Urls.publish(), repo: repo, slug: slug)

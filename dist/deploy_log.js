@@ -1,4 +1,4 @@
-var Authorized, BackendLogger, DeployLog, Git, Log, Promise, Urls, Website, _,
+var Authorized, BackendLogger, Color, DeployLog, Git, Log, Promise, Urls, Website, _,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 Promise = require('bluebird');
@@ -8,6 +8,8 @@ _ = require('lodash');
 Git = require('git-wrapper');
 
 Log = require('./log');
+
+Color = require('./color');
 
 Authorized = require('./authorized');
 
@@ -52,6 +54,7 @@ module.exports = DeployLog = (function() {
   DeployLog.prototype.requestAndLogStatus = function() {
     return Website.get().then((function(_this) {
       return function(website) {
+        _this.handleNonExistingWebsite(website);
         return _this.getSha().then(function(sha) {
           return Authorized.post(Urls.buildForCLI(website.slug), {
             commit_sha: sha
@@ -64,6 +67,15 @@ module.exports = DeployLog = (function() {
         });
       };
     })(this));
+  };
+
+  DeployLog.prototype.handleNonExistingWebsite = function(website) {
+    if (website.exists) {
+      return;
+    }
+    Log.p("You don't have a published website connected to this folder.");
+    Log.p("Write " + (Color.violet('closeheat publish')) + " to publish it first.");
+    return process.exit();
   };
 
   DeployLog.prototype.getSha = function() {

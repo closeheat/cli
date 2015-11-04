@@ -15,7 +15,7 @@ class Authorized
     opts.qs = _.merge(opts.form || {}, api_token: @token())
     opts.headers = { 'X-CLI-Version': pkg.version }
 
-    request(opts).then((resp) ->
+    request(opts).then (resp) ->
       Permissions = require './permissions'
       Permissions.check(resp)
 
@@ -23,10 +23,6 @@ class Authorized
       Errors.check(resp)
 
       resp[0].body
-
-    ).catch (err) ->
-      Log.p(err)
-      process.exit()
 
   @post: (url, data = {}) ->
     @validateUrl(url)

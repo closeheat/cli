@@ -19,14 +19,7 @@ module.exports = Errors = (function() {
     var Log;
     Log = require('./log');
     Log.stop();
-    switch (resp.body.type) {
-      case 'app-not-found':
-        Log.p("Could not find this website.");
-        break;
-      default:
-        Log.error(JSON.stringify(resp));
-    }
-    return process.exit();
+    throw new Error(resp.body.type);
   };
 
   return Errors;

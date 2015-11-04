@@ -3,6 +3,7 @@ _ = require 'lodash'
 Git = require 'git-wrapper'
 
 Log = require './log'
+Color = require './color'
 Authorized = require './authorized'
 Urls = require './urls'
 BackendLogger = require './backend_logger'
@@ -32,11 +33,20 @@ class DeployLog
 
   requestAndLogStatus: =>
     Website.get().then (website) =>
+      @handleNonExistingWebsite(website)
+
       @getSha().then (sha) =>
         Authorized.post(Urls.buildForCLI(website.slug), commit_sha: sha).then (resp) =>
           build = resp.build
           @backend_logger.log(build)
           @status = build.status
+
+  handleNonExistingWebsite: (website) ->
+    return if website.exists
+
+    Log.p "You don't have a published website connected to this folder."
+    Log.p "Write #{Color.violet('closeheat publish')} to publish it first."
+    process.exit()
 
   getSha: ->
     new Promise (resolve, reject) =>

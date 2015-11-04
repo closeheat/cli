@@ -33,9 +33,6 @@ module.exports = Authorized = (function() {
       Errors = require('./errors');
       Errors.check(resp);
       return resp[0].body;
-    })["catch"](function(err) {
-      Log.p(err);
-      return process.exit();
     });
   };
 
