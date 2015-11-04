@@ -59,7 +59,6 @@ describe 'graceful when user cli is not authorized', ->
       command('log').then (stdout) ->
         assertStdout stdout,
           """
-          TEST: Executing 'git remote --verbose'
           #{gracefulUnauthorized}
           """
         done()
@@ -77,7 +76,6 @@ describe 'graceful when user cli is not authorized', ->
       command('log').then (stdout) ->
         assertStdout stdout,
           """
-          TEST: Executing 'git remote --verbose'
           #{gracefulUnauthorized}
           """
         done()
@@ -91,7 +89,6 @@ describe 'graceful when user cli is not authorized', ->
     command('open').then (stdout) ->
       assertStdout stdout,
         """
-        TEST: Executing 'git remote --verbose'
         #{gracefulUnauthorized}
         """
       done()
@@ -108,7 +105,6 @@ describe 'graceful when user cli is not authorized', ->
       command('publish').then (stdout) ->
         assertStdout stdout,
           """
-          TEST: Executing 'git remote --verbose'
           #{gracefulUnauthorized}
           """
         done()

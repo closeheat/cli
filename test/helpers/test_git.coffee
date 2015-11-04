@@ -17,6 +17,15 @@ class TestGit
 
     @exec "-C '#{TestConfig.websiteDir()}' init"
 
+  @createFile: =>
+    fs.writeFileSync(path.join(TestConfig.websiteDir(), 'test-file.txt'), 'Testing')
+
+  @addAll: =>
+    @exec "-C '#{TestConfig.websiteDir()}' add ."
+
+  @commit: =>
+    @exec "-C '#{TestConfig.websiteDir()}' commit -m 'Testing commit message'"
+
   @exec: (args...) =>
     new Promise (resolve, reject) =>
       new Git().exec args..., (err, resp) ->

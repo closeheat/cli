@@ -29,7 +29,6 @@ describe 'graceful when GitHub not authorized', ->
     command('publish').then (stdout) ->
       assertStdout stdout,
         """
-        TEST: Executing 'git remote --verbose'
         ERROR | GitHub not authorized
                 We cannot set you up for deployment because you did not authorize GitHub.
                 Visit http://app.closeheat.com/authorize-github and rerun the command.

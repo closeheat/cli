@@ -118,6 +118,6 @@ class Log
 
   @backend: (data) ->
     if data.type == 'error'
-      Log.inner("#{Color.orange('closeheat')} | #{Color.red(data.message)}")
+      Log.p("#{Color.orange('closeheat')} | #{Color.red(data.message)}")
     else
-      Log.inner("#{Color.orange('closeheat')} | #{data.message}")
+      Log.p("#{Color.orange('closeheat')} | #{data.message}")

@@ -39,28 +39,28 @@ describe 'clone', ->
         """
       done()
 
-  it 'with app name', (done) ->
-    @api.routes.post '/apps/find', (req, res) ->
-      res.send
-        app:
-          exists: true
-          github_repo: 'example/repo'
-          default_branch: 'example-branch'
-          slug: 'example-slug'
-
-    command('clone example-slug').then (stdout) ->
-      assertStdout stdout,
-        """
-        - Getting website information for example-slug.
-        - Cloning GitHub repository from example\/repo.
-        TEST: Executing 'git clone git@github.com:example\/repo.git example-slug'
-          Cloned the app code to directory 'example-slug'.
-        The quickest way to deploy changes to closeheat.com and GitHub is with:
-          closeheat deploy
-        For more awesome tricks type:
-          closeheat help
-        """
-      done()
+  # it 'with app name', (done) ->
+  #   @api.routes.post '/apps/find', (req, res) ->
+  #     res.send
+  #       app:
+  #         exists: true
+  #         github_repo: 'example/repo'
+  #         default_branch: 'example-branch'
+  #         slug: 'example-slug'
+  #
+  #   command('clone example-slug').then (stdout) ->
+  #     assertStdout stdout,
+  #       """
+  #       - Getting website information for example-slug.
+  #       - Cloning GitHub repository from example\/repo.
+  #       TEST: Executing 'git clone git@github.com:example\/repo.git example-slug'
+  #         Cloned the app code to directory 'example-slug'.
+  #       The quickest way to deploy changes to closeheat.com and GitHub is with:
+  #         closeheat deploy
+  #       For more awesome tricks type:
+  #         closeheat help
+  #       """
+  #     done()
 
   it 'with invalid app name', (done) ->
     @timeout(5000)

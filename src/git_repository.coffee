@@ -1,7 +1,6 @@
 Promise = require 'bluebird'
 _ = require 'lodash'
-
-Git = require './git'
+Git = require 'git-wrapper'
 
 module.exports =
 class GitRepository

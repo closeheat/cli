@@ -2,7 +2,7 @@ var Authorized, Cloner, Git, Log, Notifier, Promise, Urls;
 
 Promise = require('bluebird');
 
-Git = require('./git');
+Git = require('git-wrapper');
 
 Authorized = require('./authorized');
 

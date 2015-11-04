@@ -179,9 +179,9 @@ module.exports = Log = (function() {
 
   Log.backend = function(data) {
     if (data.type === 'error') {
-      return Log.inner((Color.orange('closeheat')) + " | " + (Color.red(data.message)));
+      return Log.p((Color.orange('closeheat')) + " | " + (Color.red(data.message)));
     } else {
-      return Log.inner((Color.orange('closeheat')) + " | " + data.message);
+      return Log.p((Color.orange('closeheat')) + " | " + data.message);
     }
   };
 

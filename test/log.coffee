@@ -3,13 +3,20 @@ expect = require('chai').expect
 command = require './helpers/command'
 assertStdout = require './helpers/assert_stdout'
 TestApi = require './helpers/test_api'
+TestGit = require './helpers/test_git'
 TestConfig = require './helpers/test_config'
 Config = require '../src/config'
 
 describe 'log', ->
-  beforeEach ->
+  beforeEach (done) ->
     @api = new TestApi()
     @server = @api.start()
+    TestGit.init()
+      .then(TestGit.createFile)
+      .then(TestGit.addAll)
+      .then(TestGit.commit)
+      .then(-> TestGit.addRemote())
+      .then(-> done())
 
   afterEach ->
     @server.close()
@@ -38,7 +45,6 @@ describe 'log', ->
     command('log').then (stdout) ->
       assertStdout stdout,
         """
-        TEST: Executing 'git remote --verbose'
-          closeheat | Testing logs.
+        closeheat | Testing logs.
         """
       done()

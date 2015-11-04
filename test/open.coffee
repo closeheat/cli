@@ -25,7 +25,6 @@ describe 'open', ->
     command('open').then (stdout) ->
       assertStdout stdout,
         """
-        TEST: Executing 'git remote --verbose'
         Opening your website at http://example-slug.closeheatapp.com.
         """
       done()
@@ -39,7 +38,6 @@ describe 'open', ->
     command('open').then (stdout) ->
       assertStdout stdout,
         """
-        TEST: Executing 'git remote --verbose'
         No published website from this folder exists.
         To publish this folder, type: closeheat publish
         """

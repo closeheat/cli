@@ -1,6 +1,6 @@
 Promise = require 'bluebird'
+Git = require 'git-wrapper'
 
-Git = require './git'
 Authorized = require './authorized'
 Urls = require './urls'
 Log = require './log'
