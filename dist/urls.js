@@ -27,7 +27,7 @@ module.exports = Urls = (function() {
     return (this.api()) + "/publish";
   };
 
-  Urls.findWebsite = function() {
+  Urls.findApp = function() {
     return (this.api()) + "/apps/find";
   };
 

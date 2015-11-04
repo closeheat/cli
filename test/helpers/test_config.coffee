@@ -9,6 +9,9 @@ class TestConfig
   @dir: ->
     path.join(process.cwd(), 'test', 'fixtures', 'home', '.closeheat')
 
+  @websiteDir: ->
+    path.join(process.cwd(), 'test', 'fixtures', 'website')
+
   @file: ->
     path.join(@dir(), 'config.json')
 

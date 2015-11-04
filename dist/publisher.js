@@ -88,7 +88,7 @@ module.exports = Publisher = (function() {
     Log.p("It is available at " + (Color.violet(website.slug + ".closeheatapp.com")) + ".");
     Log.p("You can open it swiftly by typing " + (Color.violet('closeheat open')) + ".");
     Log.br();
-    Log.p("It has a continuous deployment setup from GitHub at " + website.repo);
+    Log.p("It has a continuous deployment setup from GitHub at " + website.github_repo);
     Log.br();
     Log.p("Anyways - if you'd like to publish your current code changes, just type:");
     Log.p(Color.violet('closeheat quick-publish'));

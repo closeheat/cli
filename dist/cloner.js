@@ -42,13 +42,13 @@ module.exports = Cloner = (function() {
 
   Cloner.prototype.getAppData = function(slug) {
     return new Promise(function(resolve, reject) {
-      return Authorized.post(Urls.findWebsite(), {
+      return Authorized.post(Urls.findApp(), {
         slug: slug
       }).then(function(resp) {
-        if (!resp.exists) {
+        if (!resp.app.exists) {
           return Log.error("Website named '" + slug + "' does not exist.");
         }
-        return resolve(resp);
+        return resolve(resp.app);
       });
     });
   };

@@ -6,11 +6,11 @@ Git = require './git'
 module.exports =
 class GitRepository
   @ensureRemote: (opts) =>
-    @exists().then (repo) =>
-      return _.assign(opts, remote: repo.name) if repo.exists
+    @exists().then (github_repo) =>
+      return _.assign(opts, remote: github_repo.name) if github_repo.exists
 
-      @addOriginRemote(opts.repo_url).then ->
-        _.assign(opts, remote: opts.repo_url)
+      @addOriginRemote(opts.github_repo_url).then ->
+        _.assign(opts, remote: opts.github_repo_url)
 
   @addOriginRemote: (url) ->
     new Promise (resolve, reject) =>

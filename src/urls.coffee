@@ -23,7 +23,7 @@ class Urls
   @publish: ->
     "#{@api()}/publish"
 
-  @findWebsite: ->
+  @findApp: ->
     "#{@api()}/apps/find"
 
   @buildForCLI: (slug) ->

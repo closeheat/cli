@@ -1,11 +1,11 @@
-var Permissions, Urls;
+var Errors, Urls;
 
 Urls = require('./urls');
 
-module.exports = Permissions = (function() {
-  function Permissions() {}
+module.exports = Errors = (function() {
+  function Errors() {}
 
-  Permissions.check = function(resp) {
+  Errors.check = function(resp) {
     if (!resp[0]) {
       return;
     }
@@ -15,14 +15,20 @@ module.exports = Permissions = (function() {
     return this.report(resp[0]);
   };
 
-  Permissions.report = function(resp) {
+  Errors.report = function(resp) {
     var Log;
     Log = require('./log');
     Log.stop();
-    Log.error(JSON.stringify(resp));
+    switch (resp.body.type) {
+      case 'app-not-found':
+        Log.p("Could not find this website.");
+        break;
+      default:
+        Log.error(JSON.stringify(resp));
+    }
     return process.exit();
   };
 
-  return Permissions;
+  return Errors;
 
 })();

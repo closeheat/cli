@@ -17,9 +17,10 @@ describe 'open', ->
   it 'should open app url', (done) ->
     @api.routes.post '/apps/find', (req, res) ->
       res.send
-        exists: true
-        slug: 'example-slug'
-        url: 'http://example-slug.closeheatapp.com'
+        app:
+          exists: true
+          slug: 'example-slug'
+          url: 'http://example-slug.closeheatapp.com'
 
     command('open').then (stdout) ->
       assertStdout stdout,
@@ -32,7 +33,8 @@ describe 'open', ->
   it 'should say when it does not exist', (done) ->
     @api.routes.post '/apps/find', (req, res) ->
       res.send
-        exists: false
+        app:
+          exists: false
 
     command('open').then (stdout) ->
       assertStdout stdout,

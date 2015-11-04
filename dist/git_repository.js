@@ -12,15 +12,15 @@ module.exports = GitRepository = (function() {
   function GitRepository() {}
 
   GitRepository.ensureRemote = function(opts) {
-    return GitRepository.exists().then(function(repo) {
-      if (repo.exists) {
+    return GitRepository.exists().then(function(github_repo) {
+      if (github_repo.exists) {
         return _.assign(opts, {
-          remote: repo.name
+          remote: github_repo.name
         });
       }
-      return GitRepository.addOriginRemote(opts.repo_url).then(function() {
+      return GitRepository.addOriginRemote(opts.github_repo_url).then(function() {
         return _.assign(opts, {
-          remote: opts.repo_url
+          remote: opts.github_repo_url
         });
       });
     });

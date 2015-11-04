@@ -36,7 +36,7 @@ module.exports = UserInput = (function() {
           message: "How will you name a new GitHub repository? (example: " + suggested + ")",
           name: 'repo'
         }, function(answer) {
-          return resolve(answer.repo.replace(' ', ''));
+          return resolve(answer.repo);
         });
       };
     })(this));

@@ -1,7 +1,7 @@
 Urls = require './urls'
 
 module.exports =
-class Permissions
+class Errors
   @check: (resp) ->
     return unless resp[0]
     return if resp[0].statusCode == 200
@@ -12,5 +12,11 @@ class Permissions
     Log = require './log'
     Log.stop()
 
-    Log.error JSON.stringify(resp)
+    switch resp.body.type
+      when 'app-not-found'
+        # TODO: add what to do then
+        Log.p("Could not find this website.")
+      else
+        Log.error JSON.stringify(resp)
+
     process.exit()

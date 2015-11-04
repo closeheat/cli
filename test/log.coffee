@@ -21,8 +21,9 @@ describe 'log', ->
       expect(req.body.repo).to.eql('example-org/example-repo')
 
       res.send
-        exists: true
-        slug: 'example-slug'
+        app:
+          exists: true
+          slug: 'example-slug'
 
     @api.routes.post '/apps/example-slug/builds/for_cli', (req, res) ->
       res.send

@@ -26,16 +26,14 @@ module.exports = Authorized = (function() {
     opts.headers = {
       'X-CLI-Version': pkg.version
     };
-    return request(opts).then((function(_this) {
-      return function(resp) {
-        var Errors, Permissions;
-        Permissions = require('./permissions');
-        Permissions.check(resp);
-        Errors = require('./errors');
-        Errors.check(resp);
-        return resp[0].body;
-      };
-    })(this))["catch"](function(err) {
+    return request(opts).then(function(resp) {
+      var Errors, Permissions;
+      Permissions = require('./permissions');
+      Permissions.check(resp);
+      Errors = require('./errors');
+      Errors.check(resp);
+      return resp[0].body;
+    })["catch"](function(err) {
       Log.p(err);
       return process.exit();
     });

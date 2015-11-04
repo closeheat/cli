@@ -24,4 +24,4 @@ class UserInput
         message: "How will you name a new GitHub repository? (example: #{suggested})"
         name: 'repo'
       }, (answer) =>
-        resolve(answer.repo.replace(' ', ''))
+        resolve(answer.repo)

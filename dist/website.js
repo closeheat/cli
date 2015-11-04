@@ -29,12 +29,9 @@ module.exports = Website = (function() {
 
   Website.create = function(opts) {
     return Website.execRequest(opts.slug, opts.repo).then(function(resp) {
-      if (!resp.success) {
-        return Website.handleProblem(resp, opts);
-      }
       return _.assign(opts, {
         website: resp.url,
-        repo_url: resp.repo_url
+        github_repo_url: resp.github_repo_url
       });
     });
   };
@@ -69,15 +66,10 @@ module.exports = Website = (function() {
   Website.backend = function(repo) {
     return new Promise((function(_this) {
       return function(resolve, reject) {
-        return Authorized.post(Urls.findWebsite(), {
+        return Authorized.post(Urls.findApp(), {
           repo: repo
         }).then(function(resp) {
-          return resolve({
-            exists: resp.exists,
-            repo: repo,
-            slug: resp.slug,
-            url: resp.url
-          });
+          return resolve(resp.app);
         });
       };
     })(this));
@@ -90,12 +82,7 @@ module.exports = Website = (function() {
           repo: repo,
           slug: slug
         }).then(function(resp) {
-          return resolve({
-            error_type: resp.error_type,
-            success: resp.success,
-            url: resp.url,
-            repo_url: resp.repo_url
-          });
+          return resolve(resp.app);
         });
       };
     })(this));

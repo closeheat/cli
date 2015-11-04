@@ -35,10 +35,10 @@ class Cloner
 
   getAppData: (slug) ->
     new Promise (resolve, reject) ->
-      Authorized.post(Urls.findWebsite(), slug: slug).then (resp) ->
-        return Log.error "Website named '#{slug}' does not exist." unless resp.exists
+      Authorized.post(Urls.findApp(), slug: slug).then (resp) ->
+        return Log.error "Website named '#{slug}' does not exist." unless resp.app.exists
 
-        resolve(resp)
+        resolve(resp.app)
 
   execCloning: (github_repo, branch, slug) ->
     @git = new Git()

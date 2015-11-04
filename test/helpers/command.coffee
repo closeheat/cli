@@ -2,7 +2,7 @@ Promise = require 'bluebird'
 nixt = require 'nixt'
 _ = require 'lodash'
 
-closeheat = './dist/bin/closeheat.js'
+closeheat = '../../../dist/bin/closeheat.js'
 TestConfig = require './test_config'
 
 module.exports = (command, opts = {}) ->
@@ -19,7 +19,6 @@ module.exports = (command, opts = {}) ->
   mockEnv = (cli) ->
     cli
       .env('CLOSEHEAT_TEST', true)
-      .env('CLOSEHEAT_TEST_MOCK_GIT', opts.git || '../test/fixtures/git/dist/default')
 
   new Promise (resolve, reject) ->
     test_command = [
@@ -31,8 +30,10 @@ module.exports = (command, opts = {}) ->
     ]
 
     mockEnv(fillPrompts(nixt(nixt_config)))
+      .cwd(TestConfig.websiteDir())
       .run(test_command.join(' '))
       .expect((result) ->
+        console.log result.stderr if result.stderr
         resolve(result.stdout)
       )
       .end(-> )

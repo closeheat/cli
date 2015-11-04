@@ -42,10 +42,11 @@ describe 'clone', ->
   it 'with app name', (done) ->
     @api.routes.post '/apps/find', (req, res) ->
       res.send
-        exists: true
-        github_repo: 'example/repo'
-        default_branch: 'example-branch'
-        slug: 'example-slug'
+        app:
+          exists: true
+          github_repo: 'example/repo'
+          default_branch: 'example-branch'
+          slug: 'example-slug'
 
     command('clone example-slug').then (stdout) ->
       assertStdout stdout,
@@ -65,7 +66,8 @@ describe 'clone', ->
     @timeout(5000)
     @api.routes.post '/apps/find', (req, res) ->
       res.send
-        exists: false
+        app:
+          exists: false
 
     command('clone example-slug').then (stdout) ->
       assertStdout stdout,

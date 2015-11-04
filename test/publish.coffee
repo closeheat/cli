@@ -4,6 +4,7 @@ command = require './helpers/command'
 assertStdout = require './helpers/assert_stdout'
 TestApi = require './helpers/test_api'
 TestConfig = require './helpers/test_config'
+TestGit = require './helpers/test_git'
 Config = require '../src/config'
 
 success = (repo) ->
@@ -19,9 +20,10 @@ success = (repo) ->
   """
 
 describe 'publish', ->
-  beforeEach ->
+  beforeEach (done) ->
     @api = new TestApi()
     @server = @api.start()
+    TestGit.init().then(-> done())
 
   afterEach ->
     @server.close()
@@ -30,46 +32,50 @@ describe 'publish', ->
   # ? maybe - .git doesnt exist
   # - git not installed
 
-  it 'continuous deployment already configured', (done) ->
-    @timeout(5000)
+  describe 'GitHub repository exits', ->
+    beforeEach (done) ->
+      TestGit.addRemote().then(-> done())
 
-    @api.routes.post '/apps/find', (req, res) ->
-      res.send
-        exists: true
-        slug: 'existing-slug'
+    it 'continuous deployment already configured', (done) ->
+      @timeout(5000)
 
-    command('publish').then (stdout) ->
-      assertStdout stdout,
-        """
-        TEST: Executing 'git remote --verbose'
-        Hey there! This folder is already published to closeheat.
-        It is available at existing-slug.closeheatapp.com.
-        You can open it swiftly by typing closeheat open.
-        It has a continuous deployment setup from GitHub at example-org/example-repo
-        Anyways - if you'd like to publish your current code changes, just type:
-        closeheat quick-publish
-        Doing that will commit and push all of your changes to the GitHub repository and publish it.
-        """
-      done()
-
-  describe 'continuous deployment not setup', ->
-    beforeEach ->
       @api.routes.post '/apps/find', (req, res) ->
         res.send
-          exists: false
+          app:
+            exists: true
+            slug: 'existing-slug'
+            github_repo: 'example-org/example-repo'
+
+      command('publish').then (stdout) ->
+        assertStdout stdout,
+          """
+          Hey there! This folder is already published to closeheat.
+          It is available at existing-slug.closeheatapp.com.
+          You can open it swiftly by typing closeheat open.
+          It has a continuous deployment setup from GitHub at example-org/example-repo
+          Anyways - if you'd like to publish your current code changes, just type:
+          closeheat quick-publish
+          Doing that will commit and push all of your changes to the GitHub repository and publish it.
+          """
+        done()
+
+    it 'not configured - use existing repo', (done) ->
+      @api.routes.post '/apps/find', (req, res) ->
+        res.send
+          app:
+            exists: false
 
       @api.routes.post '/suggest/slug', (req, res) ->
         res.send
           slug: 'suggested-slug'
 
-    it 'use existing repo', (done) ->
       @timeout(5000)
 
       @api.routes.post '/publish', (req, res) ->
         res.send
-          success: true
-          url: 'http://example-subdomain.closeheatapp.com'
-          repo_url: 'git@github.com:example-org/example-repo.git'
+          app:
+            url: 'http://example-subdomain.closeheatapp.com'
+            github_repo_url: 'git@github.com:example-org/example-repo.git'
 
       prompts = [
         {
@@ -78,24 +84,18 @@ describe 'publish', ->
         }
       ]
 
-      opts =
-        prompts: prompts
-        git: '../test/fixtures/git/dist/default'
-
-      command('publish', opts).then (stdout) ->
+      command('publish', prompts: prompts).then (stdout) ->
         assertStdout stdout,
           """
-          TEST: Executing 'git remote --verbose'
           You are about to publish a new website.
           ? What subdomain would you like? [example: HELLO.closeheatapp.com] (suggested-slug)
           ? What subdomain would you like? [example: HELLO.closeheatapp.com] example-subdomain
-          TEST: Executing 'git remote --verbose'
           Using your existing GitHub repository: example-org/example-repo
-          TEST: Executing 'git remote --verbose'
           #{success('example-org/example-repo')}
           """
         done()
 
+  describe 'GitHub repository does not exist', ->
     it 'create new repo', (done) ->
       @timeout(5000)
 
@@ -103,14 +103,15 @@ describe 'publish', ->
         res.send
           name: 'example-user'
 
-      @api.routes.post '/publish', (req, res) ->
-        expect(req.body.repo).to.eql('example-org/example-new-repo')
-        expect(req.body.slug).to.eql('example-subdomain')
-
+      @api.routes.post '/suggest/slug', (req, res) ->
         res.send
-          success: true
-          url: 'http://example-subdomain.closeheatapp.com'
-          repo_url: 'git@github.com:example-org/example-new-repo.git'
+          slug: 'suggested-slug'
+
+      @api.routes.post '/publish', (req, res) ->
+        res.send
+          app:
+            url: 'http://example-subdomain.closeheatapp.com'
+            github_repo_url: 'git@github.com:example-org/example-new-repo.git'
 
       prompts = [
         {
@@ -123,20 +124,14 @@ describe 'publish', ->
         }
       ]
 
-      git = '../test/fixtures/git/dist/without_remotes'
-
-      command('publish', prompts: prompts, git: git).then (stdout) ->
+      command('publish', prompts: prompts).then (stdout) ->
         assertStdout stdout,
           """
-          TEST: Executing 'git remote --verbose'
           You are about to publish a new website.
           ? What subdomain would you like? [example: HELLO.closeheatapp.com] (suggested-slug)
           ? What subdomain would you like? [example: HELLO.closeheatapp.com] example-subdomain
-          TEST: Executing 'git remote --verbose'
           ? How will you name a new GitHub repository? (example: example-user/example-subdomain)
           ? How will you name a new GitHub repository? (example: example-user/example-subdomain) example-org/example-new-repo
-          TEST: Executing 'git remote --verbose'
-          TEST: Executing 'git remote add origin git@github.com:example-org/example-new-repo.git'
           #{success('example-org/example-new-repo')}
           """
         done()

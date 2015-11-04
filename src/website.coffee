@@ -16,9 +16,9 @@ module.exports =
 class Website
   @create: (opts) =>
     @execRequest(opts.slug, opts.repo).then (resp) =>
-      return @handleProblem(resp, opts) unless resp.success
+      # return @handleProblem(resp, opts) unless resp.success
 
-      _.assign(opts, website: resp.url, repo_url: resp.repo_url)
+      _.assign(opts, website: resp.url, github_repo_url: resp.github_repo_url)
 
   @handleProblem: (resp, opts) ->
     if resp.error_type == 'slug-exists'
@@ -37,10 +37,10 @@ class Website
 
   @backend: (repo) ->
     new Promise (resolve, reject) =>
-      Authorized.post(Urls.findWebsite(), repo: repo).then (resp) ->
-        resolve(exists: resp.exists, repo: repo, slug: resp.slug, url: resp.url)
+      Authorized.post(Urls.findApp(), repo: repo).then (resp) ->
+        resolve(resp.app)
 
   @execRequest: (slug, repo) ->
     new Promise (resolve, reject) =>
       Authorized.post(Urls.publish(), repo: repo, slug: slug).then (resp) ->
-        resolve(error_type: resp.error_type, success: resp.success, url: resp.url, repo_url: resp.repo_url)
+        resolve(resp.app)

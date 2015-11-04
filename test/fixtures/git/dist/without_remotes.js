@@ -6,6 +6,8 @@ _ = require('lodash');
 
 DefaultGit = require('./default');
 
+global.TIMES_REMOTE_USED = 0;
+
 module.exports = WithoutRemotesGit = (function(superClass) {
   extend(WithoutRemotesGit, superClass);
 
@@ -14,7 +16,12 @@ module.exports = WithoutRemotesGit = (function(superClass) {
   }
 
   WithoutRemotesGit.prototype.remote = function(args, cb) {
-    return cb(null, "      ");
+    if (global.TIMES_REMOTE_USED === 0) {
+      cb(null, "        ");
+      return global.TIMES_REMOTE_USED = 1;
+    } else {
+      return cb(null, "origin  git@github.com:example-org/example-repo.git (fetch)\norigin  git@github.com:example-org/example-repo.git (push)");
+    }
   };
 
   return WithoutRemotesGit;
