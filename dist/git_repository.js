@@ -51,6 +51,10 @@ module.exports = GitRepository = (function() {
                 exists: true
               });
             }
+          } else {
+            return resolve({
+              exists: true
+            });
           }
         });
       };

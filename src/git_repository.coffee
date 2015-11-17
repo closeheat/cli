@@ -26,3 +26,5 @@ class GitRepository
             return resolve(exists: false)
           else
             return resolve(exists: true)
+        else
+          resolve(exists: true)

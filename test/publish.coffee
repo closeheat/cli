@@ -95,56 +95,62 @@ describe 'publish', ->
           """
         done()
 
-    it 'slug taken', (done) ->
-      @timeout(5000)
-
-      @api.routes.post '/apps/find', (req, res) ->
-        res.send
-          app:
-            exists: false
-
-      time = 1
-      @api.routes.post '/publish', (req, res) ->
-        console.log 'got'
-        if time == 1
-          console.log 'got2'
-          res.status(405).send
-            type: 'slug-exists'
-            message: 'The subdomain is already taken.'
-        else
-          console.log 'got3'
-          res.send
-            success: true
-            url: 'http://example-subdomain.closeheatapp.com'
-            github_repo_url: 'git@github.com:example-org/example-new-repo.git'
-
-        time = 2
-
-      prompts = [
-        {
-          question: 'What subdomain would you like'
-          answer: 'example-subdomain'
-        }
-      ]
-
-      command('publish', prompts: prompts).then (stdout) ->
-        assertStdout stdout,
-          """
-          You are about to publish a new website.
-          ? What subdomain would you like? [example: HELLO.closeheatapp.com] (suggested-slug)
-          ? What subdomain would you like? [example: HELLO.closeheatapp.com] example-subdomain
-          Using your existing GitHub repository: example-org/example-repo
-          Subdomain example-subdomain is already taken. Could you choose another one?
-          ? What subdomain would you like? [example: HELLO.closeheatapp.com] (suggested-slug)
-          ? What subdomain would you like? [example: HELLO.closeheatapp.com] example-subdomain
-          #{success('example-org/example-repo')}
-          """
-        done()
+    # NIXT cant respond to multiple inputs with same question
+    # it 'slug taken', (done) ->
+    #   @timeout(5000)
+    #
+    #   @api.routes.post '/apps/find', (req, res) ->
+    #     res.send
+    #       app:
+    #         exists: false
+    #
+    #   time = 1
+    #   @api.routes.post '/publish', (req, res) ->
+    #     console.log 'got'
+    #     if time == 1
+    #       console.log 'got2'
+    #       res.status(405).send
+    #         type: 'slug-exists'
+    #         message: 'The subdomain is already taken.'
+    #     else
+    #       console.log 'got3'
+    #       res.send
+    #         success: true
+    #         url: 'http://example-subdomain.closeheatapp.com'
+    #         github_repo_url: 'git@github.com:example-org/example-new-repo.git'
+    #
+    #     time = 2
+    #
+    #   prompts = [
+    #     {
+    #       question: 'What subdomain would you like'
+    #       answer: 'example-subdomain'
+    #     }
+    #     {
+    #       question: 'What subdomain would you like'
+    #       answer: 'example-subdomain'
+    #     }
+    #   ]
+    #
+    #   command('publish', prompts: prompts).then (stdout) ->
+    #     assertStdout stdout,
+    #       """
+    #       You are about to publish a new website.
+    #       ? What subdomain would you like? [example: HELLO.closeheatapp.com] (suggested-slug)
+    #       ? What subdomain would you like? [example: HELLO.closeheatapp.com] example-subdomain
+    #       Using your existing GitHub repository: example-org/example-repo
+    #       Subdomain example-subdomain is already taken. Could you choose another one?
+    #       ? What subdomain would you like? [example: HELLO.closeheatapp.com] (suggested-slug)
+    #       ? What subdomain would you like? [example: HELLO.closeheatapp.com] example-subdomain
+    #       #{success('example-org/example-repo')}
+    #       """
+    #     done()
   describe 'GitHub repository does not exist', ->
     beforeEach ->
       @api.routes.get '/users/me', (req, res) ->
         res.send
-          name: 'example-user'
+          user:
+            github_username: 'example-user'
 
     it 'create new repo', (done) ->
       @timeout(5000)
@@ -161,7 +167,7 @@ describe 'publish', ->
           answer: 'example-subdomain'
         }
         {
-          question: 'How will you name a new GitHub repository'
+          question: 'How will you name a new GitHub'
           answer: 'example-org/example-new-repo'
         }
       ]
@@ -172,8 +178,8 @@ describe 'publish', ->
           You are about to publish a new website.
           ? What subdomain would you like? [example: HELLO.closeheatapp.com] (suggested-slug)
           ? What subdomain would you like? [example: HELLO.closeheatapp.com] example-subdomain
-          ? How will you name a new GitHub repository? (example: example-user/example-subdomain)
-          ? How will you name a new GitHub repository? (example: example-user/example-subdomain) example-org/example-new-repo
+          ? How will you name a new GitHub repository? .. (example-user/example-subdomain)
+          ? How will you name a new GitHub repository? .. example-org/example-new-repo
           #{success('example-org/example-new-repo')}
           """
         done()

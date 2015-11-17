@@ -19,10 +19,10 @@ class UserInput
 
   @repo: (suggested) ->
     new Promise (resolve, reject) =>
-      # show as example instead of default. inquirer / in defaults bug
       inquirer.prompt {
-        message: "How will you name a new GitHub repository? (example: #{suggested})"
+        message: "How will you name a new GitHub repository? .."
         name: 'repo'
+        default: suggested
       }, (answer) =>
         return resolve(suggested) unless answer.repo
         return resolve(answer.repo) if answer.repo.match(/(.*)\/(.*)/)

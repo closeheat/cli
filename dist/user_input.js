@@ -33,8 +33,9 @@ module.exports = UserInput = (function() {
     return new Promise((function(_this) {
       return function(resolve, reject) {
         return inquirer.prompt({
-          message: "How will you name a new GitHub repository? (example: " + suggested + ")",
-          name: 'repo'
+          message: "How will you name a new GitHub repository? ..",
+          name: 'repo',
+          "default": suggested
         }, function(answer) {
           if (!answer.repo) {
             return resolve(suggested);
