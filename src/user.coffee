@@ -1,7 +1,10 @@
 Urls = require './urls'
 Authorized = require './authorized'
+Promise= require 'bluebird'
 
 module.exports =
 class User
   @get: ->
-    Authorized.get(Urls.currentUser())
+    new Promise (resolve, reject) ->
+      Authorized.get(Urls.currentUser()).then (resp) ->
+        resolve(resp.user)

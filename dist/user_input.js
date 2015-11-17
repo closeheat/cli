@@ -36,7 +36,14 @@ module.exports = UserInput = (function() {
           message: "How will you name a new GitHub repository? (example: " + suggested + ")",
           name: 'repo'
         }, function(answer) {
-          return resolve(answer.repo);
+          if (!answer.repo) {
+            return resolve(suggested);
+          }
+          if (answer.repo.match(/(.*)\/(.*)/)) {
+            return resolve(answer.repo);
+          }
+          Log.p('Could you provide the repository name in "name/repository" format?');
+          return resolve();
         });
       };
     })(this));

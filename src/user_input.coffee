@@ -24,4 +24,8 @@ class UserInput
         message: "How will you name a new GitHub repository? (example: #{suggested})"
         name: 'repo'
       }, (answer) =>
-        resolve(answer.repo)
+        return resolve(suggested) unless answer.repo
+        return resolve(answer.repo) if answer.repo.match(/(.*)\/(.*)/)
+
+        Log.p 'Could you provide the repository name in "name/repository" format?'
+        resolve()

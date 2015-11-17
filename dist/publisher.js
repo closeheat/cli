@@ -1,4 +1,5 @@
-var Color, GitHubManager, GitRepository, Log, Promise, Publisher, SlugManager, Website, _;
+var Color, GitHubManager, GitRemote, GitRepository, Log, Promise, Publisher, SlugManager, Website, _,
+  bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 Promise = require('bluebird');
 
@@ -14,10 +15,14 @@ GitHubManager = require('./github_manager');
 
 Website = require('./website');
 
+GitRemote = require('./git_remote');
+
 GitRepository = require('./git_repository');
 
 module.exports = Publisher = (function() {
-  function Publisher() {}
+  function Publisher() {
+    this.run = bind(this.run, this);
+  }
 
   Publisher.prototype.start = function() {
     return this.ensureNoWebsite().then((function(_this) {
@@ -40,8 +45,11 @@ module.exports = Publisher = (function() {
         key: 'website',
         fn: Website.create
       }, {
+        key: 'repository',
+        fn: GitRepository.ensure
+      }, {
         key: 'remote',
-        fn: GitRepository.ensureRemote
+        fn: GitRemote.ensure
       }
     ];
   };
@@ -53,20 +61,14 @@ module.exports = Publisher = (function() {
   };
 
   Publisher.prototype.run = function(opts) {
-    var runner;
     if (opts == null) {
       opts = {};
     }
     if (_.isEmpty(this.unfullfilledSteps(opts))) {
       return opts;
     }
-    runner = Promise.reduce(this.unfullfilledSteps(opts), function(new_opts, obj) {
-      return obj.fn(new_opts).then(function(result) {
-        return result;
-      });
-    }, opts);
-    return runner.then((function(_this) {
-      return function(opts) {
+    return _.first(this.unfullfilledSteps(opts)).fn(opts).then((function(_this) {
+      return function() {
         return _this.run(opts);
       };
     })(this));

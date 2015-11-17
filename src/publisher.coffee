@@ -7,6 +7,7 @@ Color = require './color'
 SlugManager = require './slug_manager'
 GitHubManager = require './github_manager'
 Website = require './website'
+GitRemote = require './git_remote'
 GitRepository = require './git_repository'
 
 module.exports =
@@ -21,22 +22,18 @@ class Publisher
       { key: 'slug', fn: SlugManager.choose }
       { key: 'repo', fn: GitHubManager.choose }
       { key: 'website', fn: Website.create }
-      { key: 'remote', fn: GitRepository.ensureRemote }
+      { key: 'repository', fn: GitRepository.ensure }
+      { key: 'remote', fn: GitRemote.ensure }
     ]
 
   unfullfilledSteps: (opts) ->
     _.select @steps(), (obj) ->
       !opts[obj.key]
 
-  run: (opts = {}) ->
+  run: (opts = {}) =>
     return opts if _.isEmpty(@unfullfilledSteps(opts))
 
-    runner = Promise.reduce @unfullfilledSteps(opts), (new_opts, obj) ->
-      obj.fn(new_opts).then (result) ->
-        result
-    , opts
-
-    runner.then (opts) =>
+    _.first(@unfullfilledSteps(opts)).fn(opts).then =>
       @run(opts)
 
   ensureNoWebsite: (data) ->

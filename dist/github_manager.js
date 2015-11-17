@@ -1,4 +1,4 @@
-var GitHubManager, GitRepository, Log, User, UserInput, _;
+var GitHubManager, GitRemote, Log, User, UserInput, _;
 
 _ = require('lodash');
 
@@ -8,7 +8,7 @@ UserInput = require('./user_input');
 
 User = require('./user');
 
-GitRepository = require('./git_repository');
+GitRemote = require('./git_remote');
 
 module.exports = GitHubManager = (function() {
   function GitHubManager() {}
@@ -22,7 +22,7 @@ module.exports = GitHubManager = (function() {
   };
 
   GitHubManager.oldOrNewRepo = function(opts) {
-    return GitRepository.exists().then((function(_this) {
+    return GitRemote.exists().then((function(_this) {
       return function(repo) {
         if (repo.exists) {
           Log.p("Using your existing GitHub repository: " + repo.name);
@@ -36,7 +36,7 @@ module.exports = GitHubManager = (function() {
 
   GitHubManager["new"] = function(slug) {
     return User.get().then(function(user) {
-      return UserInput.repo(user.name + "/" + slug);
+      return UserInput.repo(user.github_username + "/" + slug);
     });
   };
 

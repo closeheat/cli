@@ -9,7 +9,7 @@ Log = require './log'
 Authorized = require './authorized'
 Color = require './color'
 GitHubManager = require './github_manager'
-GitRepository = require './git_repository'
+GitRemote = require './git_remote'
 _ = require 'lodash'
 
 module.exports =
@@ -30,7 +30,7 @@ class Website
 
   @get: ->
     new Promise (resolve, reject) =>
-      GitRepository.exists().then (repo) =>
+      GitRemote.exists().then (repo) =>
         return resolve(exists: false) unless repo.exists
 
         @backend(repo.name).then(resolve)

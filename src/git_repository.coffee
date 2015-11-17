@@ -4,28 +4,25 @@ Git = require 'git-wrapper'
 
 module.exports =
 class GitRepository
-  @ensureRemote: (opts) =>
-    @exists().then (github_repo) =>
-      return _.assign(opts, remote: github_repo.name) if github_repo.exists
+  @ensure: (opts) =>
+    @exists().then (resp) =>
+      return _.assign(opts, repository: true) if resp.exists
 
-      @addOriginRemote(opts.github_repo_url).then ->
-        _.assign(opts, remote: opts.github_repo_url)
+      @init().then ->
+        _.assign(opts, repository: true)
 
-  @addOriginRemote: (url) ->
+  @init: (url) ->
     new Promise (resolve, reject) =>
-      new Git().exec 'remote', ["add origin #{url}"], (err, resp) ->
+      new Git().exec 'init', (err, resp) ->
         return reject(err) if err
 
         resolve(resp)
 
-  # TODO: select only GitHub repo
-  GITHUB_REPO_REGEX = /origin*.+:(.+\/.+).git \(push\)/
   @exists: ->
     new Promise (resolve, reject) =>
       new Git().exec 'remote', ['--verbose'], (err, resp) ->
-        return reject(err) if err
-
-        repo_match = resp.match(GITHUB_REPO_REGEX)
-        return resolve(exists: false) unless repo_match
-
-        resolve(exists: true, name: repo_match[1])
+        if err
+          if err.message.match(/Not a git repository/)
+            return resolve(exists: false)
+          else
+            return resolve(exists: true)

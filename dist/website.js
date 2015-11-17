@@ -1,4 +1,4 @@
-var Authorized, Color, GitHubManager, GitRepository, Log, Promise, SlugManager, Urls, Website, _, inquirer, path;
+var Authorized, Color, GitHubManager, GitRemote, Log, Promise, SlugManager, Urls, Website, _, inquirer, path;
 
 inquirer = require('inquirer');
 
@@ -20,7 +20,7 @@ Color = require('./color');
 
 GitHubManager = require('./github_manager');
 
-GitRepository = require('./git_repository');
+GitRemote = require('./git_remote');
 
 _ = require('lodash');
 
@@ -53,7 +53,7 @@ module.exports = Website = (function() {
   Website.get = function() {
     return new Promise((function(_this) {
       return function(resolve, reject) {
-        return GitRepository.exists().then(function(repo) {
+        return GitRemote.exists().then(function(repo) {
           if (!repo.exists) {
             return resolve({
               exists: false
