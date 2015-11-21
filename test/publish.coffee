@@ -79,7 +79,7 @@ describe 'publish', ->
 
       prompts = [
         {
-          question: 'What subdomain would you like'
+          question: 'Choose a subdomain'
           answer: 'example-subdomain'
         }
       ]
@@ -88,8 +88,8 @@ describe 'publish', ->
         assertStdout stdout,
           """
           You are about to publish a new website.
-          ? What subdomain would you like? [example: HELLO.closeheatapp.com] (suggested-slug)
-          ? What subdomain would you like? [example: HELLO.closeheatapp.com] example-subdomain
+          ? Choose a subdomain - XXX.closeheatapp.com: (suggested-slug)
+          ? Choose a subdomain - XXX.closeheatapp.com: example-subdomain
           Using your existing GitHub repository: example-org/example-repo
           #{success('example-org/example-repo')}
           """
@@ -163,11 +163,11 @@ describe 'publish', ->
 
       prompts = [
         {
-          question: 'What subdomain would you like'
+          question: 'Choose a subdomain'
           answer: 'example-subdomain'
         }
         {
-          question: 'How will you name a new GitHub'
+          question: 'Choose a GitHub repository'
           answer: 'example-org/example-new-repo'
         }
       ]
@@ -176,10 +176,10 @@ describe 'publish', ->
         assertStdout stdout,
           """
           You are about to publish a new website.
-          ? What subdomain would you like? [example: HELLO.closeheatapp.com] (suggested-slug)
-          ? What subdomain would you like? [example: HELLO.closeheatapp.com] example-subdomain
-          ? How will you name a new GitHub repository? .. (example-user/example-subdomain)
-          ? How will you name a new GitHub repository? .. example-org/example-new-repo
+          ? Choose a subdomain - XXX.closeheatapp.com: (suggested-slug)
+          ? Choose a subdomain - XXX.closeheatapp.com: example-subdomain
+          ? Choose a GitHub repository: (example-user/example-subdomain)
+          ? Choose a GitHub repository: example-org/example-new-repo
           #{success('example-org/example-new-repo')}
           """
         done()

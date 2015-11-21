@@ -19,7 +19,7 @@ module.exports = UserInput = (function() {
     return new Promise((function(_this) {
       return function(resolve, reject) {
         return inquirer.prompt({
-          message: 'What subdomain would you like? [example: HELLO.closeheatapp.com]',
+          message: 'Choose a subdomain - XXX.closeheatapp.com:',
           name: 'slug',
           "default": suggested
         }, function(answer) {
@@ -33,7 +33,7 @@ module.exports = UserInput = (function() {
     return new Promise((function(_this) {
       return function(resolve, reject) {
         return inquirer.prompt({
-          message: "How will you name a new GitHub repository? ..",
+          message: 'Choose a GitHub repository:',
           name: 'repo',
           "default": suggested
         }, function(answer) {

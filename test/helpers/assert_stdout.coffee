@@ -1,6 +1,8 @@
 expect = require('chai').expect
 _ = require 'lodash'
 ansiRegex = require('ansi-regex')()
+EMPTY_STRING = /^\s*$/
+INCOMPLETE_ANSWERS = /(.+)\((.+)\)\s?([^\s]+)/
 
 split = (stdout) ->
   result = stdout.replace('\r-', '').replace('\r', '')
@@ -8,15 +10,16 @@ split = (stdout) ->
   result = _.reject result, (line) -> line == '-'
   result = _.reject result, (line) -> _.isEmpty(_.trim(line))
   result = _.map result, (line) ->
-    return line unless line[0] == '?'
-
     prompt_states = _.compact(line.split(ansiRegex))
-    return new Error("Error in prompt states: #{JSON.stringify(prompt_states)}") if prompt_states.length <= 2
+    prompt_states = _.reject prompt_states, (s) -> s.match(EMPTY_STRING)
+    return line unless prompt_states[0][0] == '?'
+
+    prompt_states = _.reject prompt_states, (s) -> s.match(INCOMPLETE_ANSWERS)
 
     [empty, ..., filled] = prompt_states
     [empty, filled]
 
-  _.map(_.flatten(_.compact(result)), _.trimRight)
+  _.uniq(_.map(_.flatten(_.compact(result)), _.trimRight))
 
 module.exports = (stdout, expected) ->
   expected_lines = expected.split('\n')

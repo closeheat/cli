@@ -11,7 +11,7 @@ class UserInput
   @slug: (suggested) ->
     new Promise (resolve, reject) =>
       inquirer.prompt {
-        message: 'What subdomain would you like? [example: HELLO.closeheatapp.com]'
+        message: 'Choose a subdomain - XXX.closeheatapp.com:'
         name: 'slug'
         default: suggested
       }, (answer) =>
@@ -20,7 +20,7 @@ class UserInput
   @repo: (suggested) ->
     new Promise (resolve, reject) =>
       inquirer.prompt {
-        message: "How will you name a new GitHub repository? .."
+        message: 'Choose a GitHub repository:'
         name: 'repo'
         default: suggested
       }, (answer) =>
