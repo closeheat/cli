@@ -6,12 +6,6 @@ assertStdout = require './helpers/assert_stdout'
 TestConfig = require './helpers/test_config'
 Config = require '../src/config'
 
-gracefulUnauthorized =
-  """
-  You need to log in for that.
-  Type closeheat login to do it swiftly.
-  """
-
 describe 'graceful when GitHub not authorized', ->
   before ->
     @api = new TestApi()
@@ -29,8 +23,8 @@ describe 'graceful when GitHub not authorized', ->
     command('publish').then (stdout) ->
       assertStdout stdout,
         """
-        ERROR | GitHub not authorized
-                We cannot set you up for deployment because you did not authorize GitHub.
-                Run closeheat auth-github and rerun the command.
+        You need to authorize GitHub for that.
+        Type closeheat auth-github to do it.
+        And rerun your last command aftewards.
         """
       done()
