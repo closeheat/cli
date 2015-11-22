@@ -62,12 +62,7 @@ class Publisher
     Log.p 'Success!'
     Log.p "Your website #{Color.violet("#{slug}.closeheatapp.com")} is now published."
     Log.br()
-    Log.p "GitHub repository #{repo} is setup for continuous deployment."
-    Log.p "Every change to master branch will be immediately published."
+    Log.p "Every change to master branch on #{repo} in GitHub will be immediately published."
     Log.br()
-    Log.p "The logs of each deploy are available with #{Color.violet('closeheat log')}."
-    Log.p "It's useful to have them right after your #{Color.violet('git push')} with #{Color.violet('git push origin master && closeheat log')}"
-    Log.br()
-    Log.p "To set up a custom domain or change a public directory type:"
-    # Just opens http://app.closeheat.com/apps/app-name/settings
-    Log.code 'closeheat settings'
+    Log.p "The logs of each change are available with #{Color.violet('closeheat log')}."
+    Log.p "It's useful to have them right after your push your changes like: #{Color.violet('git push origin master && closeheat log')}"

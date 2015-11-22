@@ -11,12 +11,9 @@ success = (repo) ->
   """
   Success!
   Your website example-subdomain.closeheatapp.com is now published.
-  GitHub repository #{repo} is setup for continuous deployment.
-  Every change to master branch will be immediately published.
-  The logs of each deploy are available with closeheat log.
-  It\'s useful to have them right after your git push with git push origin master && closeheat log
-  To set up a custom domain or change a public directory type:
-    closeheat settings
+  Every change to master branch on #{repo} in GitHub will be immediately published.
+  The logs of each change are available with closeheat log.
+  It\'s useful to have them right after your push your changes like: git push origin master && closeheat log
   """
 
 describe 'publish', ->
