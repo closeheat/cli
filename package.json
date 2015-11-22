@@ -3,7 +3,8 @@
   "version": "0.19.5",
   "author": "Domas Bitvinskas <domas.bitvinskas@me.com>",
   "contributors": [
-    "Justas Palumickas <jpalumickas@gmail.com>"
+    "Justas Palumickas <jpalumickas@gmail.com>",
+    "Kenan Yildirim <kenan@kenany.me>"
   ],
   "description": "A cli for closeheat",
   "license": "MIT",
