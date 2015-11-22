@@ -5,6 +5,7 @@ path = require 'path'
 pkg = require '../../package.json'
 Log = require '../log'
 Updater = require '../updater'
+Notifier = require '../notifier'
 
 setGlobals = (program) ->
   global.API_URL = program.api || 'http://api.closeheat.com'
@@ -24,6 +25,7 @@ program
   .description('Sets up continuous website delivery from GitHub to closeheat.')
   .action ->
     setGlobals(program)
+    Notifier.notify('publish')
 
     Publisher = require '../publisher'
     new Publisher().start()
@@ -33,8 +35,9 @@ program
   .description('Deploys your app to closeheat.com via GitHub.')
   .action ->
     setGlobals(program)
-    Deployer = require '../deployer'
+    Notifier.notify('deploy')
 
+    Deployer = require '../deployer'
     new Deployer().deploy()
 
 program
@@ -42,8 +45,9 @@ program
   .description('Polls the log of the last deployment. Usable: git push origin master && closeheat log')
   .action (a, b) ->
     setGlobals(program)
-    DeployLog = require '../deploy_log'
+    Notifier.notify('log')
 
+    DeployLog = require '../deploy_log'
     Log.logo()
     new DeployLog().fromCurrentCommit()
 
@@ -52,8 +56,9 @@ program
   .description('Opens your deployed app in the browser.')
   .action ->
     setGlobals(program)
-    Opener = require '../opener'
+    Notifier.notify('open')
 
+    Opener = require '../opener'
     new Opener().open()
 
 program
@@ -61,8 +66,9 @@ program
   .description('Shows a list of your deployed apps.')
   .action ->
     setGlobals(program)
-    List = require '../list'
+    Notifier.notify('list')
 
+    List = require '../list'
     new List().show()
 
 program
@@ -70,6 +76,7 @@ program
   .description('Log in to closeheat.com with this computer.')
   .action (token) ->
     setGlobals(program)
+    Notifier.notify('login')
 
     Authorizer = require '../authorizer'
     new Authorizer().login(token)
@@ -79,6 +86,7 @@ program
   .description('Authorize GitHub for your Closeheat account.')
   .action ->
     setGlobals(program)
+    Notifier.notify('auth-github')
 
     GitHubAuthorizer = require '../github_authorizer'
     new GitHubAuthorizer().open()
@@ -88,6 +96,7 @@ program
   .description('Clones the closeheat app files.')
   .action (app_name) ->
     setGlobals(program)
+    Notifier.notify('clone', app_name)
 
     if app_name
       Cloner = require '../cloner'
@@ -101,6 +110,7 @@ program
   .description('Displays this menu.')
   .action ->
     setGlobals(program)
+    Notifier.notify('help')
 
     Updater = require '../updater'
     new Updater().update().then ->
@@ -112,6 +122,7 @@ program
   .description('Well, its a command robots run after the install.')
   .action ->
     setGlobals(program)
+    Notifier.notify('postinstall')
 
     Color = require '../color'
     Log.br()
@@ -123,6 +134,7 @@ program
   .command('*')
   .action ->
     setGlobals(program)
+    Notifier.notify('wildcard-help')
 
     Log.logo(0)
     program.help()
@@ -131,6 +143,7 @@ program.parse(process.argv)
 
 unless program.args.length
   setGlobals(program)
+  Notifier.notify('no-arg-help')
 
   Log.logo(0)
   program.help()
