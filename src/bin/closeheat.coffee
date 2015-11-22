@@ -4,11 +4,13 @@ path = require 'path'
 
 pkg = require '../../package.json'
 Log = require '../log'
+Updater = require '../updater'
 
 setGlobals = (program) ->
   global.API_URL = program.api || 'http://api.closeheat.com'
   global.CONFIG_DIR = program.configDir || path.join(homePath(), '.closeheat')
   global.COLORS = program.colors
+  new Updater().update()
 
 program
   .version(pkg.version)

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var Log, homePath, path, pkg, program, setGlobals;
+var Log, Updater, homePath, path, pkg, program, setGlobals;
 
 program = require('commander');
 
@@ -12,10 +12,13 @@ pkg = require('../../package.json');
 
 Log = require('../log');
 
+Updater = require('../updater');
+
 setGlobals = function(program) {
   global.API_URL = program.api || 'http://api.closeheat.com';
   global.CONFIG_DIR = program.configDir || path.join(homePath(), '.closeheat');
-  return global.COLORS = program.colors;
+  global.COLORS = program.colors;
+  return new Updater().update();
 };
 
 program.version(pkg.version).usage('<keywords>').option('--api [url]', 'API endpoint. Default: http://api.closeheat.com').option('--config-dir [path]', 'Configuration directory. Default: ~/.closeheat').option('--no-colors', 'Disable colors.');
@@ -83,7 +86,6 @@ program.command('clone [app-name]').description('Clones the closeheat app files.
 });
 
 program.command('help').description('Displays this menu.').action(function() {
-  var Updater;
   setGlobals(program);
   Updater = require('../updater');
   return new Updater().update().then(function() {
