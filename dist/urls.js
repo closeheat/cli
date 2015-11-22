@@ -40,7 +40,7 @@ module.exports = Urls = (function() {
   };
 
   Urls.authorizeGitHub = function() {
-    return (this.base()) + "/authorize-github";
+    return (this.base()) + "/auth/github";
   };
 
   Urls.notifier = function() {

@@ -33,7 +33,7 @@ class Urls
     "#{@api()}/users/me"
 
   @authorizeGitHub: ->
-    "#{@base()}/authorize-github"
+    "#{@base()}/auth/github"
 
   @notifier: ->
     "#{@api()}/cli_notifier"

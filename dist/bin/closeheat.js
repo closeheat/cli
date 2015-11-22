@@ -63,6 +63,13 @@ program.command('login [access-token]').description('Log in to closeheat.com wit
   return new Authorizer().login(token);
 });
 
+program.command('auth-github').description('Authorize GitHub for your Closeheat account.').action(function() {
+  var GitHubAuthorizer;
+  setGlobals(program);
+  GitHubAuthorizer = require('../github_authorizer');
+  return new GitHubAuthorizer().open();
+});
+
 program.command('clone [app-name]').description('Clones the closeheat app files.').action(function(app_name) {
   var Cloner, List;
   setGlobals(program);
