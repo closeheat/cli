@@ -5,6 +5,7 @@ TestApi = require './helpers/test_api'
 assertStdout = require './helpers/assert_stdout'
 TestConfig = require './helpers/test_config'
 Config = require '../src/config'
+TestGit = require './helpers/test_git'
 
 gracefulUnauthorized =
   """
@@ -13,9 +14,14 @@ gracefulUnauthorized =
   """
 
 describe 'graceful when user cli is not authorized', ->
-  before ->
+  before (done) ->
     @api = new TestApi()
     @server = @api.start()
+
+    TestGit.init().then ->
+      TestGit.addRemote().then ->
+        done()
+
 
   after ->
     @server.close()

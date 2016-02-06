@@ -39,7 +39,6 @@ class Website
 
       pusher_user_channel = pusher.subscribe(pusher_data.user_key)
 
-      # TODO: guard with timeout
       timeout = setTimeout(@showUngracefulError, 20000)
       pusher_user_channel.bind 'app.build', =>
         clearTimeout(timeout)
