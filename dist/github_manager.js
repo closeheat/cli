@@ -28,16 +28,13 @@ module.exports = GitHubManager = (function() {
           Log.p("Using your existing GitHub repository: " + repo.name);
           return repo.name;
         } else {
-          return _this["new"](opts.slug);
+          Log.br();
+          Log.p("This folder is not in a GitHub repository.");
+          Log.p("Set up GitHub repository first: https://github.com/new");
+          return process.exit();
         }
       };
     })(this));
-  };
-
-  GitHubManager["new"] = function(slug) {
-    return User.get().then(function(user) {
-      return UserInput.repo(user.github_username + "/" + slug);
-    });
   };
 
   return GitHubManager;

@@ -17,8 +17,7 @@ class GitHubManager
         Log.p "Using your existing GitHub repository: #{repo.name}"
         repo.name
       else
-        @new(opts.slug)
-
-  @new: (slug) ->
-    User.get().then (user) ->
-      UserInput.repo("#{user.github_username}/#{slug}")
+        Log.br()
+        Log.p "This folder is not in a GitHub repository."
+        Log.p "Set up GitHub repository first: https://github.com/new"
+        process.exit()
