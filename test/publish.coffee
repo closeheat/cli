@@ -9,6 +9,7 @@ Config = require '../src/config'
 
 success = (repo) ->
   """
+  Setting up your website...
   Success!
   Your website example-subdomain.closeheatapp.com is now published.
   Every change to master branch on #{repo} in GitHub will be immediately published.
@@ -73,6 +74,10 @@ describe 'publish', ->
           app:
             url: 'http://example-subdomain.closeheatapp.com'
             github_repo_url: 'git@github.com:example-org/example-repo.git'
+          pusher:
+            key: ''
+            auth_endpoint: 'http://example.com/pusher/auth'
+            user_key: 'private-user-15'
 
       prompts = [
         {
@@ -149,24 +154,24 @@ describe 'publish', ->
           user:
             github_username: 'example-user'
 
-    it 'create new repo', (done) ->
+    it 'show instructions', (done) ->
       @timeout(5000)
 
-      @api.routes.post '/publish', (req, res) ->
-        res.send
-          app:
-            url: 'http://example-subdomain.closeheatapp.com'
-            github_repo_url: 'git@github.com:example-org/example-new-repo.git'
+      # @api.routes.post '/publish', (req, res) ->
+      #   res.send
+      #     app:
+      #       url: 'http://example-subdomain.closeheatapp.com'
+      #       github_repo_url: 'git@github.com:example-org/example-new-repo.git'
 
       prompts = [
         {
           question: 'Choose a subdomain'
           answer: 'example-subdomain'
         }
-        {
-          question: 'Choose a GitHub repository'
-          answer: 'example-org/example-new-repo'
-        }
+        # {
+        #   question: 'Choose a GitHub repository'
+        #   answer: 'example-org/example-new-repo'
+        # }
       ]
 
       command('publish', prompts: prompts).then (stdout) ->
@@ -175,8 +180,7 @@ describe 'publish', ->
           You are about to publish a new website.
           ? Choose a subdomain - XXX.closeheatapp.com: (suggested-slug)
           ? Choose a subdomain - XXX.closeheatapp.com: example-subdomain
-          ? Choose a GitHub repository: (example-user/example-subdomain)
-          ? Choose a GitHub repository: example-org/example-new-repo
-          #{success('example-org/example-new-repo')}
+          This folder is not in a GitHub repository.
+          Set up GitHub repository first: https://github.com/new
           """
         done()

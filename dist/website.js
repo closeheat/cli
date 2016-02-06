@@ -24,7 +24,7 @@ GitRemote = require('./git_remote');
 
 _ = require('lodash');
 
-Pusher = require('pusher-client');
+Pusher = global.TEST_PUSHER ? require('../test/fixtures/pusher/dist/pusher') : require('pusher-client');
 
 module.exports = Website = (function() {
   function Website() {}

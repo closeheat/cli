@@ -32,7 +32,13 @@ gulp.task 'coffee', ->
       .on('error', gutil.log))
     .pipe gulp.dest('./test/fixtures/git/dist')
 
+  gulp
+    .src('./test/fixtures/pusher/src/*.coffee')
+    .pipe(coffee(bare: true)
+      .on('error', gutil.log))
+    .pipe gulp.dest('./test/fixtures/pusher/dist')
+
 gulp.task 'test', ->
   gulp
-    .src('test/*.coffee', read: false)
+    .src('test/publish.coffee', read: false)
     .pipe(mocha())

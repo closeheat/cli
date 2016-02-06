@@ -27,6 +27,7 @@ module.exports = (command, opts = {}) ->
       '--api http://localhost:1234'
       "--config-dir #{TestConfig.dir()}"
       '--no-colors'
+      '--test-pusher'
     ]
 
     mockEnv(fillPrompts(nixt(nixt_config)))

@@ -5,13 +5,20 @@ Urls = require '../src/urls'
 
 command = require './helpers/command'
 TestConfig = require './helpers/test_config'
+TestApi = require './helpers/test_api'
 Config = require '../src/config'
 assertStdout = require './helpers/assert_stdout'
 
 describe 'login', ->
   beforeEach ->
+    @api = new TestApi()
+    @server = @api.start()
+
     TestConfig.init()
     TestConfig.rm()
+
+  afterEach ->
+    @server.close()
 
   describe 'have a token', ->
     it 'blank slate', (done) ->
@@ -21,7 +28,7 @@ describe 'login', ->
           - Login successful. Access token saved.
           """
         expect(stdout).to.match(/Login successful. Access token saved./)
-        expect(Config.fileContents()).to.eql(access_token: 'example-token')
+        expect(Config.fileContents().access_token).to.eql('example-token')
         done()
 
     it 'override existing token', (done) ->
@@ -32,7 +39,7 @@ describe 'login', ->
           """
           - Login successful. New access token saved.
           """
-        expect(Config.fileContents()).to.eql(access_token: 'example-token')
+        expect(Config.fileContents().access_token).to.eql('example-token')
         done()
 
   describe 'no token', ->

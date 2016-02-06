@@ -11,7 +11,11 @@ Color = require './color'
 GitHubManager = require './github_manager'
 GitRemote = require './git_remote'
 _ = require 'lodash'
-Pusher = require 'pusher-client'
+
+Pusher = if global.TEST_PUSHER
+  require '../test/fixtures/pusher/dist/pusher'
+else
+  require 'pusher-client'
 
 module.exports =
 class Website

@@ -20,10 +20,11 @@ setGlobals = function(program) {
   global.API_URL = program.api || 'http://api.closeheat.com';
   global.CONFIG_DIR = program.configDir || path.join(homePath(), '.closeheat');
   global.COLORS = program.colors;
+  global.TEST_PUSHER = program.testPusher;
   return new Updater().update();
 };
 
-program.version(pkg.version).usage('<keywords>').option('--api [url]', 'API endpoint. Default: http://api.closeheat.com').option('--config-dir [path]', 'Configuration directory. Default: ~/.closeheat').option('--no-colors', 'Disable colors.');
+program.version(pkg.version).usage('<keywords>').option('--api [url]', 'API endpoint. Default: http://api.closeheat.com').option('--config-dir [path]', 'Configuration directory. Default: ~/.closeheat').option('--no-colors', 'Disable colors.').option('--test-pusher', 'Use test version of Pusher.');
 
 program.command('publish').description('Sets up continuous website delivery from GitHub to closeheat.').action(function() {
   var Publisher;
