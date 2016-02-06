@@ -1,4 +1,4 @@
-var Authorizer, Color, Config, Couleurs, Log, Promise, Spinner, _, chalk, opbeat;
+var Authorizer, Color, Config, Couleurs, Log, Promise, Spinner, _, chalk;
 
 _ = require('lodash');
 
@@ -7,16 +7,6 @@ chalk = require('chalk');
 Couleurs = require('couleurs')();
 
 Promise = require('bluebird');
-
-opbeat = require('opbeat')({
-  clientLogLevel: 'fatal',
-  active: 'true',
-  logger: {
-    fatal: function() {},
-    debug: function() {},
-    info: function() {}
-  }
-});
 
 Spinner = require('./spinner');
 

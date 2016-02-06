@@ -2,17 +2,17 @@ _ = require 'lodash'
 chalk = require 'chalk'
 Couleurs = require('couleurs')()
 Promise = require 'bluebird'
-opbeat = require('opbeat')(
-  # organizationId: '1979aa4688cb49b7962c8658bfbc649b'
-  # appId: 'c19a8164de'
-  # secretToken: 'f12b94d66534f8cc856401008ddd06b627bc5d53'
-  clientLogLevel: 'fatal'
-  active: 'true'
-  logger:
-    fatal: ->
-    debug: ->
-    info: ->
-)
+# opbeat = require('opbeat').start(
+#   organizationId: '1979aa4688cb49b7962c8658bfbc649b',
+#   appId: 'ba7a8259ee',
+#   secretToken: 'f12b94d66534f8cc856401008ddd06b627bc5d53'
+#   clientLogLevel: 'fatal'
+#   active: 'true'
+#   logger:
+#     fatal: ->
+#     debug: ->
+#     info: ->
+# )
 
 Spinner = require './spinner'
 Color = require './color'

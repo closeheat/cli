@@ -55,9 +55,7 @@ describe 'publish', ->
           It is available at existing-slug.closeheatapp.com.
           You can open it swiftly by typing closeheat open.
           It has a continuous deployment setup from GitHub at example-org/example-repo
-          Anyways - if you'd like to publish your current code changes, just type:
-          closeheat quick-publish
-          Doing that will commit and push all of your changes to the GitHub repository and publish it.
+          Push new changes to your GitHub repository and it will automatically rebuild.
           """
         done()
 

@@ -92,9 +92,7 @@ module.exports = Publisher = (function() {
     Log.br();
     Log.p("It has a continuous deployment setup from GitHub at " + website.github_repo);
     Log.br();
-    Log.p("Anyways - if you'd like to publish your current code changes, just type:");
-    Log.p(Color.violet('closeheat quick-publish'));
-    Log.p("Doing that will commit and push all of your changes to the GitHub repository and publish it.");
+    Log.p("Push new changes to your GitHub repository and it will automatically rebuild.");
     return process.exit();
   };
 
