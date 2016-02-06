@@ -108,11 +108,9 @@ module.exports = Log = (function() {
     this.br();
     this.line((Color.red('ERROR')) + " | " + msg);
     this.br();
-    return this.sendErrorLog(msg).then(function() {
-      if (exit) {
-        return process.exit();
-      }
-    });
+    if (exit) {
+      return process.exit();
+    }
   };
 
   Log.sendErrorLog = function(msg) {

@@ -76,8 +76,8 @@ class Log
     @line("#{Color.red('ERROR')} | #{msg}")
     @br()
 
-    @sendErrorLog(msg).then ->
-      process.exit() if exit
+    # @sendErrorLog(msg).then ->
+    process.exit() if exit
 
   @sendErrorLog: (msg) ->
     new Promise (resolve, reject) ->

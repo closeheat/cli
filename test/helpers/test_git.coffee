@@ -15,7 +15,11 @@ class TestGit
     rimraf.sync(TestConfig.websiteDir())
     fs.mkdirSync(TestConfig.websiteDir())
 
-    @exec "-C '#{TestConfig.websiteDir()}' init"
+    @exec("-C '#{TestConfig.websiteDir()}' init").then(@configureLocally)
+
+  @configureLocally: =>
+    @exec("-C '#{TestConfig.websiteDir()}' config --local user.email 'joseph@kittinger.com'").then =>
+      @exec("-C '#{TestConfig.websiteDir()}' config --local user.name 'Joseph Kittinger'")
 
   @createFile: =>
     fs.writeFileSync(path.join(TestConfig.websiteDir(), 'test-file.txt'), 'Testing')
