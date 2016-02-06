@@ -65,15 +65,26 @@ module.exports = Website = (function() {
   };
 
   Website.handleProblem = function(message, opts) {
-    if (message === 'slug-exists') {
-      Log.p("Subdomain " + opts.slug + " is already taken. Could you choose another one?");
-      return _.assign(opts, {
-        slug: null
-      });
-    } else {
-      Log.p("Some error happened. Shoot a message to support@closeheat.com.");
-      return process.exit();
+    var SLUG_ERRORS, graceful_error;
+    SLUG_ERRORS = {
+      'slug-exists': 'Subdomain is already taken. I know how it feels...',
+      'slug-too-short': 'Subdomain is too short (min. 3 characters). But pretty!',
+      'slug-invalid': 'Subdomain can only have letters, numbers and dashes.'
+    };
+    graceful_error = SLUG_ERRORS[message];
+    if (!graceful_error) {
+      this.showUngracefulError();
     }
+    Log.p(graceful_error);
+    return _.assign(opts, {
+      slug: null
+    });
+  };
+
+  Website.showUngracefulError = function() {
+    Log.p("Amazing error happened. Shoot a message to support@closeheat.com.");
+    Log.p("Sorry, but we will sort it out!");
+    return process.exit();
   };
 
   Website.get = function() {
