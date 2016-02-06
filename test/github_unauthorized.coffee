@@ -11,7 +11,7 @@ describe 'graceful when GitHub not authorized', ->
     @api = new TestApi()
     @server = @api.start()
 
-    @api.routes.post '/apps/find', (req, res) ->
+    @api.routes.post '/suggest/slug', (req, res) ->
       res.status(401).send
         type: 'github-unauthorized'
         message: 'Unauthorized'
@@ -23,6 +23,7 @@ describe 'graceful when GitHub not authorized', ->
     command('publish').then (stdout) ->
       assertStdout stdout,
         """
+        You are about to publish a new website.
         You need to authorize GitHub for that.
         Type closeheat auth-github to do it.
         And rerun your last command aftewards.

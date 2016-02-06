@@ -5,15 +5,17 @@ command = require './helpers/command'
 assertStdout = require './helpers/assert_stdout'
 TestConfig = require './helpers/test_config'
 Config = require '../src/config'
+TestGit = require './helpers/test_git'
 
 describe 'list', ->
-  beforeEach ->
+  beforeEach (done) ->
     @api = new TestApi()
     @server = @api.start()
 
     TestConfig.init()
     TestConfig.rm()
     Config.update('access_token', 'example-token')
+    TestGit.init().then(-> done())
 
   afterEach ->
     @server.close()
