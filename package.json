@@ -16,7 +16,8 @@
     "url": "git://github.com/closeheat/cli.git"
   },
   "scripts": {
-    "postinstall": "node ./dist/bin/closeheat postinstall"
+    "postinstall": "node ./dist/bin/closeheat postinstall",
+    "test": "gulp test"
   },
   "dependencies": {
     "bluebird": "^2.9.8",
