@@ -47,7 +47,7 @@ module.exports = Website = (function() {
   Website.waitForBuild = function(pusher_data) {
     return new Promise((function(_this) {
       return function(resolve, reject) {
-        var pusher, pusher_user_channel;
+        var pusher, pusher_user_channel, timeout;
         pusher = new Pusher(pusher_data.key, {
           authEndpoint: pusher_data.auth_endpoint,
           auth: {
@@ -57,7 +57,9 @@ module.exports = Website = (function() {
           }
         });
         pusher_user_channel = pusher.subscribe(pusher_data.user_key);
+        timeout = setTimeout(_this.showUngracefulError, 20000);
         return pusher_user_channel.bind('app.build', function() {
+          clearTimeout(timeout);
           return resolve();
         });
       };
@@ -82,8 +84,15 @@ module.exports = Website = (function() {
   };
 
   Website.showUngracefulError = function() {
-    Log.p("Amazing error happened. Shoot a message to support@closeheat.com.");
-    Log.p("Sorry, but we will sort it out!");
+    Log.br();
+    Log.p('Amazing error happened.');
+    Log.br();
+    Log.p('Three ways to make it work:');
+    Log.p('1. Log in to the closeheat.com - check status on your app and its builds.');
+    Log.p('2. Check if closeheat is in your GitHub settings among Applications.');
+    Log.p('3. Shoot a message to support@closeheat.com.');
+    Log.br();
+    Log.p("Sorry that this happened, but we'll sort it out!");
     return process.exit();
   };
 
