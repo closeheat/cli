@@ -1,13 +1,12 @@
 {
   "name": "closeheat",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "author": "Domas Bitvinskas <domas.bitvinskas@me.com>",
   "contributors": [
     "Justas Palumickas <jpalumickas@gmail.com>"
   ],
-  "description": "A cli for closeheat",
+  "description": "Static Website Hosting with CMS without touching your code.",
   "license": "MIT",
-  "main": "dist/creator.js",
   "bin": {
     "closeheat": "./dist/bin/closeheat.js"
   },
@@ -17,7 +16,7 @@
     "url": "git://github.com/closeheat/cli.git"
   },
   "scripts": {
-    "postinstall": "closeheat postinstall"
+    "postinstall": "node ./dist/bin/closeheat postinstall"
   },
   "dependencies": {
     "bluebird": "^2.9.8",
@@ -38,7 +37,12 @@
   },
   "keywords": [
     "closeheat",
-    "cli"
+    "static website hosting",
+    "hosting",
+    "static",
+    "jekyll",
+    "cms",
+    "content management system"
   ],
   "devDependencies": {
     "ansi-regex": "^2.0.0",
