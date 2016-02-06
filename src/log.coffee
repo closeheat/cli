@@ -2,13 +2,17 @@ _ = require 'lodash'
 chalk = require 'chalk'
 Couleurs = require('couleurs')()
 Promise = require 'bluebird'
-opbeat = require('opbeat')(
-  organizationId: '1979aa4688cb49b7962c8658bfbc649b'
-  appId: 'c19a8164de'
-  secretToken: 'f12b94d66534f8cc856401008ddd06b627bc5d53'
-  clientLogLevel: 'fatal'
-  active: 'true'
-)
+# opbeat = require('opbeat').start(
+#   organizationId: '1979aa4688cb49b7962c8658bfbc649b',
+#   appId: 'ba7a8259ee',
+#   secretToken: 'f12b94d66534f8cc856401008ddd06b627bc5d53'
+#   clientLogLevel: 'fatal'
+#   active: 'true'
+#   logger:
+#     fatal: ->
+#     debug: ->
+#     info: ->
+# )
 
 Spinner = require './spinner'
 Color = require './color'
@@ -18,6 +22,7 @@ Config = require './config'
 module.exports =
 class Log
   @logo: (br = 1) ->
+    return '' unless global.COLORS
     block_colours = [
       '#FFBB5D'
       '#FF6664'
@@ -71,33 +76,21 @@ class Log
     @line("#{Color.red('ERROR')} | #{msg}")
     @br()
 
-    return if type == 'login'
+    # @sendErrorLog(msg).then ->
+    process.exit() if exit
 
-    printStackTrace = require('stacktrace-js')
-
-    trace = [err.toString()]
-
-    if err
-      trace = trace.concat printStackTrace(e: err)
-    else
-      trace = trace.concat printStackTrace()
-
-    _.each trace, (trace_line) =>
-      @innerError(trace_line, false)
-
-    @sendErrorLog(msg, trace).then ->
-      process.exit() if exit
-
-  @sendErrorLog: (msg, trace) ->
+  @sendErrorLog: (msg) ->
     new Promise (resolve, reject) ->
       opbeat.on 'logged', resolve
       opbeat.on 'error', resolve
 
-      opbeat.captureError new Error(msg),
-        extra:
-          closeheat_version: Config.version()
-          token: new Authorizer().accessToken()
-          trace: trace
+      StackTrace = require('stacktrace-js')
+      StackTrace.get().then (trace) ->
+        opbeat.captureError msg,
+          extra:
+            closeheat_version: Config.version()
+            token: new Authorizer().accessToken()
+            trace: trace
 
   @backendError: ->
     @error('Backend responded with an error.')
@@ -125,6 +118,6 @@ class Log
 
   @backend: (data) ->
     if data.type == 'error'
-      Log.inner("#{Color.orange('closeheat')} | #{Color.red(data.message)}")
+      Log.p("#{Color.orange('closeheat')} | #{Color.red(data.message)}")
     else
-      Log.inner("#{Color.orange('closeheat')} | #{data.message}")
+      Log.p("#{Color.orange('closeheat')} | #{data.message}")

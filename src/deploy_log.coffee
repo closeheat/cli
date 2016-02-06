@@ -3,48 +3,50 @@ _ = require 'lodash'
 Git = require 'git-wrapper'
 
 Log = require './log'
+Color = require './color'
 Authorized = require './authorized'
 Urls = require './urls'
 BackendLogger = require './backend_logger'
+Website = require './website'
 
 module.exports =
 class DeployLog
   constructor: ->
-    Deployer = require './deployer'
-    @deployer = new Deployer()
     @backend_logger = new BackendLogger()
     @git = new Git()
 
   fromCurrentCommit: ->
     new Promise (resolve, reject) =>
-      @deployer.getOriginRepo().then (repo) =>
-        @pollAndLogUntilDeployed(repo).then =>
-          Log.br()
-          resolve(@slug)
+      @pollAndLogUntilDeployed().then =>
+        Log.br()
+        resolve(@slug)
 
-  pollAndLogUntilDeployed: (repo) ->
+  pollAndLogUntilDeployed: ->
     new Promise (resolve, reject) =>
       @status = 'none'
       Log.br()
+
       @promiseWhile(
         (=> !_.contains(['success', 'failed', null], @status)),
-        (=> @requestAndLogStatus(repo))
+        (=> @requestAndLogStatus())
       ).then(resolve)
 
-  requestAndLogStatus: (repo) =>
-    @getSha().then (sha) =>
-      @deployer.getSlug(repo).then (slug) =>
-        @slug = slug
+  requestAndLogStatus: =>
+    Website.get().then (website) =>
+      @handleNonExistingWebsite(website)
 
-        Authorized.request url: Urls.buildForCLI(slug), qs: { commit_sha: sha }, method: 'get', json: true, (err, resp) =>
-          if resp.statusCode == 404
-            Log.error resp.body.message
-          else if resp.statusCode == 200
-            build = resp.body.build
-            @backend_logger.log(build)
-            @status = build.status
-          else
-            Log.error "Unknown backend error. We're fixing this already."
+      @getSha().then (sha) =>
+        Authorized.post(Urls.buildForCLI(website.slug), commit_sha: sha).then (resp) =>
+          build = resp.build
+          @backend_logger.log(build)
+          @status = build.status
+
+  handleNonExistingWebsite: (website) ->
+    return if website.exists
+
+    Log.p "You don't have a published website connected to this folder."
+    Log.p "Write #{Color.violet('closeheat publish')} to publish it first."
+    process.exit()
 
   getSha: ->
     new Promise (resolve, reject) =>

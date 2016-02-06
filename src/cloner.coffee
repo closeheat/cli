@@ -8,27 +8,20 @@ Notifier = require './notifier'
 
 module.exports =
 class Cloner
-  clone: (app_name) ->
+  clone: (slug) ->
     Log.logo()
-    Log.spin "Getting application data for #{app_name}."
+    Log.spin "Getting website information for #{slug}."
 
-    @getAppData(app_name).then((app) =>
+    @getAppData(slug).then((app) =>
       Log.stop()
       Log.br()
       Log.spin "Cloning GitHub repository from #{app.github_repo}."
 
-      @execCloning(app.github_repo, app.default_branch, app_name).then =>
+      @execCloning(app.github_repo, app.default_branch, slug).then =>
         Notifier.notify('app_clone', app.slug)
 
         Log.stop()
-        Log.inner "Cloned the app code to directory '#{app_name}'."
-
-        Log.br()
-        Log.line 'Run the server by typing:'
-        Log.code [
-          "cd #{app_name}"
-          'closeheat'
-        ]
+        Log.inner "Cloned the app code to directory '#{slug}'."
 
         Log.br()
         Log.p 'The quickest way to deploy changes to closeheat.com and GitHub is with:'
@@ -40,23 +33,18 @@ class Cloner
     ).catch (err) ->
       Log.error(err)
 
-  getAppData: (app_name) ->
+  getAppData: (slug) ->
     new Promise (resolve, reject) ->
-      Authorized.request url: Urls.appData(app_name), method: 'get', (err, resp) ->
-        return reject(err) if err
+      Authorized.post(Urls.findApp(), slug: slug).then (resp) ->
+        return Log.error "Website named '#{slug}' does not exist." unless resp.app.exists
 
-        try
-          app = JSON.parse(resp.body).app
-        catch e
-          return reject("App named '#{app_name}' does not exist or the server is down.")
+        resolve(resp.app)
 
-        resolve(app)
-
-  execCloning: (github_repo, branch, app_name) ->
+  execCloning: (github_repo, branch, slug) ->
     @git = new Git()
 
     new Promise (resolve, reject) ->
-      new Git().exec 'clone', ["git@github.com:#{github_repo}.git", app_name], (err, resp) ->
+      new Git().exec 'clone', ["git@github.com:#{github_repo}.git", slug], (err, resp) ->
         return reject(err) if err
 
         resolve()

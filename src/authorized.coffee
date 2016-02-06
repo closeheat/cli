@@ -1,4 +1,5 @@
-request = require 'request'
+Promise = require 'bluebird'
+request = Promise.promisify(require('request'))
 _ = require 'lodash'
 pkg = require '../package.json'
 
@@ -7,31 +8,39 @@ Log = require './log'
 
 module.exports =
 class Authorized
-  @request: (params...) ->
-    [opts, cb] = params
-    token_params = @tokenParams(opts, cb)
+  @request: (opts) ->
+    Log = require './log'
+    Log.error("Request opts is not an object: #{opts}") unless _.isPlainObject(opts)
 
-    if token_params
-      opts.qs = _.merge(opts.qs || {}, token_params)
-      opts.headers = { 'X-CLI-Version': pkg.version }
-      request opts, @loginOnUnauthorized(opts, cb)
+    opts.qs = _.merge(opts.form || {}, api_token: @token())
+    opts.headers = { 'X-CLI-Version': pkg.version }
 
-  @tokenParams: (opts, cb) ->
-    authorizer = new Authorizer
-    api_token = authorizer.accessToken()
+    request(opts).then (resp) ->
+      Permissions = require './permissions'
+      Permissions.check(resp)
 
-    if api_token == 'none' || !api_token
-      authorizer.forceLogin(=> @request(opts, cb))
-      return false
+      Errors = require './errors'
+      Errors.check(resp)
 
-    api_token: api_token
+      resp[0].body
 
-  @loginOnUnauthorized: (opts, cb) =>
-    (err, resp) =>
-      Log.error(err) if err
-      authorizer = new Authorizer()
+  @post: (url, data = {}) ->
+    @validateUrl(url)
 
-      if authorizer.unauthorized(resp)
-        authorizer.forceLogin(=> @request(opts, cb))
-      else
-        cb(err, resp)
+    @request(url: url, form: data, json: true, method: 'post')
+
+  @get: (url) ->
+    @validateUrl(url)
+
+    @request(url: url, json: true, method: 'get')
+
+  @validateUrl: (url) ->
+    return if _.isString(url)
+
+    Log.p("Url #{url} is not a string")
+    process.exit()
+
+  @token: ->
+    Authorizer = require './authorizer'
+    authorizer = new Authorizer()
+    authorizer.accessToken()

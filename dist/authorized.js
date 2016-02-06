@@ -1,7 +1,8 @@
-var Authorized, Authorizer, Log, _, pkg, request,
-  slice = [].slice;
+var Authorized, Authorizer, Log, Promise, _, pkg, request;
 
-request = require('request');
+Promise = require('bluebird');
+
+request = Promise.promisify(require('request'));
 
 _ = require('lodash');
 
@@ -14,52 +15,62 @@ Log = require('./log');
 module.exports = Authorized = (function() {
   function Authorized() {}
 
-  Authorized.request = function() {
-    var cb, opts, params, token_params;
-    params = 1 <= arguments.length ? slice.call(arguments, 0) : [];
-    opts = params[0], cb = params[1];
-    token_params = this.tokenParams(opts, cb);
-    if (token_params) {
-      opts.qs = _.merge(opts.qs || {}, token_params);
-      opts.headers = {
-        'X-CLI-Version': pkg.version
-      };
-      return request(opts, this.loginOnUnauthorized(opts, cb));
+  Authorized.request = function(opts) {
+    Log = require('./log');
+    if (!_.isPlainObject(opts)) {
+      Log.error("Request opts is not an object: " + opts);
     }
+    opts.qs = _.merge(opts.form || {}, {
+      api_token: this.token()
+    });
+    opts.headers = {
+      'X-CLI-Version': pkg.version
+    };
+    return request(opts).then(function(resp) {
+      var Errors, Permissions;
+      Permissions = require('./permissions');
+      Permissions.check(resp);
+      Errors = require('./errors');
+      Errors.check(resp);
+      return resp[0].body;
+    });
   };
 
-  Authorized.tokenParams = function(opts, cb) {
-    var api_token, authorizer;
-    authorizer = new Authorizer;
-    api_token = authorizer.accessToken();
-    if (api_token === 'none' || !api_token) {
-      authorizer.forceLogin((function(_this) {
-        return function() {
-          return _this.request(opts, cb);
-        };
-      })(this));
-      return false;
+  Authorized.post = function(url, data) {
+    if (data == null) {
+      data = {};
     }
-    return {
-      api_token: api_token
-    };
+    this.validateUrl(url);
+    return this.request({
+      url: url,
+      form: data,
+      json: true,
+      method: 'post'
+    });
   };
 
-  Authorized.loginOnUnauthorized = function(opts, cb) {
-    return function(err, resp) {
-      var authorizer;
-      if (err) {
-        Log.error(err);
-      }
-      authorizer = new Authorizer();
-      if (authorizer.unauthorized(resp)) {
-        return authorizer.forceLogin(function() {
-          return Authorized.request(opts, cb);
-        });
-      } else {
-        return cb(err, resp);
-      }
-    };
+  Authorized.get = function(url) {
+    this.validateUrl(url);
+    return this.request({
+      url: url,
+      json: true,
+      method: 'get'
+    });
+  };
+
+  Authorized.validateUrl = function(url) {
+    if (_.isString(url)) {
+      return;
+    }
+    Log.p("Url " + url + " is not a string");
+    return process.exit();
+  };
+
+  Authorized.token = function() {
+    var authorizer;
+    Authorizer = require('./authorizer');
+    authorizer = new Authorizer();
+    return authorizer.accessToken();
   };
 
   return Authorized;

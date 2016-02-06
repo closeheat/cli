@@ -12,43 +12,43 @@ module.exports = Urls = (function() {
   };
 
   Urls.api = function() {
-    return 'http://api.closeheat.com';
+    return global.API_URL;
   };
 
   Urls.appsIndex = function() {
     return (this.api()) + "/apps";
   };
 
-  Urls.deployedSlug = function() {
-    return (this.api()) + "/deploy/slug";
+  Urls.suggestSlug = function() {
+    return (this.api()) + "/suggest/slug";
   };
 
-  Urls.latestBuild = function(slug) {
-    return (this.api()) + "/apps/" + slug + "/builds/latest";
+  Urls.publish = function() {
+    return (this.api()) + "/publish";
+  };
+
+  Urls.findApp = function() {
+    return (this.api()) + "/apps/find";
   };
 
   Urls.buildForCLI = function(slug) {
     return (this.api()) + "/apps/" + slug + "/builds/for_cli";
   };
 
-  Urls.createApp = function() {
-    return (this.api()) + "/apps";
-  };
-
-  Urls.currentUserInfo = function() {
+  Urls.currentUser = function() {
     return (this.api()) + "/users/me";
   };
 
-  Urls.getToken = function() {
-    return (this.api()) + "/users/token";
-  };
-
-  Urls.authorizeGithub = function() {
-    return (this.base()) + "/authorize-github";
+  Urls.authorizeGitHub = function() {
+    return (this.base()) + "/auth/github";
   };
 
   Urls.notifier = function() {
     return (this.api()) + "/cli_notifier";
+  };
+
+  Urls.loginInstructions = function() {
+    return (this.base()) + "/api/login";
   };
 
   return Urls;

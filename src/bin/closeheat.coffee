@@ -1,89 +1,45 @@
 program = require 'commander'
-_ = require 'lodash'
-fs = require 'fs'
+homePath = require 'home-path'
 path = require 'path'
 
 pkg = require '../../package.json'
 Log = require '../log'
+Updater = require '../updater'
+Notifier = require '../notifier'
+
+setGlobals = (program) ->
+  global.API_URL = program.api || 'http://api.closeheat.com'
+  global.CONFIG_DIR = program.configDir || path.join(homePath(), '.closeheat')
+  global.COLORS = program.colors
+  global.TEST_PUSHER = program.testPusher
+  new Updater().update()
 
 program
   .version(pkg.version)
   .usage('<keywords>')
+  .option('--api [url]', 'API endpoint. Default: http://api.closeheat.com')
+  .option('--config-dir [path]', 'Configuration directory. Default: ~/.closeheat')
+  .option('--no-colors', 'Disable colors.')
+  .option('--test-pusher', 'Use test version of Pusher.')
 
 program
-  .command('create [app-name]')
-  .description('Creates a new app with clean setup and directory structure.')
-  .option('-f, --framework [name]', 'Framework')
-  .option('-t, --template [name]', 'Template')
-  .option('--javascript [name]', 'Javascript precompiler')
-  .option('--html [name]', 'HTML precompiler')
-  .option('--css [name]', 'CSS precompiler')
-  .option('--tmp [path]', 'The path of temporary directory when creating')
-  .option('--dist [path]', 'Path of destination of where to create app dir')
-  .option('--no-deploy', 'Do not create GitHub repo and closeheat app')
-  .action (name, opts) ->
-    Creator = require '../creator'
-
-    settings = _.pick(
-      [
-        opts
-        'framework'
-        'template'
-        'javascript'
-        'html'
-        'css'
-        'dist'
-        'tmp'
-        'deploy'
-      ]...
-    )
-
-    settings.name = name
-
-    Log.logo()
-
-    template_settings = [
-      'framework'
-      'template'
-      'javascript'
-      'html'
-      'css'
-    ]
-
-    includes_template_settings = _.any _.keys(settings), (setting) ->
-      _.contains(template_settings, setting)
-
-    if includes_template_settings
-      new Creator().createFromSettings(settings)
-    else
-      new Creator().createFromPrompt(settings)
-
-program
-  .command('server')
-  .description('Runs a server which builds and LiveReloads your app.')
-  .option('--ip [ip]', 'IP to run LiveReload on (default - localhost)')
-  .option('-p, --port [port]', 'Port to run server on (default - 4000)')
-  .action (opts) ->
-    Updater = require '../updater'
-    new Updater().update().then ->
-      Server = require '../server'
-      new Server().start(opts)
-
-program
-  .command('deploy')
-  .description('Deploys your app to closeheat.com via GitHub.')
+  .command('publish')
+  .description('Sets up continuous website delivery from GitHub to closeheat.')
   .action ->
-    Deployer = require '../deployer'
+    setGlobals(program)
+    Notifier.notify('publish')
 
-    Log.logo()
-    new Deployer().deploy()
+    Publisher = require '../publisher'
+    new Publisher().start()
 
 program
   .command('log')
   .description('Polls the log of the last deployment. Usable: git push origin master && closeheat log')
-  .action ->
-    DeployLog = require '../deploy_log'
+  .action (a, b) ->
+    setGlobals(program)
+    Notifier.notify('log')
 
+    DeployLog = require '../deploy_log'
     Log.logo()
     new DeployLog().fromCurrentCommit()
 
@@ -91,82 +47,63 @@ program
   .command('open')
   .description('Opens your deployed app in the browser.')
   .action ->
-    Deployer = require '../deployer'
+    setGlobals(program)
+    Notifier.notify('open')
 
-    new Deployer().open()
+    Opener = require '../opener'
+    new Opener().open()
 
 program
-  .command('apps')
+  .command('list')
   .description('Shows a list of your deployed apps.')
   .action ->
-    Updater = require '../updater'
-    new Updater().update().then ->
-      Apps = require '../apps'
+    setGlobals(program)
+    Notifier.notify('list')
 
-      new Apps().list()
+    List = require '../list'
+    new List().show()
 
 program
-  .command('login')
-  .option('-t, --token [access-token]', 'Access token from closeheat.com.')
+  .command('login [access-token]')
   .description('Log in to closeheat.com with this computer.')
-  .action (opts) ->
-    Authorizer = require '../authorizer'
+  .action (token) ->
+    setGlobals(program)
+    Notifier.notify('login')
 
-    if opts.token
-      new Authorizer().saveToken(opts.token)
-    else
-      new Authorizer().login()
+    Authorizer = require '../authorizer'
+    new Authorizer().login(token)
+
+program
+  .command('auth-github')
+  .description('Authorize GitHub for your Closeheat account.')
+  .action ->
+    setGlobals(program)
+    Notifier.notify('auth-github')
+
+    GitHubAuthorizer = require '../github_authorizer'
+    new GitHubAuthorizer().open()
 
 program
   .command('clone [app-name]')
   .description('Clones the closeheat app files.')
   .action (app_name) ->
+    setGlobals(program)
+    Notifier.notify('clone', app_name)
+
     if app_name
       Cloner = require '../cloner'
       new Cloner().clone(app_name)
     else
-      Apps = require '../apps'
-      new Apps().list()
-
-program
-  .command('transform [type] [language]')
-  .description('Transforms files in current dir to other language (Experimental).')
-  .action (type, language) ->
-    _ = require 'lodash'
-
-    Dirs = require '../dirs'
-    Transformer = require '../transformer'
-
-    Log.logo()
-    settings = {}
-    settings[type] = language
-    source_type = _.first(_.keys(settings))
-    dist_type = _.first(_.values(settings))
-
-    Log.spin("Transforming #{source_type} to #{dist_type}.")
-    dirs = new Dirs(name: 'transforming', src: process.cwd(), dist: process.cwd())
-
-    settings = {}
-    settings[type] = language
-
-    transformer = new Transformer(dirs)
-
-    transformer.transform(settings).then =>
-      Log.stop()
-      Log.inner('Files transformed.')
-
-      Log.spin("Removing old #{source_type} files.")
-      transformer.remove(source_type).then( (paths) ->
-        Log.stop()
-        _.each paths, Log.inner
-        Log.inner("#{source_type} files removed.")
-      ).catch (e) ->
-        Log.error(e)
+      List = require '../list'
+      new List().show()
 
 program
   .command('help')
   .description('Displays this menu.')
   .action ->
+    setGlobals(program)
+    Notifier.notify('help')
+
     Updater = require '../updater'
     new Updater().update().then ->
       Log.logo(0)
@@ -174,20 +111,31 @@ program
 
 program
   .command('postinstall')
-  .description('This is run after the install for easy instructions.')
+  .description('Well, its a command robots run after the install.')
   .action ->
+    setGlobals(program)
+    Notifier.notify('postinstall')
+
     Color = require '../color'
     Log.br()
     Log.p('Installation successful.')
     Log.p('------------------------')
-    Log.p("Run #{Color.violet('closeheat apps')} command for the list of your apps.")
+    Log.p("Run #{Color.violet('closeheat login')} to authorize your toolkit.")
+
+program
+  .command('*')
+  .action ->
+    setGlobals(program)
+    Notifier.notify('wildcard-help')
+
+    Log.logo(0)
+    program.help()
 
 program.parse(process.argv)
 
 unless program.args.length
-  if fs.existsSync('index.html') || fs.existsSync('index.jade')
-    Server = require '../server'
-    new Server().start()
-  else
-    Log.logo(0)
-    program.help()
+  setGlobals(program)
+  Notifier.notify('no-arg-help')
+
+  Log.logo(0)
+  program.help()

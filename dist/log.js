@@ -1,4 +1,4 @@
-var Authorizer, Color, Config, Couleurs, Log, Promise, Spinner, _, chalk, opbeat;
+var Authorizer, Color, Config, Couleurs, Log, Promise, Spinner, _, chalk;
 
 _ = require('lodash');
 
@@ -7,14 +7,6 @@ chalk = require('chalk');
 Couleurs = require('couleurs')();
 
 Promise = require('bluebird');
-
-opbeat = require('opbeat')({
-  organizationId: '1979aa4688cb49b7962c8658bfbc649b',
-  appId: 'c19a8164de',
-  secretToken: 'f12b94d66534f8cc856401008ddd06b627bc5d53',
-  clientLogLevel: 'fatal',
-  active: 'true'
-});
 
 Spinner = require('./spinner');
 
@@ -31,6 +23,9 @@ module.exports = Log = (function() {
     var block_colours, blocks;
     if (br == null) {
       br = 1;
+    }
+    if (!global.COLORS) {
+      return '';
     }
     block_colours = ['#FFBB5D', '#FF6664', '#F8006C', '#3590F3'];
     blocks = _.map(block_colours, function(hex) {
@@ -103,7 +98,6 @@ module.exports = Log = (function() {
   };
 
   Log.error = function(msg, exit, err, type) {
-    var printStackTrace, trace;
     if (exit == null) {
       exit = true;
     }
@@ -114,40 +108,25 @@ module.exports = Log = (function() {
     this.br();
     this.line((Color.red('ERROR')) + " | " + msg);
     this.br();
-    if (type === 'login') {
-      return;
+    if (exit) {
+      return process.exit();
     }
-    printStackTrace = require('stacktrace-js');
-    trace = [err.toString()];
-    if (err) {
-      trace = trace.concat(printStackTrace({
-        e: err
-      }));
-    } else {
-      trace = trace.concat(printStackTrace());
-    }
-    _.each(trace, (function(_this) {
-      return function(trace_line) {
-        return _this.innerError(trace_line, false);
-      };
-    })(this));
-    return this.sendErrorLog(msg, trace).then(function() {
-      if (exit) {
-        return process.exit();
-      }
-    });
   };
 
-  Log.sendErrorLog = function(msg, trace) {
+  Log.sendErrorLog = function(msg) {
     return new Promise(function(resolve, reject) {
+      var StackTrace;
       opbeat.on('logged', resolve);
       opbeat.on('error', resolve);
-      return opbeat.captureError(new Error(msg), {
-        extra: {
-          closeheat_version: Config.version(),
-          token: new Authorizer().accessToken(),
-          trace: trace
-        }
+      StackTrace = require('stacktrace-js');
+      return StackTrace.get().then(function(trace) {
+        return opbeat.captureError(msg, {
+          extra: {
+            closeheat_version: Config.version(),
+            token: new Authorizer().accessToken(),
+            trace: trace
+          }
+        });
       });
     });
   };
@@ -188,9 +167,9 @@ module.exports = Log = (function() {
 
   Log.backend = function(data) {
     if (data.type === 'error') {
-      return Log.inner((Color.orange('closeheat')) + " | " + (Color.red(data.message)));
+      return Log.p((Color.orange('closeheat')) + " | " + (Color.red(data.message)));
     } else {
-      return Log.inner((Color.orange('closeheat')) + " | " + data.message);
+      return Log.p((Color.orange('closeheat')) + " | " + data.message);
     }
   };
 

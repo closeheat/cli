@@ -24,18 +24,3 @@ class BackendLogger
   diff: (build) ->
     _.select build.log, (new_data) =>
       !_.contains(_.map(@old_log, 'message'), new_data.message)
-
-  @fromBackendStatus: (status, msg) ->
-    if status == 'download_github_repo'
-      @backend('Downloading the GitHub repo.')
-    else if status == 'build'
-      @backend('Building app.')
-    else if status == 'deployed'
-      @backend('App is live.')
-    else if status == 'error'
-      if msg
-        @error(msg)
-      else
-        @backendError()
-    else
-      @backend('Unknown status.')

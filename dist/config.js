@@ -1,6 +1,4 @@
-var Config, fs, homePath, path, pkg;
-
-homePath = require('home-path');
+var Config, fs, path, pkg;
 
 path = require('path');
 
@@ -16,7 +14,7 @@ module.exports = Config = (function() {
     config_path = path.join(this.dir(), 'config.json');
     if (!fs.existsSync(config_path)) {
       fs.writeFileSync(config_path, JSON.stringify({
-        access_token: 'none'
+        access_token: ''
       }));
     }
     return config_path;
@@ -28,7 +26,7 @@ module.exports = Config = (function() {
 
   Config.dir = function() {
     var result;
-    result = path.join(homePath(), '.closeheat');
+    result = global.CONFIG_DIR;
     if (!fs.existsSync(result)) {
       fs.mkdirSync(result);
     }

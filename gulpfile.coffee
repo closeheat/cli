@@ -1,24 +1,16 @@
 gulp = require 'gulp'
 coffee = require 'gulp-coffee'
 gutil = require 'gulp-util'
-shell = require 'gulp-shell'
 fs = require 'fs'
 mocha = require 'gulp-mocha'
 watch = require 'gulp-watch'
-replace = require 'gulp-replace'
-rename = require 'gulp-rename'
 insert = require 'gulp-insert'
-acorn = require 'acorn'
 
-gulp.task 'default', ['coffee', 'img']
+gulp.task 'default', ['coffee']
 
 gulp.task 'watch', ->
   gulp.watch('./src/**/*.coffee', ['default'])
-
-gulp.task 'img', ->
-  gulp
-    .src('./src/**/*.png')
-    .pipe gulp.dest('./dist/')
+  gulp.watch('./test/fixtures/**/*.coffee', ['default'])
 
 gulp.task 'coffee', ->
   gulp
@@ -34,18 +26,19 @@ gulp.task 'coffee', ->
     .pipe(insert.prepend('#!/usr/bin/env node\n\n'))
     .pipe gulp.dest('./dist/bin')
 
-gulp.task 'requires', ->
-  fs.readFile './dist/creator.js', 'utf-8', (err, data) ->
-    ast = acorn.parse(data)
-    walk = require('acorn/dist/walk')
-    walkall = require('walkall')
+  gulp
+    .src('./test/fixtures/git/src/*.coffee')
+    .pipe(coffee(bare: true)
+      .on('error', gutil.log))
+    .pipe gulp.dest('./test/fixtures/git/dist')
 
-    walk.simple(ast, walkall.makeVisitors((node) ->
-      return unless node.type == 'CallExpression'
-      return unless node.callee.name == 'require'
+  gulp
+    .src('./test/fixtures/pusher/src/*.coffee')
+    .pipe(coffee(bare: true)
+      .on('error', gutil.log))
+    .pipe gulp.dest('./test/fixtures/pusher/dist')
 
-      module_name = node.arguments[0].value
-      return unless module_name.match(/^[a-zA-Z]/)
-
-      console.log module_name
-    ), walkall.traversers)
+gulp.task 'test', ->
+  gulp
+    .src('test/*.coffee', read: false)
+    .pipe(mocha())

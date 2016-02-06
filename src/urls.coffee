@@ -10,32 +10,33 @@ class Urls
 
   @api: ->
     # 'http://staging.closeheat.com/api'
-    'http://api.closeheat.com'
+    global.API_URL
+    # 'http://api.closeheat.com'
     # 'http://10.30.0.1:4000/api'
 
   @appsIndex: ->
     "#{@api()}/apps"
 
-  @deployedSlug: ->
-    "#{@api()}/deploy/slug"
+  @suggestSlug: ->
+    "#{@api()}/suggest/slug"
 
-  @latestBuild: (slug) ->
-    "#{@api()}/apps/#{slug}/builds/latest"
+  @publish: ->
+    "#{@api()}/publish"
+
+  @findApp: ->
+    "#{@api()}/apps/find"
 
   @buildForCLI: (slug) ->
     "#{@api()}/apps/#{slug}/builds/for_cli"
 
-  @createApp: ->
-    "#{@api()}/apps"
-
-  @currentUserInfo: ->
+  @currentUser: ->
     "#{@api()}/users/me"
 
-  @getToken: ->
-    "#{@api()}/users/token"
-
-  @authorizeGithub: ->
-    "#{@base()}/authorize-github"
+  @authorizeGitHub: ->
+    "#{@base()}/auth/github"
 
   @notifier: ->
     "#{@api()}/cli_notifier"
+
+  @loginInstructions: ->
+    "#{@base()}/api/login"

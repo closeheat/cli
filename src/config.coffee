@@ -1,4 +1,3 @@
-homePath = require 'home-path'
 path = require 'path'
 pkg = require '../package.json'
 fs = require 'fs'
@@ -7,14 +6,14 @@ module.exports =
 class Config
   @file: ->
     config_path = path.join(@dir(), 'config.json')
-    fs.writeFileSync(config_path, JSON.stringify(access_token: 'none')) unless fs.existsSync(config_path)
+    fs.writeFileSync(config_path, JSON.stringify(access_token: '')) unless fs.existsSync(config_path)
     config_path
 
   @fileContents: ->
     JSON.parse(fs.readFileSync(@file()).toString())
 
   @dir: ->
-    result = path.join(homePath(), '.closeheat')
+    result = global.CONFIG_DIR
     fs.mkdirSync(result) unless fs.existsSync result
     result
 

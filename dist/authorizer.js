@@ -1,125 +1,59 @@
-var Authorizer, Color, Config, Log, Promise, Urls, fs, inquirer, pkg, request;
+var Authorized, Authorizer, Config, Urls, open;
 
-fs = require('fs');
-
-inquirer = require('inquirer');
-
-request = require('request');
-
-pkg = require('../package.json');
-
-Promise = require('bluebird');
-
-Log = require('./log');
+open = require('open');
 
 Urls = require('./urls');
 
-Color = require('./color');
-
 Config = require('./config');
+
+Authorized = require('./authorized');
 
 module.exports = Authorizer = (function() {
   function Authorizer() {}
 
   Authorizer.prototype.saveToken = function(access_token) {
-    var config;
+    var Log, config, overriden;
+    overriden = this.accessToken();
     config = {
       access_token: access_token
     };
     Config.update('access_token', access_token);
     Log = require('./log');
-    return Log.doneLine('Access token saved.');
+    if (overriden) {
+      return Log.doneLine('Login successful. New access token saved.');
+    } else {
+      return Log.doneLine('Login successful. Access token saved.');
+    }
   };
 
   Authorizer.prototype.accessToken = function() {
     return Config.fileContents().access_token;
   };
 
-  Authorizer.prototype.login = function(cb) {
-    var login_questions;
-    if (cb == null) {
-      cb = function() {};
+  Authorizer.prototype.login = function(token) {
+    if (token) {
+      return this.saveToken(token);
     }
-    login_questions = [
-      {
-        message: 'Your email address',
-        name: 'email',
-        type: 'input'
-      }, {
-        message: 'Your password',
-        name: 'password',
-        type: 'password'
-      }
-    ];
-    return inquirer.prompt(login_questions, (function(_this) {
-      return function(answers) {
-        return _this.getToken(answers).then(function() {
-          Log.br();
-          return cb();
-        })["catch"](function(resp) {
-          if (resp.code === 401) {
-            Log = require('./log');
-            if (resp.status === 'locked') {
-              Log.error('Too many invalid logins. Account locked for 1 hour.', false);
-              return Log.innerError("Check your email for unlock instructions or contact the support at " + (Color.violet('closeheat.com/support')) + ".");
-            } else {
-              Log.error("Wrong password or email. Please try again", false, '', 'login');
-              return _this.login(cb);
-            }
-          } else {
-            return Log.backendError();
-          }
-        });
-      };
-    })(this));
+    if (this.accessToken()) {
+      return this.youreLoggedIn();
+    } else {
+      return this.openLogin();
+    }
   };
 
-  Authorizer.prototype.getToken = function(answers) {
-    return new Promise((function(_this) {
-      return function(resolve, reject) {
-        var params;
-        params = {
-          url: Urls.getToken(),
-          headers: {
-            'X-CLI-Version': pkg.version
-          },
-          qs: answers,
-          method: 'post',
-          json: true
-        };
-        return request(params, function(err, resp) {
-          if (err) {
-            Log.error(err);
-          }
-          if (resp.statusCode === 200) {
-            _this.saveToken(resp.body.access_token);
-            return resolve();
-          } else {
-            return reject({
-              code: resp.statusCode,
-              status: resp.body.status
-            });
-          }
-        });
-      };
-    })(this));
-  };
-
-  Authorizer.prototype.forceLogin = function(cb) {
+  Authorizer.prototype.youreLoggedIn = function() {
+    var Log;
     Log = require('./log');
-    Log.stop();
-    Log.br();
-    Log.p(Color.redYellow('Please login to closeheat.com to check out your app list.'));
-    return this.login(cb);
+    Log.doneLine('You are already logged in.');
+    return Log.inner("Log in with another account here: " + (Urls.loginInstructions()));
   };
 
-  Authorizer.prototype.unauthorized = function(resp) {
-    return resp.statusCode === 401;
-  };
-
-  Authorizer.prototype.checkLoggedIn = function(resp, cb) {
-    if (this.unauthorized(resp)) {
-      return this.forceLogin(cb);
+  Authorizer.prototype.openLogin = function() {
+    var Log;
+    Log = require('./log');
+    Log.doneLine("Log in at " + (Urls.loginInstructions()) + " in your browser.");
+    if (!process.env.CLOSEHEAT_TEST) {
+      return open(Urls.loginInstructions());
     }
   };
 
