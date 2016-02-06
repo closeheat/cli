@@ -1,4 +1,4 @@
-var Authorized, Color, GitHubManager, GitRemote, Log, Promise, SlugManager, Urls, Website, _, inquirer, path;
+var Authorized, Color, GitHubManager, GitRemote, Log, Promise, Pusher, SlugManager, Urls, Website, _, inquirer, path;
 
 inquirer = require('inquirer');
 
@@ -24,18 +24,44 @@ GitRemote = require('./git_remote');
 
 _ = require('lodash');
 
+Pusher = require('pusher-client');
+
 module.exports = Website = (function() {
   function Website() {}
 
   Website.create = function(opts) {
     return Website.execRequest(opts.slug, opts.repo).then(function(resp) {
-      return _.assign(opts, {
-        website: resp.app.url,
-        github_repo_url: resp.app.github_repo_url
+      Log.p("Setting up your website...");
+      return Website.waitForBuild(resp.pusher).then(function() {
+        Log.br();
+        return _.assign(opts, {
+          website: resp.app.url,
+          github_repo_url: resp.app.github_repo_url
+        });
       });
     })["catch"](function(e) {
       return Website.handleProblem(e.message, opts);
     });
+  };
+
+  Website.waitForBuild = function(pusher_data) {
+    return new Promise((function(_this) {
+      return function(resolve, reject) {
+        var pusher, pusher_user_channel;
+        pusher = new Pusher(pusher_data.key, {
+          authEndpoint: pusher_data.auth_endpoint,
+          auth: {
+            params: {
+              api_token: Authorized.token()
+            }
+          }
+        });
+        pusher_user_channel = pusher.subscribe(pusher_data.user_key);
+        return pusher_user_channel.bind('app.build', function() {
+          return resolve();
+        });
+      };
+    })(this));
   };
 
   Website.handleProblem = function(message, opts) {

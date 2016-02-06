@@ -31,16 +31,6 @@ program
     new Publisher().start()
 
 program
-  .command('deploy')
-  .description('Deploys your app to closeheat.com via GitHub.')
-  .action ->
-    setGlobals(program)
-    Notifier.notify('deploy')
-
-    Deployer = require '../deployer'
-    new Deployer().deploy()
-
-program
   .command('log')
   .description('Polls the log of the last deployment. Usable: git push origin master && closeheat log')
   .action (a, b) ->

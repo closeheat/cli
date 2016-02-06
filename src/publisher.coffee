@@ -66,3 +66,4 @@ class Publisher
     Log.br()
     Log.p "The logs of each change are available with #{Color.violet('closeheat log')}."
     Log.p "It's useful to have them right after your push your changes like: #{Color.violet('git push origin master && closeheat log')}"
+    process.exit()

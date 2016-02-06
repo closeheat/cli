@@ -108,7 +108,8 @@ module.exports = Publisher = (function() {
     Log.p("Every change to master branch on " + repo + " in GitHub will be immediately published.");
     Log.br();
     Log.p("The logs of each change are available with " + (Color.violet('closeheat log')) + ".");
-    return Log.p("It's useful to have them right after your push your changes like: " + (Color.violet('git push origin master && closeheat log')));
+    Log.p("It's useful to have them right after your push your changes like: " + (Color.violet('git push origin master && closeheat log')));
+    return process.exit();
   };
 
   return Publisher;

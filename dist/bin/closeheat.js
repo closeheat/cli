@@ -33,14 +33,6 @@ program.command('publish').description('Sets up continuous website delivery from
   return new Publisher().start();
 });
 
-program.command('deploy').description('Deploys your app to closeheat.com via GitHub.').action(function() {
-  var Deployer;
-  setGlobals(program);
-  Notifier.notify('deploy');
-  Deployer = require('../deployer');
-  return new Deployer().deploy();
-});
-
 program.command('log').description('Polls the log of the last deployment. Usable: git push origin master && closeheat log').action(function(a, b) {
   var DeployLog;
   setGlobals(program);
